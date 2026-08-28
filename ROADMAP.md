@@ -1153,7 +1153,7 @@ Nenhum dado real da empresa deve aparecer na demonstracao publica.
 
 ### FASE 18 — README e apresentacao
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1194,17 +1194,17 @@ Nao divulgar:
 
 #### Tarefas
 
-- [ ] Documentar o problema.
-- [ ] Documentar a solucao e funcionalidades.
-- [ ] Documentar stack e arquitetura.
-- [ ] Documentar banco e importacao.
-- [ ] Documentar algoritmo de prioridade.
-- [ ] Documentar multi-tenancy e seguranca.
-- [ ] Adicionar screenshots seguros.
-- [ ] Documentar instalacao e deploy.
-- [ ] Documentar aprendizados e melhorias futuras.
-- [ ] Criar descricao para portfolio.
-- [ ] Revisar o material para remover informacoes sensiveis.
+- [x] Documentar o problema.
+- [x] Documentar a solucao e funcionalidades.
+- [x] Documentar stack e arquitetura.
+- [x] Documentar banco e importacao.
+- [x] Documentar algoritmo de prioridade.
+- [x] Documentar multi-tenancy e seguranca.
+- [x] Adicionar screenshots seguros.
+- [x] Documentar instalacao e deploy.
+- [x] Documentar aprendizados e melhorias futuras.
+- [x] Criar descricao para portfolio.
+- [x] Revisar o material para remover informacoes sensiveis.
 
 #### Conceitos que devo aprender
 
@@ -1224,10 +1224,10 @@ Nao divulgar:
 
 #### Checklist de conclusao
 
-- [ ] Seguir o README do zero em um ambiente limpo.
-- [ ] Revisar links, screenshots e comandos.
-- [ ] Revisar informacoes confidenciais.
-- [ ] Revisar a descricao de portfolio.
+- [x] Seguir o README do zero em um ambiente limpo.
+- [x] Revisar links, screenshots e comandos.
+- [x] Revisar informacoes confidenciais.
+- [x] Revisar a descricao de portfolio.
 
 ---
 

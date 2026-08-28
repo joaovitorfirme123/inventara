@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 700" role="img" aria-labelledby="title desc">
+  <title id="title">Inventara dashboard demo</title>
+  <desc id="desc">Preview sintetica do dashboard com indicadores ficticios.</desc>
+  <rect width="1200" height="700" fill="#f3f0e8"/>
+  <rect width="240" height="700" fill="#183b3d"/>
+  <text x="34" y="58" fill="#f5f0e4" font-family="Arial" font-size="24" font-weight="700">INVENTARA</text>
+  <text x="34" y="82" fill="#9fc0b2" font-family="Arial" font-size="12">Inventory intelligence</text>
+  <g fill="#dce8df" font-family="Arial" font-size="15">
+    <text x="34" y="150">01  Dashboard</text><text x="34" y="192">02  Produtos</text>
+    <text x="34" y="234">03  Inventarios</text><text x="34" y="276">04  Importacoes</text>
+    <text x="34" y="318">05  Estoque</text>
+  </g>
+  <rect x="240" width="960" height="84" fill="#fffdf8"/>
+  <text x="280" y="48" fill="#183b3d" font-family="Arial" font-size="14">VISAO GERAL</text>
+  <text x="1040" y="48" fill="#183b3d" font-family="Arial" font-size="14">MD  Marina Demo</text>
+  <text x="280" y="140" fill="#183b3d" font-family="Arial" font-size="30" font-weight="700">Dashboard</text>
+  <text x="280" y="168" fill="#6c7773" font-family="Arial" font-size="15">Cobertura e prioridades da conta demonstrativa</text>
+  <g>
+    <rect x="280" y="210" width="198" height="120" fill="#fffdf8" stroke="#ded9ce"/><rect x="498" y="210" width="198" height="120" fill="#fffdf8" stroke="#ded9ce"/>
+    <rect x="716" y="210" width="198" height="120" fill="#fffdf8" stroke="#ded9ce"/><rect x="934" y="210" width="198" height="120" fill="#fffdf8" stroke="#ded9ce"/>
+    <g fill="#6c7773" font-family="Arial" font-size="13"><text x="300" y="242">TOTAL DE SKUS</text><text x="518" y="242">SECOES</text><text x="736" y="242">PENDENTES</text><text x="954" y="242">COBERTURA</text></g>
+    <g fill="#183b3d" font-family="Arial" font-size="32" font-weight="700"><text x="300" y="290">12</text><text x="518" y="290">5</text><text x="736" y="290">7</text><text x="954" y="290">41.7%</text></g>
+  </g>
+  <rect x="280" y="370" width="852" height="250" fill="#fffdf8" stroke="#ded9ce"/>
+  <text x="310" y="410" fill="#183b3d" font-family="Arial" font-size="19" font-weight="700">Contados por secao</text>
+  <g font-family="Arial" font-size="14" fill="#53625e">
+    <text x="310" y="460">Bebidas</text><text x="310" y="505">Casa</text><text x="310" y="550">Frios</text><text x="310" y="595">Mercearia</text>
+  </g>
+  <g fill="#78a977"><rect x="420" y="446" width="420" height="14"/><rect x="420" y="491" width="270" height="14"/><rect x="420" y="536" width="350" height="14"/><rect x="420" y="581" width="540" height="14"/></g>
+  <g fill="#183b3d" font-family="Arial" font-size="14"><text x="860" y="459">50%</text><text x="710" y="504">33%</text><text x="790" y="549">42%</text><text x="980" y="594">64%</text></g>
+</svg>

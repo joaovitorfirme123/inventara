@@ -1,36 +1,302 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Inventara
 
-## Getting Started
+![CI](https://github.com/joaovitorfirme123/inventara/actions/workflows/ci.yml/badge.svg)
 
-First, run the development server:
+Sistema web para acompanhar inventários, estoque e prioridades de contagem em
+operações que importam sua base de produtos por CSV.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+O projeto nasceu da observação de um problema operacional: uma planilha mostra
+o estoque, mas não ajuda a decidir quais grupos devem ser contados primeiro.
+O Inventara transforma essa base em uma visão navegável de cobertura,
+pendências, evolução do estoque e histórico de importações.
+
+## Demonstração
+
+A aplicação possui uma organização sintética chamada **Inventara Demo**:
+
+```text
+E-mail: demo@inventara.test
+Senha: valor definido em DEMO_USER_PASSWORD
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Os dados demo são criados pelo seed e não dependem de dados de empresas reais.
+Consulte [docs/demo-account.md](docs/demo-account.md) para provisionar ou
+atualizar a conta.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Previews seguras
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+As imagens abaixo são previews estáticas geradas com dados fictícios. Elas não
+foram capturadas do banco de produção.
 
-## Learn More
+![Preview do dashboard](docs/screenshots/dashboard-demo.svg)
 
-To learn more about Next.js, take a look at the following resources:
+![Preview da posição de estoque](docs/screenshots/stock-demo.svg)
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## O problema
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Inventários recorrentes costumam começar em relatórios exportados do ERP. Sem
+uma camada de análise, a equipe precisa procurar manualmente por:
 
-## Deploy on Vercel
+- produtos que nunca foram contados;
+- grupos com baixa cobertura no ciclo atual;
+- estoque que mudou desde o inventário anterior;
+- arquivos já importados ou com erros de validação.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+O objetivo do MVP é reduzir esse trabalho sem substituir o ERP: o ERP continua
+sendo a origem dos dados, e o Inventara organiza a decisão operacional.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Funcionalidades
+
+- Dashboard com SKUs, cobertura, pendências, seções e prioridades.
+- Inventários agrupados por seção, grupo e subgrupo.
+- Fórmula de prioridade com pontuação de 0 a 100.
+- Importação de CSV com aliases de cabeçalho, UTF-8/Windows-1252 e datas BR/ISO.
+- Limites de tamanho e quantidade de linhas, validação e detecção de duplicados.
+- Histórico de importações com contadores de inserções, atualizações e erros.
+- Produtos com busca, filtros, paginação e detalhe individual.
+- Estoque atual, estoque anterior, variação e histórico por produto.
+- Conta demonstrativa isolada com dados sintéticos.
+- Autenticação por e-mail e senha com sessões persistidas.
+- Isolamento por organização em páginas, APIs, produtos, importações e histórico.
+
+## Rotas
+
+| Rota | Função |
+| --- | --- |
+| `/` | Dashboard e indicadores do ciclo atual |
+| `/produtos` | Busca, filtros e paginação de produtos |
+| `/produtos/[plu]` | Detalhe e histórico de estoque do produto |
+| `/inventarios` | Prioridade de contagem por subgrupo |
+| `/importacoes` | Histórico dos arquivos importados |
+| `/estoque` | Posição atual e evolução do estoque |
+| `/configuracoes` | Informações da organização e da sessão |
+| `/login` | Autenticação |
+| `/api/importacoes` | Upload protegido de CSV |
+
+## Arquitetura
+
+```text
+Browser
+  -> Next.js App Router
+     -> Proxy de autenticação
+     -> Server Components e Route Handlers
+        -> Camada de dados / Prisma Client
+           -> PostgreSQL local ou Neon
+```
+
+As páginas server-rendered consultam o banco depois de validar a sessão. O
+identificador da organização vem do usuário autenticado, não de um parâmetro
+fornecido pelo navegador.
+
+## Stack
+
+| Camada | Tecnologia |
+| --- | --- |
+| Aplicação | Next.js 16, React 19, TypeScript |
+| Interface | CSS próprio, Server Components, Suspense |
+| Autenticação | Better Auth com adapter Prisma |
+| Persistência | PostgreSQL |
+| ORM | Prisma 7 com `@prisma/adapter-pg` |
+| CSV | Papa Parse |
+| Desenvolvimento | Docker Compose |
+| Produção | Vercel + Neon |
+| CI | GitHub Actions |
+
+## Banco de dados
+
+O schema contém as seguintes entidades principais:
+
+- `Organization`: tenant da aplicação.
+- `User`: usuário vinculado a uma organização.
+- `Account` e `Session`: credenciais e sessões do Better Auth.
+- `Product`: catálogo e estoque atual.
+- `ImportRecord`: execução de cada importação.
+- `StockHistory`: snapshot do estoque por produto e importação.
+
+O histórico é append-only por importação. Isso permite comparar os dois últimos
+snapshots sem substituir a evidência de uma importação anterior.
+
+## Importação CSV
+
+O arquivo deve conter estes campos, aceitando os aliases implementados no
+parser:
+
+```text
+Descrição;Código PLU;Código Barras;Descrição Seção;Descrição Grupo;Descrição SubGrupo;Data Últ. Inventário;Estoque Atual
+Produto sintético;DEMO-9001;7900000009001;Mercearia;Exemplo;Teste;26/08/2026;12,500
+```
+
+O parser identifica automaticamente delimitador, remove BOM, tenta UTF-8 e
+Windows-1252, aceita datas `DD/MM/YYYY` ou `YYYY-MM-DD` e converte estoque
+decimal brasileiro. O endpoint limita o arquivo a 5 MB e 50.000 registros.
+
+Cada importação é executada em uma transação. Se uma etapa falhar, o catálogo,
+o registro da importação e os snapshots não ficam parcialmente gravados.
+
+## Prioridade de inventários
+
+Cada subgrupo recebe uma pontuação baseada em:
+
+| Fator | Peso |
+| --- | ---: |
+| Quantidade pendente | 35 |
+| Percentual pendente | 25 |
+| Antiguidade | 20 |
+| Itens sem data | 10 |
+| Volume do subgrupo | 10 |
+
+As partes de volume usam escala logarítmica para evitar que grupos grandes
+dominem automaticamente todos os outros. As faixas são `Urgente` (70+),
+`Alta` (50–69,9), `Média` (30–49,9), `Baixa` (abaixo de 30) e `Atualizado`
+quando não há pendências. A especificação completa está em
+[docs/inventory-priority.md](docs/inventory-priority.md).
+
+## Multi-tenancy e segurança
+
+- Todas as consultas recebem `organizationId` derivado da sessão.
+- O proxy protege páginas e APIs sem sessão.
+- O cadastro público está desabilitado.
+- Senhas são armazenadas somente como hashes gerados pelo Better Auth.
+- Uploads têm limites de tamanho, linhas, extensão e duplicidade.
+- Hash SHA-256 identifica arquivos repetidos no período de proteção.
+- Segredos ficam em variáveis de ambiente e são ignorados pelo Git.
+- A conta demo usa organização, produtos e snapshots próprios.
+
+Detalhes do fluxo de autenticação estão em
+[docs/authentication.md](docs/authentication.md).
+
+## Instalação local
+
+Pré-requisitos: Node.js 24 ou superior, npm e Docker com Compose.
+
+```bash
+git clone https://github.com/joaovitorfirme123/inventara.git
+cd inventara
+cp .env.example .env
+npm ci
+docker compose up -d
+npm run db:deploy
+npm run db:seed
+npm run dev
+```
+
+Abra [http://localhost:3000](http://localhost:3000). O seed cria as contas
+Alfa, Beta e Demo. Defina `SEED_USER_PASSWORD` e, opcionalmente,
+`DEMO_USER_PASSWORD` no `.env` antes de executá-lo.
+
+Para parar o PostgreSQL local:
+
+```bash
+docker compose down
+```
+
+## Variáveis de ambiente
+
+| Variável | Uso |
+| --- | --- |
+| `DATABASE_URL` | Connection string do PostgreSQL |
+| `BETTER_AUTH_SECRET` | Segredo da autenticação, mínimo de 32 caracteres |
+| `BETTER_AUTH_URL` | URL base da aplicação |
+| `SEED_USER_PASSWORD` | Senha das contas locais Alfa/Beta |
+| `DEMO_USER_PASSWORD` | Senha opcional da conta sintética Demo |
+
+Nunca versione `.env` ou coloque credenciais em variáveis `NEXT_PUBLIC_*`.
+
+## Testes e qualidade
+
+Lint e build:
+
+```bash
+npm run lint
+npm run build
+```
+
+Migrations e banco:
+
+```bash
+npm run db:status
+npm run db:deploy
+npm run db:check
+```
+
+Testes de dados:
+
+```bash
+npm run test:tenancy
+npm run test:products
+npm run test:csv
+npm run test:history
+npm run test:inventories
+npm run test:dashboard
+npm run test:stock
+npm run test:stock-page
+npm run test:demo
+npm run test:product-details
+```
+
+Com o servidor de produção local ativo, execute também:
+
+```bash
+npm run test:authentication
+npm run test:isolation
+npm run test:security
+```
+
+O GitHub Actions repete migrations, seed, lint, build e os testes de dados e
+HTTP em um PostgreSQL descartável.
+
+## Deploy
+
+O projeto está preparado para Vercel e Neon. O `vercel.json` aplica migrations
+pendentes antes do build:
+
+```text
+npm run db:deploy && npm run build
+```
+
+Siga [docs/deployment.md](docs/deployment.md) para configurar o banco,
+variáveis de produção e a validação pós-deploy.
+
+## Estrutura do projeto
+
+```text
+src/app/       rotas e páginas do App Router
+src/components componentes reutilizáveis da interface
+src/data/      consultas e regras de acesso aos dados
+src/lib/       autenticação, parser, Prisma e regras de domínio
+prisma/        schema, migrations e seed
+scripts/       testes de integração e verificações
+docs/          decisões técnicas e procedimentos operacionais
+```
+
+## Aprendizados
+
+- Como modelar snapshots para preservar evolução do estoque.
+- Como derivar prioridades de inventário de dados imperfeitos.
+- Como manter autorização por tenant na camada de dados.
+- Como validar e importar arquivos reais sem persistência parcial.
+- Como separar seed local, dados demo e banco de produção.
+- Como preparar migrations e variáveis para uma aplicação Next.js server-rendered.
+
+## Melhorias futuras
+
+- Planejamento de inventários e responsáveis por contagem.
+- Status operacional por inventário.
+- Metas de cobertura e alertas.
+- Exportação para Excel e PDF.
+- Comparação entre períodos.
+- Auditoria de alterações.
+
+## Privacidade
+
+O projeto é uma implementação genérica baseada em um problema operacional real.
+O material público usa somente dados sintéticos e não identifica empresa,
+relatórios internos, produtos reais ou estoques reais.
+
+O texto resumido para apresentação está em
+[docs/portfolio.md](docs/portfolio.md).
+
+## Licença
+
+Projeto de portfólio. Consulte o proprietário do repositório antes de reutilizar
+o código ou os dados de demonstração.
