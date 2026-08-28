@@ -1,0 +1,88 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_USER: inventara
+          POSTGRES_PASSWORD: inventara_ci
+          POSTGRES_DB: inventara
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U inventara -d inventara"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
+    env:
+      DATABASE_URL: postgresql://inventara:inventara_ci@localhost:5432/inventara?schema=public
+      BETTER_AUTH_SECRET: ci-secret-that-is-only-used-by-github-actions
+      BETTER_AUTH_URL: http://localhost:3000
+      SEED_USER_PASSWORD: ci-local-password
+      AUTH_TEST_BASE_URL: http://localhost:3000
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Apply migrations
+        run: npm run db:deploy
+
+      - name: Seed test accounts
+        run: npm run db:seed
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Build
+        run: npm run build
+
+      - name: Run data tests
+        run: >-
+          npm run test:tenancy &&
+          npm run test:products &&
+          npm run test:csv &&
+          npm run test:history &&
+          npm run test:inventories &&
+          npm run test:dashboard &&
+          npm run test:stock &&
+          npm run test:stock-page &&
+          npm run test:product-details
+
+      - name: Start production server
+        run: npm run start > /tmp/inventara-next.log 2>&1 &
+
+      - name: Wait for production server
+        run: |
+          for attempt in {1..30}; do
+            if curl --fail --silent http://localhost:3000/login > /dev/null; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat /tmp/inventara-next.log
+          exit 1
+
+      - name: Run HTTP tests
+        run: |
+          npm run test:authentication
+          npm run test:isolation
+          npm run test:security

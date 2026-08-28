@@ -1062,9 +1062,9 @@ Usuario
 
 #### Tarefas
 
-- [ ] Criar repositorio GitHub.
-- [ ] Revisar `.gitignore`.
-- [ ] Remover secrets.
+- [x] Criar repositorio GitHub.
+- [x] Revisar `.gitignore`.
+- [x] Remover secrets.
 - [ ] Configurar variaveis na Vercel.
 - [ ] Configurar Neon de producao.
 - [ ] Executar migrations.
@@ -1093,12 +1093,12 @@ Usuario
 
 #### Checklist de conclusao
 
-- [ ] Revisar historico e arquivos versionados.
+- [x] Revisar arquivos versionados e preparar CI/deploy.
 - [ ] Configurar ambiente de producao.
 - [ ] Executar migrations de producao.
 - [ ] Validar deploy.
 - [ ] Executar todos os testes de producao.
-- [ ] Confirmar que nao existem secrets ou dados reais publicados.
+- [x] Confirmar que nao existem secrets ou dados reais publicados.
 
 ---
 
