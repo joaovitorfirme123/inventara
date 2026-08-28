@@ -1622,14 +1622,31 @@ input {
 
 .back-link {
   display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 9px;
   margin-bottom: 28px;
-  color: var(--muted);
-  font-size: 0.68rem;
-  font-weight: 750;
+  padding: 0 18px;
+  color: var(--paper);
+  background: var(--forest);
+  border: 1px solid var(--forest);
+  border-radius: 2px;
+  box-shadow: 0 6px 18px rgba(23, 62, 50, 0.14);
+  font-size: 0.72rem;
+  font-weight: 800;
+  transition: 160ms ease;
 }
 
 .back-link:hover {
-  color: var(--rust);
+  color: var(--forest);
+  background: var(--lime);
+  border-color: var(--lime);
+  transform: translateY(-1px);
+}
+
+.back-link:focus-visible {
+  outline: 3px solid rgba(207, 99, 63, 0.35);
+  outline-offset: 3px;
 }
 
 .product-overview {
