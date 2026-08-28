@@ -43,6 +43,7 @@ async function testStockHistory() {
     await importProducts({
       organizationId: organizationAId,
       filename: filenames[0],
+      fileHash: "stock-test-hash-first",
       rows: [row("10")],
       errorRows: 0,
     });
@@ -58,6 +59,7 @@ async function testStockHistory() {
     await importProducts({
       organizationId: organizationAId,
       filename: filenames[1],
+      fileHash: "stock-test-hash-second",
       rows: [row("14.5")],
       errorRows: 0,
     });

@@ -4,6 +4,7 @@ import {
   listProducts,
   PRODUCT_PAGE_SIZE,
 } from "../src/data/products";
+import { getProductDetailsByPlu } from "../src/data/stock-history";
 import { prisma } from "../src/lib/prisma";
 
 const organizationAId = "11111111-1111-4111-8111-111111111111";
@@ -58,10 +59,12 @@ async function testProducts() {
     throw new Error("Pagination or organization isolation failed.");
   }
 
-  if (
-    betaProducts.products.length !== 1 ||
-    betaProducts.products[0].plu !== "1000"
-  ) {
+  const [alfaPlu, betaPlu] = await Promise.all([
+    getProductDetailsByPlu(organizationAId, "1000"),
+    getProductDetailsByPlu(organizationBId, "1000"),
+  ]);
+
+  if (!alfaPlu || !betaPlu || alfaPlu.id === betaPlu.id) {
     throw new Error("The same PLU was not isolated between organizations.");
   }
 

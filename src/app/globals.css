@@ -717,6 +717,43 @@ input {
   clip: rect(0 0 0 0);
 }
 
+.file-actions {
+  display: grid;
+  justify-items: center;
+  gap: 8px;
+}
+
+.file-actions small {
+  color: var(--muted);
+  font-size: 0.62rem;
+  white-space: nowrap;
+}
+
+.import-picker.dragging {
+  background: #f6eee8;
+  border-color: var(--rust);
+  outline: 2px dashed var(--rust);
+  outline-offset: -6px;
+}
+
+.result-errors {
+  grid-column: 1 / -1;
+  margin-top: 18px;
+  padding: 16px;
+  color: #813c2b;
+  background: #f7e9e3;
+  border-left: 3px solid var(--rust);
+}
+
+.result-errors strong {
+  font-size: 0.68rem;
+}
+
+.result-errors p {
+  margin-top: 6px;
+  font-size: 0.68rem;
+}
+
 .selected-file {
   display: flex;
   grid-column: 2 / -1;
@@ -1050,7 +1087,7 @@ input {
 
 .inventory-filters {
   display: grid;
-  grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto auto;
+  grid-template-columns: minmax(220px, 1.5fr) repeat(3, minmax(150px, 1fr));
   align-items: end;
   gap: 16px;
   margin-bottom: 14px;
@@ -1071,13 +1108,19 @@ input {
   text-transform: uppercase;
 }
 
-.inventory-filters select {
+.inventory-filters select,
+.inventory-search input {
+  width: 100%;
   height: 44px;
   padding: 0 12px;
   color: var(--ink);
   background: #f7f6f0;
   border: 1px solid var(--line);
   border-radius: 2px;
+}
+
+.inventory-search input::placeholder {
+  color: #a8a69b;
 }
 
 .pending-filter {
@@ -1150,6 +1193,65 @@ input {
   font-family: var(--font-geist), monospace;
   font-size: 0.59rem;
   text-transform: uppercase;
+}
+
+.inventory-groups {
+  display: grid;
+}
+
+.inventory-group {
+  border-top: 1px solid var(--line);
+}
+
+.inventory-group:first-child {
+  border-top: 0;
+}
+
+.inventory-group summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 16px 28px;
+  cursor: pointer;
+  list-style: none;
+  user-select: none;
+}
+
+.inventory-group summary::-webkit-details-marker {
+  display: none;
+}
+
+.inventory-group summary::before {
+  content: "▸";
+  color: var(--rust);
+  font-size: 0.7rem;
+  transition: transform 0.12s ease;
+}
+
+.inventory-group[open] > summary::before {
+  transform: rotate(90deg);
+}
+
+.inventory-group summary strong {
+  flex: 1;
+  font-size: 0.82rem;
+}
+
+.inventory-group summary small {
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.56rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+
+.inventory-group summary:hover {
+  background: #f3f1e9;
+}
+
+.inventory-group .inventory-table {
+  border-top: 1px solid var(--line);
 }
 
 .inventory-table {
@@ -2120,6 +2222,86 @@ input {
   to { background-position-x: -200%; }
 }
 
+.product-loading {
+  display: grid;
+  gap: 14px;
+}
+
+.skeleton-block,
+.skeleton-row {
+  background: linear-gradient(90deg, #e9e7dd 25%, #f4f2ea 50%, #e9e7dd 75%);
+  background-size: 200% 100%;
+  animation: dashboard-loading 1.4s ease infinite;
+}
+
+.skeleton-block {
+  height: 60px;
+}
+
+.skeleton-block.wide {
+  height: 120px;
+}
+
+.skeleton-table {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+}
+
+.skeleton-row {
+  height: 72px;
+  background: var(--paper);
+}
+
+.error-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  min-height: 280px;
+  color: #813c2b;
+  background: #f7e9e3;
+  border-color: var(--rust);
+}
+
+.error-state > span {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  color: var(--paper);
+  background: var(--rust);
+  border-radius: 50%;
+  font-family: var(--font-geist), monospace;
+  font-size: 1.2rem;
+  font-weight: 800;
+}
+
+.error-state h2 {
+  margin-bottom: 5px;
+  color: var(--ink);
+  font-size: 1rem;
+}
+
+.error-state p {
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.error-state button {
+  margin-top: 14px;
+  min-height: 40px;
+  padding: 0 16px;
+  color: var(--paper);
+  background: var(--forest);
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -2182,6 +2364,10 @@ input {
 
   .inventory-filters {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .inventory-search {
+    grid-column: 1 / -1;
   }
 
   .dashboard-metrics {

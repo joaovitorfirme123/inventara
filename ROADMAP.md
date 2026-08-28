@@ -839,7 +839,7 @@ Identificar corretamente o usuario.
 
 ### FASE 12 — Autorizacao e isolamento
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -853,20 +853,20 @@ ser obtido da sessao.
 
 #### Tarefas
 
-- [ ] Revisar consultas para exigir `organization_id`.
-- [ ] Obter a organizacao a partir da sessao.
-- [ ] Impedir acesso cruzado em paginas.
-- [ ] Impedir acesso cruzado em APIs.
-- [ ] Criar testes de isolamento.
+- [x] Revisar consultas para exigir `organization_id`.
+- [x] Obter a organizacao a partir da sessao.
+- [x] Impedir acesso cruzado em paginas.
+- [x] Impedir acesso cruzado em APIs.
+- [x] Criar testes de isolamento.
 
 #### Testes obrigatorios
 
-- [ ] Usuario A ve produtos da organizacao A.
-- [ ] Usuario B ve produtos da organizacao B.
-- [ ] Usuario A nao acessa produto da organizacao B pela URL.
-- [ ] Usuario A nao acessa historico da organizacao B.
-- [ ] Usuario A nao acessa importacoes da organizacao B.
-- [ ] APIs tambem impedem acesso cruzado.
+- [x] Usuario A ve produtos da organizacao A.
+- [x] Usuario B ve produtos da organizacao B.
+- [x] Usuario A nao acessa produto da organizacao B pela URL.
+- [x] Usuario A nao acessa historico da organizacao B.
+- [x] Usuario A nao acessa importacoes da organizacao B.
+- [x] APIs tambem impedem acesso cruzado.
 
 #### Conceitos que devo aprender
 
@@ -885,17 +885,17 @@ ser obtido da sessao.
 
 #### Checklist de conclusao
 
-- [ ] Auditar consultas de produtos.
-- [ ] Auditar consultas de historico.
-- [ ] Auditar consultas de importacoes.
-- [ ] Executar todos os testes obrigatorios.
-- [ ] Testar manipulacao de parametros pelo cliente.
+- [x] Auditar consultas de produtos.
+- [x] Auditar consultas de historico.
+- [x] Auditar consultas de importacoes.
+- [x] Executar todos os testes obrigatorios.
+- [x] Testar manipulacao de parametros pelo cliente.
 
 ---
 
 ### FASE 13 — Seguranca da importacao
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -903,16 +903,16 @@ Tornar a importacao resistente a arquivos invalidos, abusivos ou duplicados.
 
 #### Tarefas
 
-- [ ] Limitar tamanho do arquivo.
-- [ ] Validar extensao.
-- [ ] Validar conteudo.
-- [ ] Validar cabecalhos.
-- [ ] Tratar CSV corrompido.
-- [ ] Tratar linhas invalidas.
-- [ ] Validar quantidade de registros.
-- [ ] Usar transacao quando apropriado.
-- [ ] Evitar importacoes duplicadas acidentais.
-- [ ] Criar mensagens de erro compreensiveis.
+- [x] Limitar tamanho do arquivo.
+- [x] Validar extensao.
+- [x] Validar conteudo.
+- [x] Validar cabecalhos.
+- [x] Tratar CSV corrompido.
+- [x] Tratar linhas invalidas.
+- [x] Validar quantidade de registros.
+- [x] Usar transacao quando apropriado.
+- [x] Evitar importacoes duplicadas acidentais.
+- [x] Criar mensagens de erro compreensiveis.
 
 #### Conceitos que devo aprender
 
@@ -932,19 +932,19 @@ Tornar a importacao resistente a arquivos invalidos, abusivos ou duplicados.
 
 #### Checklist de conclusao
 
-- [ ] Testar arquivo acima do limite.
-- [ ] Testar extensao e conteudo invalidos.
-- [ ] Testar CSV corrompido.
-- [ ] Testar muitas linhas e linhas invalidas.
-- [ ] Testar falha durante o processamento.
-- [ ] Testar importacao duplicada.
-- [ ] Conferir mensagens para o usuario.
+- [x] Testar arquivo acima do limite.
+- [x] Testar extensao e conteudo invalidos.
+- [x] Testar CSV corrompido.
+- [x] Testar muitas linhas e linhas invalidas.
+- [x] Testar falha durante o processamento.
+- [x] Testar importacao duplicada.
+- [x] Conferir mensagens para o usuario.
 
 ---
 
 ### FASE 14 — Melhorias de UX
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -952,29 +952,29 @@ Melhorar a eficiencia e a clareza das telas principais.
 
 #### Inventarios
 
-- [ ] Pesquisa.
-- [ ] Filtro por secao.
-- [ ] Filtro por prioridade.
-- [ ] Somente pendentes.
-- [ ] Somente urgentes.
-- [ ] Ordenacao.
-- [ ] Expandir Grupo -> Subgrupo.
+- [x] Pesquisa.
+- [x] Filtro por secao.
+- [x] Filtro por prioridade.
+- [x] Somente pendentes.
+- [x] Somente urgentes.
+- [x] Ordenacao.
+- [x] Expandir Grupo -> Subgrupo.
 
 #### Produtos
 
-- [ ] Paginacao.
-- [ ] Busca rapida.
-- [ ] Filtros combinados.
-- [ ] Loading states.
-- [ ] Empty states.
-- [ ] Tratamento visual de erros.
+- [x] Paginacao.
+- [x] Busca rapida.
+- [x] Filtros combinados.
+- [x] Loading states.
+- [x] Empty states.
+- [x] Tratamento visual de erros.
 
 #### Importacao
 
-- [ ] Drag and drop.
-- [ ] Previa.
-- [ ] Loading.
-- [ ] Resultado detalhado.
+- [x] Drag and drop.
+- [x] Previa.
+- [x] Loading.
+- [x] Resultado detalhado.
 
 #### Conceitos que devo aprender
 
@@ -994,11 +994,11 @@ Melhorar a eficiencia e a clareza das telas principais.
 
 #### Checklist de conclusao
 
-- [ ] Testar cada recurso de Inventarios.
-- [ ] Testar cada recurso de Produtos.
-- [ ] Testar cada recurso de Importacao.
-- [ ] Validar loading, empty e erro.
-- [ ] Validar teclado e responsividade basica.
+- [x] Testar cada recurso de Inventarios.
+- [x] Testar cada recurso de Produtos.
+- [x] Testar cada recurso de Importacao.
+- [x] Validar loading, empty e erro.
+- [x] Validar teclado e responsividade basica.
 
 ---
 

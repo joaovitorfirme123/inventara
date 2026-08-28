@@ -1,10 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import type { ChangeEvent } from "react";
+import type { ChangeEvent, DragEvent } from "react";
 import { useRouter } from "next/navigation";
 import { parseCsvBuffer } from "@/lib/csv";
 import type { CsvParseResult, CsvRowError } from "@/lib/csv";
+import {
+  hasAllowedImportExtension,
+  MAX_IMPORT_FILE_BYTES,
+  MAX_IMPORT_ROWS,
+} from "@/lib/import-limits";
 
 type ImportSummary = {
   processedRows: number;
@@ -32,9 +37,9 @@ export function CsvImporter() {
   const [summary, setSummary] = useState<ImportSummary | null>(null);
   const [state, setState] = useState<ImportState>("idle");
   const [message, setMessage] = useState("");
+  const [isDragging, setIsDragging] = useState(false);
 
-  async function handleFile(event: ChangeEvent<HTMLInputElement>) {
-    const selectedFile = event.target.files?.[0] ?? null;
+  async function handleSelectedFile(selectedFile: File | null) {
     setFile(selectedFile);
     setPreview(null);
     setSummary(null);
@@ -45,10 +50,41 @@ export function CsvImporter() {
       return;
     }
 
+    if (!hasAllowedImportExtension(selectedFile.name)) {
+      setFile(null);
+      setState("error");
+      setMessage("Formato inválido. Envie um arquivo com extensão .csv.");
+      return;
+    }
+
+    if (selectedFile.size > MAX_IMPORT_FILE_BYTES) {
+      setFile(null);
+      setState("error");
+      setMessage(
+        `O arquivo excede o limite de ${Math.round(
+          MAX_IMPORT_FILE_BYTES / (1024 * 1024),
+        )} MB.`,
+      );
+      return;
+    }
+
     setState("reading");
 
     try {
       const result = parseCsvBuffer(await selectedFile.arrayBuffer());
+
+      if (result.totalRows > MAX_IMPORT_ROWS) {
+        setState("error");
+        setMessage(
+          `O arquivo possui ${numberFormatter.format(
+            result.totalRows,
+          )} registros, acima do limite de ${numberFormatter.format(
+            MAX_IMPORT_ROWS,
+          )}.`,
+        );
+        return;
+      }
+
       setPreview(result);
       setState(result.fatalErrors.length > 0 ? "error" : "ready");
       setMessage(result.fatalErrors.join(" "));
@@ -56,6 +92,28 @@ export function CsvImporter() {
       setState("error");
       setMessage("Não foi possível ler o arquivo selecionado.");
     }
+  }
+
+  function handleInput(event: ChangeEvent<HTMLInputElement>) {
+    const selectedFile = event.target.files?.[0] ?? null;
+    event.target.value = "";
+    void handleSelectedFile(selectedFile);
+  }
+
+  function handleDragOver(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    setIsDragging(true);
+  }
+
+  function handleDragLeave(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    setIsDragging(false);
+  }
+
+  function handleDrop(event: DragEvent<HTMLElement>) {
+    event.preventDefault();
+    setIsDragging(false);
+    void handleSelectedFile(event.dataTransfer.files?.[0] ?? null);
   }
 
   async function confirmImport() {
@@ -90,20 +148,28 @@ export function CsvImporter() {
 
   return (
     <div className="import-workflow">
-      <section className="import-picker panel">
+      <section
+        className={isDragging ? "import-picker panel dragging" : "import-picker panel"}
+        onDragLeave={handleDragLeave}
+        onDragOver={handleDragOver}
+        onDrop={handleDrop}
+      >
         <div className="import-step">01</div>
         <div>
           <span className="section-kicker">Selecionar arquivo</span>
           <h2>Carregue a exportação do ERP</h2>
           <p>
             O arquivo deve conter PLU, código de barras, descrição, classificação,
-            último inventário e estoque atual.
+            último inventário e estoque atual. Limites: {numberFormatter.format(MAX_IMPORT_FILE_BYTES / 1024 / 1024)} MB e {numberFormatter.format(MAX_IMPORT_ROWS)} registros.
           </p>
         </div>
-        <label className="file-button">
-          Escolher CSV
-          <input accept=".csv,text/csv" onChange={handleFile} type="file" />
-        </label>
+        <div className="file-actions">
+          <label className="file-button">
+            Escolher CSV
+            <input accept=".csv,text/csv" onChange={handleInput} type="file" />
+          </label>
+          <small>ou arraste e solte o arquivo aqui</small>
+        </div>
         {file && (
           <div className="selected-file">
             <strong>{file.name}</strong>
@@ -203,6 +269,16 @@ export function CsvImporter() {
             <article><strong>{numberFormatter.format(summary.updatedRows)}</strong><span>Atualizados</span></article>
             <article><strong>{numberFormatter.format(summary.errorRows)}</strong><span>Erros</span></article>
           </div>
+          {summary.errors.length > 0 && (
+            <div className="result-errors">
+              <strong>{summary.errors.length} linhas ignoradas</strong>
+              {summary.errors.slice(0, 5).map((error) => (
+                <p key={`${error.row}-${error.message}`}>
+                  Linha {error.row}: {error.message}
+                </p>
+              ))}
+            </div>
+          )}
         </section>
       )}
     </div>

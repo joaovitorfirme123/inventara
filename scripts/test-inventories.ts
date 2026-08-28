@@ -145,10 +145,70 @@ async function testInventories() {
     const sectionRows = filterInventoryRows(testRows, {
       section: testSections[1],
     });
+    const queryRows = filterInventoryRows(testRows, { query: "Subgrupo misto" });
+    const noMatchRows = filterInventoryRows(testRows, { query: "inexistente" });
+    const urgentRows = filterInventoryRows(testRows, { urgentOnly: true });
 
     assert(pendingRows.length === 2, "Pending-only filter is incorrect.");
     assert(priorityRows.includes(mixed), "Priority filter is incorrect.");
     assert(sectionRows.length === 1, "Section filter is incorrect.");
+    assert(queryRows.length === 1 && queryRows[0].subgroup === "Subgrupo misto", "Search filter is incorrect.");
+    assert(noMatchRows.length === 0, "Search with no match returned rows.");
+    assert(
+      urgentRows.every((row) => row.priority === "Urgente"),
+      "Urgent-only filter returned non-urgent rows.",
+    );
+
+    const nameRows = await getInventoryRows(
+      organizationAId,
+      2026,
+      now,
+      "name",
+    );
+    const nameTestRows = nameRows.filter((row) => testSections.includes(row.section));
+    const nameA = nameTestRows
+      .filter((row) => row.section === testSections[0])
+      .map((row) => row.group);
+    assert(
+      nameA.every((group, index) => index === 0 || group >= nameA[index - 1]),
+      "Name sort is not alphabetical within a section.",
+    );
+
+    const coverageRows = await getInventoryRows(
+      organizationAId,
+      2026,
+      now,
+      "coverage",
+    );
+    const coverageTestRows = coverageRows.filter(
+      (row) => row.section === testSections[0],
+    );
+    assert(
+      coverageTestRows.every(
+        (row, index) =>
+          index === 0 ||
+          row.countedPercentage >= coverageTestRows[index - 1].countedPercentage,
+      ),
+      "Coverage sort is not ascending within a section.",
+    );
+
+    const pendingSortedRows = await getInventoryRows(
+      organizationAId,
+      2026,
+      now,
+      "pending",
+    );
+    const pendingSortedTestRows = pendingSortedRows.filter(
+      (row) => row.section === testSections[0],
+    );
+    assert(
+      pendingSortedTestRows.every(
+        (row, index) =>
+          index === 0 ||
+          row.pendingSkus <= pendingSortedTestRows[index - 1].pendingSkus,
+      ),
+      "Pending sort is not descending within a section.",
+    );
 
     const sectionOrder = rows.map((row) => row.section);
     const sortedOrder = [...sectionOrder].sort((left, right) =>
@@ -162,7 +222,7 @@ async function testInventories() {
     await cleanTestProducts();
   }
 
-  console.log("Inventory aggregation, priorities, ranking, filters, and isolation passed.");
+  console.log("Inventory aggregation, priorities, ranking, search, sorting, filters, and isolation passed.");
 }
 
 testInventories()

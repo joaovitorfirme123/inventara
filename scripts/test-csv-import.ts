@@ -86,18 +86,21 @@ ARROZ TIPO 1 5KG;00010001;7891000000011;MERCEARIA;ARROZ E FEIJAO;ARROZ;25/08/202
     const first = await importProducts({
       organizationId: organizationAId,
       filename: importFilenames[0],
+      fileHash: "csv-test-hash-first",
       rows: semicolon.rows,
       errorRows: semicolon.errors.length,
     });
     const second = await importProducts({
       organizationId: organizationAId,
       filename: importFilenames[1],
+      fileHash: "csv-test-hash-second",
       rows: semicolon.rows,
       errorRows: semicolon.errors.length,
     });
     await importProducts({
       organizationId: organizationBId,
       filename: importFilenames[2],
+      fileHash: "csv-test-hash-b",
       rows: comma.rows,
       errorRows: comma.errors.length,
     });

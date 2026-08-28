@@ -30,11 +30,15 @@ function DashboardSkeleton() {
   );
 }
 
-async function DashboardContent() {
-  await connection();
-  const year = new Date().getFullYear();
+async function DashboardContent({
+  organizationId,
+  year,
+}: {
+  organizationId: string;
+  year: number;
+}) {
   const { summary, sections, priorities } = await getDashboardData(
-    await getCurrentOrganizationId(),
+    organizationId,
     year,
   );
 
@@ -171,7 +175,11 @@ async function DashboardContent() {
   );
 }
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  await connection();
+  const year = new Date().getFullYear();
+  const organizationId = await getCurrentOrganizationId();
+
   return (
     <>
       <PageHeader
@@ -179,7 +187,9 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Acompanhe a cobertura dos inventários e os pontos que precisam de atenção."
       />
-      <Suspense fallback={<DashboardSkeleton />}><DashboardContent /></Suspense>
+      <Suspense fallback={<DashboardSkeleton />}>
+        <DashboardContent organizationId={organizationId} year={year} />
+      </Suspense>
     </>
   );
 }

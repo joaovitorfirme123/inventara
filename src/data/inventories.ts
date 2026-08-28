@@ -38,12 +38,37 @@ export type InventoryFilters = {
   section?: string;
   priority?: InventoryPriority;
   pendingOnly?: boolean;
+  urgentOnly?: boolean;
+  query?: string;
+};
+
+export type InventorySort = "priority" | "coverage" | "pending" | "name";
+
+const comparators: Record<
+  InventorySort,
+  (left: InventoryRow, right: InventoryRow) => number
+> = {
+  priority: (left, right) =>
+    right.score - left.score ||
+    right.pendingSkus - left.pendingSkus ||
+    left.group.localeCompare(right.group, "pt-BR") ||
+    left.subgroup.localeCompare(right.subgroup, "pt-BR"),
+  coverage: (left, right) =>
+    left.countedPercentage - right.countedPercentage ||
+    right.pendingSkus - left.pendingSkus ||
+    right.score - left.score,
+  pending: (left, right) =>
+    right.pendingSkus - left.pendingSkus || right.score - left.score,
+  name: (left, right) =>
+    left.group.localeCompare(right.group, "pt-BR") ||
+    left.subgroup.localeCompare(right.subgroup, "pt-BR"),
 };
 
 export async function getInventoryRows(
   organizationId: string,
   year = new Date().getFullYear(),
   now = new Date(),
+  sort: InventorySort = "priority",
 ) {
   const groups = await prisma.$queryRaw<RawInventoryGroup[]>`
     SELECT
@@ -109,10 +134,7 @@ export async function getInventoryRows(
   rows.sort(
     (left, right) =>
       left.section.localeCompare(right.section, "pt-BR") ||
-      right.score - left.score ||
-      right.pendingSkus - left.pendingSkus ||
-      left.group.localeCompare(right.group, "pt-BR") ||
-      left.subgroup.localeCompare(right.subgroup, "pt-BR"),
+      comparators.priority(left, right),
   );
 
   let currentSection = "";
@@ -125,6 +147,12 @@ export async function getInventoryRows(
     row.rank = ++rank;
   }
 
+  rows.sort(
+    (left, right) =>
+      left.section.localeCompare(right.section, "pt-BR") ||
+      comparators[sort](left, right),
+  );
+
   return rows;
 }
 
@@ -132,10 +160,17 @@ export function filterInventoryRows(
   rows: InventoryRow[],
   filters: InventoryFilters,
 ) {
+  const query = filters.query?.trim().toLowerCase() ?? "";
+
   return rows.filter(
     (row) =>
       (!filters.section || row.section === filters.section) &&
       (!filters.priority || row.priority === filters.priority) &&
-      (!filters.pendingOnly || row.pendingSkus > 0),
+      (!filters.urgentOnly || row.priority === "Urgente") &&
+      (!filters.pendingOnly || row.pendingSkus > 0) &&
+      (!query ||
+        `${row.section} ${row.group} ${row.subgroup}`
+          .toLowerCase()
+          .includes(query)),
   );
 }

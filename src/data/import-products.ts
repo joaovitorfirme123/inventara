@@ -17,6 +17,7 @@ export async function importProducts(
   input: {
     organizationId: string;
     filename: string;
+    fileHash: string;
     rows: CsvProduct[];
     errorRows: number;
   },
@@ -28,6 +29,7 @@ export async function importProducts(
       data: {
         organizationId: input.organizationId,
         filename: input.filename,
+        fileHash: input.fileHash,
         totalRows: input.rows.length + input.errorRows,
         insertedRows: 0,
         updatedRows: 0,

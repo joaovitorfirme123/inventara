@@ -43,12 +43,14 @@ async function testProductDetails() {
     await importProducts({
       organizationId: organizationAId,
       filename: filenames[0],
+      fileHash: "detail-test-hash-first",
       rows: [row("8")],
       errorRows: 0,
     });
     await importProducts({
       organizationId: organizationAId,
       filename: filenames[1],
+      fileHash: "detail-test-hash-second",
       rows: [row("11.5")],
       errorRows: 0,
     });

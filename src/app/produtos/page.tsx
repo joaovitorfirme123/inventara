@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { Suspense } from "react";
 import { PageHeader } from "@/components/page-header";
 import { ProductFilters } from "@/components/product-filters";
 import {
@@ -37,22 +38,35 @@ const stockFormatter = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 3,
 });
 
-export default async function ProdutosPage({
-  searchParams,
-}: {
-  searchParams: SearchParams;
-}) {
-  const params = await searchParams;
-  const rawPage = Number.parseInt(getParam(params.page), 10);
-  const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
-  const filters = {
-    q: getParam(params.q),
-    section: getParam(params.section),
-    group: getParam(params.group),
-    subgroup: getParam(params.subgroup),
-  };
-  const organizationId = await getCurrentOrganizationId();
+function ProductsSkeleton() {
+  return (
+    <div className="product-loading" aria-label="Carregando produtos">
+      <div className="skeleton-block" />
+      <div className="skeleton-table">
+        {Array.from({ length: 5 }, (_, index) => (
+          <div className="skeleton-row" key={index} />
+        ))}
+      </div>
+    </div>
+  );
+}
 
+type ProductFiltersType = {
+  q: string;
+  section: string;
+  group: string;
+  subgroup: string;
+};
+
+async function ProductsContent({
+  organizationId,
+  filters,
+  page,
+}: {
+  organizationId: string;
+  filters: ProductFiltersType;
+  page: number;
+}) {
   const [result, options] = await Promise.all([
     listProducts({
       organizationId,
@@ -74,12 +88,6 @@ export default async function ProdutosPage({
 
   return (
     <>
-      <PageHeader
-        eyebrow="Catálogo"
-        title="Produtos"
-        description="Consulte a base de produtos vinculada à sua organização."
-      />
-
       <ProductFilters
         key={`${filters.q}:${filters.section}:${filters.group}:${filters.subgroup}`}
         filters={filters}
@@ -171,6 +179,41 @@ export default async function ProdutosPage({
           )}
         </nav>
       </section>
+    </>
+  );
+}
+
+export default async function ProdutosPage({
+  searchParams,
+}: {
+  searchParams: SearchParams;
+}) {
+  const params = await searchParams;
+  const rawPage = Number.parseInt(getParam(params.page), 10);
+  const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+  const filters = {
+    q: getParam(params.q),
+    section: getParam(params.section),
+    group: getParam(params.group),
+    subgroup: getParam(params.subgroup),
+  };
+  const organizationId = await getCurrentOrganizationId();
+
+  return (
+    <>
+      <PageHeader
+        eyebrow="Catálogo"
+        title="Produtos"
+        description="Consulte a base de produtos vinculada à sua organização."
+      />
+
+      <Suspense fallback={<ProductsSkeleton />}>
+        <ProductsContent
+          organizationId={organizationId}
+          filters={filters}
+          page={page}
+        />
+      </Suspense>
     </>
   );
 }

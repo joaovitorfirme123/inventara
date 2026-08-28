@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { authClient } from "@/lib/auth-client";
 
@@ -27,7 +27,6 @@ type AppShellProps = {
 
 export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
-  const router = useRouter();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
   if (pathname === "/login") {
@@ -43,9 +42,13 @@ export function AppShell({ children, user }: AppShellProps) {
 
   async function signOut() {
     setIsSigningOut(true);
-    await authClient.signOut();
-    router.replace("/login");
-    router.refresh();
+    try {
+      await authClient.signOut();
+    } finally {
+      // Logout must hard-reset the client auth state, bypassing the router cache.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+      window.location.assign("/login");
+    }
   }
 
   return (
