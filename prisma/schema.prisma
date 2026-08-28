@@ -1,0 +1,70 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Organization {
+  id        String         @id @default(uuid()) @db.Uuid
+  name      String
+  createdAt DateTime       @default(now()) @map("created_at")
+  updatedAt DateTime       @updatedAt @map("updated_at")
+  users     User[]
+  products  Product[]
+  imports   ImportRecord[]
+
+  @@map("organizations")
+}
+
+model User {
+  id             String       @id @default(uuid()) @db.Uuid
+  name           String
+  email          String       @unique
+  organizationId String       @map("organization_id") @db.Uuid
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId])
+  @@map("users")
+}
+
+model Product {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  plu            String
+  barcode        String?
+  description    String
+  section        String?
+  group          String?
+  subgroup       String?
+  lastInventory  DateTime?    @map("last_inventory") @db.Date
+  currentStock   Decimal      @default(0) @map("current_stock") @db.Decimal(15, 3)
+  createdAt      DateTime     @default(now()) @map("created_at")
+  updatedAt      DateTime     @updatedAt @map("updated_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+
+  @@unique([organizationId, plu])
+  @@index([organizationId, description])
+  @@index([organizationId, barcode])
+  @@index([organizationId, section, group, subgroup])
+  @@map("products")
+}
+
+model ImportRecord {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  filename       String
+  importedAt     DateTime     @default(now()) @map("imported_at")
+  totalRows      Int          @map("total_rows")
+  insertedRows   Int          @map("inserted_rows")
+  updatedRows    Int          @map("updated_rows")
+  errorRows      Int          @map("error_rows")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+
+  @@index([organizationId, importedAt(sort: Desc)])
+  @@map("imports")
+}

@@ -6,19 +6,40 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "postinstall": "prisma generate",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:status": "prisma migrate status",
+    "db:check": "tsx scripts/check-database.ts",
+    "db:seed": "tsx prisma/seed.ts",
+    "test:tenancy": "tsx scripts/test-tenancy.ts",
+    "test:products": "tsx scripts/test-products.ts",
+    "test:csv": "tsx scripts/test-csv-import.ts",
+    "test:history": "tsx scripts/test-import-history.ts",
+    "test:inventories": "tsx scripts/test-inventories.ts"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.10.0",
+    "@prisma/client": "^7.10.0",
+    "dotenv": "^17.4.2",
     "next": "16.3.3",
+    "papaparse": "^5.7.0",
+    "pg": "^8.23.0",
     "react": "19.2.8",
     "react-dom": "19.2.8"
   },
   "devDependencies": {
     "@types/node": "^20",
+    "@types/papaparse": "^5.5.2",
+    "@types/pg": "^8.23.1",
     "@types/react": "^19",
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "16.3.3",
+    "prisma": "^7.10.0",
+    "tsx": "^4.23.12",
     "typescript": "^5"
   }
 }

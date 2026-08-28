@@ -147,7 +147,7 @@ Criar a estrutura inicial da aplicacao.
 
 ### FASE 2 — Banco de dados
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -155,13 +155,13 @@ Criar a infraestrutura de persistencia.
 
 #### Tarefas
 
-- [ ] Criar projeto PostgreSQL no Neon.
-- [ ] Configurar a variavel `DATABASE_URL`.
-- [ ] Usar Prisma como ORM.
-- [ ] Configurar o ORM.
-- [ ] Criar migrations.
-- [ ] Testar conexao.
-- [ ] Garantir que `.env` esteja no `.gitignore`.
+- [x] Criar PostgreSQL local em container Docker.
+- [x] Configurar a variavel `DATABASE_URL`.
+- [x] Usar Prisma como ORM.
+- [x] Configurar o ORM.
+- [x] Criar migrations.
+- [x] Testar conexao.
+- [x] Garantir que `.env` esteja no `.gitignore`.
 
 #### Conceitos que devo aprender
 
@@ -175,23 +175,22 @@ Criar a infraestrutura de persistencia.
 
 - A escolha do ORM foi justificada e registrada.
 - O ORM esta configurado para PostgreSQL.
-- A conexao com o banco foi testada sem expor credenciais.
+- A conexao com o PostgreSQL local foi testada sem expor credenciais reais.
 - As migrations executam corretamente.
 - Arquivos de ambiente nao sao versionados.
 
 #### Checklist de conclusao
 
-- [ ] Confirmar que `DATABASE_URL` funciona localmente.
-- [ ] Executar as migrations em um banco de desenvolvimento.
-- [ ] Validar uma operacao simples de conexao.
-- [ ] Confirmar `.env` no `.gitignore`.
-- [ ] Confirmar que nenhum secret foi commitado.
-
+- [x] Confirmar que `DATABASE_URL` funciona localmente.
+- [x] Executar as migrations em um banco de desenvolvimento.
+- [x] Validar uma operacao simples de conexao.
+- [x] Confirmar `.env` no `.gitignore`.
+- [x] Confirmar que nenhum secret foi commitado.
 ---
 
 ### FASE 3 — Organizacoes e usuarios
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -227,12 +226,12 @@ Organization
 
 #### Tarefas
 
-- [ ] Criar tabela `organizations`.
-- [ ] Criar tabela `users`.
-- [ ] Criar relacionamento usuario -> organizacao.
-- [ ] Entender PK e FK.
-- [ ] Criar dados locais de teste.
-- [ ] Garantir isolamento logico entre organizacoes.
+- [x] Criar tabela `organizations`.
+- [x] Criar tabela `users`.
+- [x] Criar relacionamento usuario -> organizacao.
+- [x] Entender PK e FK.
+- [x] Criar dados locais de teste.
+- [x] Garantir isolamento logico entre organizacoes.
 
 #### Regra critica
 
@@ -254,16 +253,16 @@ Nenhum usuario pode acessar dados pertencentes a outra organizacao.
 
 #### Checklist de conclusao
 
-- [ ] Executar migrations da fase.
-- [ ] Inserir organizacoes e usuarios de teste.
-- [ ] Testar PKs e FKs.
-- [ ] Testar isolamento com duas organizacoes.
+- [x] Executar migrations da fase.
+- [x] Inserir organizacoes e usuarios de teste.
+- [x] Testar PKs e FKs.
+- [x] Testar isolamento com duas organizacoes.
 
 ---
 
 ### FASE 4 — Produtos
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -293,18 +292,18 @@ O PLU identifica o produto dentro de uma organizacao. Portanto,
 
 #### Tarefas
 
-- [ ] Criar tabela `products`.
-- [ ] Criar relacionamento com `organization`.
-- [ ] Criar constraint de unicidade adequada.
-- [ ] Criar pagina Produtos.
-- [ ] Listar produtos.
-- [ ] Implementar paginacao.
-- [ ] Pesquisar por descricao.
-- [ ] Pesquisar por PLU.
-- [ ] Pesquisar por codigo de barras.
-- [ ] Filtrar por secao.
-- [ ] Filtrar por grupo.
-- [ ] Filtrar por subgrupo.
+- [x] Criar tabela `products`.
+- [x] Criar relacionamento com `organization`.
+- [x] Criar constraint de unicidade adequada.
+- [x] Criar pagina Produtos.
+- [x] Listar produtos.
+- [x] Implementar paginacao.
+- [x] Pesquisar por descricao.
+- [x] Pesquisar por PLU.
+- [x] Pesquisar por codigo de barras.
+- [x] Filtrar por secao.
+- [x] Filtrar por grupo.
+- [x] Filtrar por subgrupo.
 
 #### Regra
 
@@ -328,17 +327,17 @@ Nunca carregar todos os milhares de produtos no navegador simultaneamente.
 
 #### Checklist de conclusao
 
-- [ ] Testar criacao de produtos com PLUs iguais em organizacoes diferentes.
-- [ ] Testar rejeicao de PLU duplicado na mesma organizacao.
-- [ ] Testar paginacao.
-- [ ] Testar todos os campos de busca e filtro.
-- [ ] Validar desktop e mobile.
+- [x] Testar criacao de produtos com PLUs iguais em organizacoes diferentes.
+- [x] Testar rejeicao de PLU duplicado na mesma organizacao.
+- [x] Testar paginacao.
+- [x] Testar todos os campos de busca e filtro.
+- [x] Validar desktop e mobile.
 
 ---
 
 ### FASE 5 — Importacao de CSV
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -370,22 +369,22 @@ Selecionar arquivo
 
 #### Tarefas
 
-- [ ] Criar pagina de importacao.
-- [ ] Criar upload.
-- [ ] Fazer parser do CSV.
-- [ ] Identificar separador.
-- [ ] Tratar encoding quando necessario.
-- [ ] Validar cabecalhos.
-- [ ] Validar PLU.
-- [ ] Converter datas.
-- [ ] Converter numeros com virgula.
-- [ ] Tratar campos vazios.
-- [ ] Criar produtos inexistentes.
-- [ ] Atualizar produtos existentes.
-- [ ] Processar registros eficientemente.
-- [ ] Mostrar progresso/estado da importacao.
-- [ ] Mostrar resumo final.
-- [ ] Garantir que produtos sejam associados somente a organizacao atual.
+- [x] Criar pagina de importacao.
+- [x] Criar upload.
+- [x] Fazer parser do CSV.
+- [x] Identificar separador.
+- [x] Tratar encoding quando necessario.
+- [x] Validar cabecalhos.
+- [x] Validar PLU.
+- [x] Converter datas.
+- [x] Converter numeros com virgula.
+- [x] Tratar campos vazios.
+- [x] Criar produtos inexistentes.
+- [x] Atualizar produtos existentes.
+- [x] Processar registros eficientemente.
+- [x] Mostrar progresso/estado da importacao.
+- [x] Mostrar resumo final.
+- [x] Garantir que produtos sejam associados somente a organizacao atual.
 
 #### Resultado esperado
 
@@ -419,20 +418,21 @@ Exemplo:
 
 #### Checklist de conclusao
 
-- [ ] Testar CSV valido com separador por virgula.
-- [ ] Testar CSV valido com separador por ponto e virgula.
-- [ ] Testar cabecalhos invalidos.
-- [ ] Testar datas e numeros com virgula.
-- [ ] Testar campos vazios e linhas invalidas.
-- [ ] Testar produtos novos e existentes.
-- [ ] Testar importacao com mais de uma organizacao.
-- [ ] Validar o resumo final.
+- [x] Testar CSV valido com separador por virgula.
+- [x] Testar CSV valido com separador por ponto e virgula.
+- [x] Testar cabecalhos invalidos.
+- [x] Testar datas e numeros com virgula.
+- [x] Testar campos vazios e linhas invalidas.
+- [x] Testar produtos novos e existentes.
+- [x] Testar importacao com mais de uma organizacao.
+- [x] Validar o resumo final.
+- [x] Testar cabecalhos do modelo real do ERP.
 
 ---
 
 ### FASE 6 — Historico de importacoes
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -453,16 +453,16 @@ Registrar o resultado de cada importacao realizada pela organizacao.
 
 #### Tarefas
 
-- [ ] Criar tabela `imports`.
-- [ ] Relacionar importacao a organizacao.
-- [ ] Registrar cada importacao.
-- [ ] Criar pagina Historico de Importacoes.
-- [ ] Mostrar data.
-- [ ] Mostrar arquivo.
-- [ ] Mostrar registros processados.
-- [ ] Mostrar inseridos.
-- [ ] Mostrar atualizados.
-- [ ] Mostrar erros.
+- [x] Criar tabela `imports`.
+- [x] Relacionar importacao a organizacao.
+- [x] Registrar cada importacao.
+- [x] Criar pagina Historico de Importacoes.
+- [x] Mostrar data.
+- [x] Mostrar arquivo.
+- [x] Mostrar registros processados.
+- [x] Mostrar inseridos.
+- [x] Mostrar atualizados.
+- [x] Mostrar erros.
 
 #### Conceitos que devo aprender
 
@@ -480,16 +480,16 @@ Registrar o resultado de cada importacao realizada pela organizacao.
 
 #### Checklist de conclusao
 
-- [ ] Executar uma importacao e confirmar seu registro.
-- [ ] Validar todos os contadores do historico.
-- [ ] Validar ordenacao por data.
-- [ ] Testar isolamento entre organizacoes.
+- [x] Executar uma importacao e confirmar seu registro.
+- [x] Validar todos os contadores do historico.
+- [x] Validar ordenacao por data.
+- [x] Testar isolamento entre organizacoes.
 
 ---
 
 ### FASE 7 — Motor de inventarios
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -541,16 +541,16 @@ antigos. Um produto antigo nao deve necessariamente ter prioridade maior que
 
 #### Tarefas
 
-- [ ] Criar consulta agregada.
-- [ ] Agrupar Secao -> Grupo -> Subgrupo.
-- [ ] Criar formula inicial de prioridade.
-- [ ] Documentar os pesos.
-- [ ] Criar ranking por secao.
-- [ ] Criar pagina Inventarios.
-- [ ] Aplicar cores.
-- [ ] Permitir filtro por secao.
-- [ ] Permitir filtro por prioridade.
-- [ ] Permitir mostrar somente pendentes.
+- [x] Criar consulta agregada.
+- [x] Agrupar Secao -> Grupo -> Subgrupo.
+- [x] Criar formula inicial de prioridade.
+- [x] Documentar os pesos.
+- [x] Criar ranking por secao.
+- [x] Criar pagina Inventarios.
+- [x] Aplicar cores.
+- [x] Permitir filtro por secao.
+- [x] Permitir filtro por prioridade.
+- [x] Permitir mostrar somente pendentes.
 
 #### Conceitos que devo aprender
 
@@ -572,13 +572,13 @@ antigos. Um produto antigo nao deve necessariamente ter prioridade maior que
 
 #### Checklist de conclusao
 
-- [ ] Testar agregacoes com dados conhecidos.
-- [ ] Testar produtos contados no ano atual.
-- [ ] Testar itens sem data.
-- [ ] Testar ranking independente por secao.
-- [ ] Testar o caso de subgrupo pequeno versus subgrupo volumoso.
-- [ ] Testar filtros e cores de prioridade.
-- [ ] Validar o fluxo completo com um CSV.
+- [x] Testar agregacoes com dados conhecidos.
+- [x] Testar produtos contados no ano atual.
+- [x] Testar itens sem data.
+- [x] Testar ranking independente por secao.
+- [x] Testar o caso de subgrupo pequeno versus subgrupo volumoso.
+- [x] Testar filtros e cores de prioridade.
+- [x] Validar o fluxo completo com um CSV.
 
 #### Criterio do MVP
 
