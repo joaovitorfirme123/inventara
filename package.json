@@ -18,7 +18,8 @@
     "test:products": "tsx scripts/test-products.ts",
     "test:csv": "tsx scripts/test-csv-import.ts",
     "test:history": "tsx scripts/test-import-history.ts",
-    "test:inventories": "tsx scripts/test-inventories.ts"
+    "test:inventories": "tsx scripts/test-inventories.ts",
+    "test:dashboard": "tsx scripts/test-dashboard.ts"
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.10.0",

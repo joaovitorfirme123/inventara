@@ -596,7 +596,7 @@ Quando isso funcionar, o MVP estara concluido.
 
 ### FASE 8 — Dashboard
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -629,11 +629,11 @@ Apresentar uma visao consolidada da situacao dos inventarios.
 
 #### Tarefas
 
-- [ ] Criar cards.
-- [ ] Criar consultas.
-- [ ] Criar resumo por secao.
-- [ ] Criar graficos.
-- [ ] Garantir responsividade.
+- [x] Criar cards.
+- [x] Criar consultas.
+- [x] Criar resumo por secao.
+- [x] Criar graficos.
+- [x] Garantir responsividade.
 
 #### Conceitos que devo aprender
 
@@ -650,10 +650,10 @@ Apresentar uma visao consolidada da situacao dos inventarios.
 
 #### Checklist de conclusao
 
-- [ ] Conferir cards com dados conhecidos.
-- [ ] Conferir resumo por secao.
-- [ ] Conferir os tres graficos.
-- [ ] Validar desktop e mobile.
+- [x] Conferir cards com dados conhecidos.
+- [x] Conferir resumo por secao.
+- [x] Conferir os tres graficos.
+- [x] Validar desktop e mobile.
 
 ---
 

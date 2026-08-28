@@ -1,10 +1,175 @@
+import type { CSSProperties } from "react";
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import { connection } from "next/server";
 import { PageHeader } from "@/components/page-header";
+import { getDashboardData } from "@/data/dashboard";
+import { getCurrentOrganizationId } from "@/lib/current-organization";
+import type { InventoryPriority } from "@/lib/inventory-priority";
 
-const metrics = [
-  { label: "Total de SKUs", value: "—", detail: "Base ainda não importada" },
-  { label: "Cobertura anual", value: "—", detail: "Sem dados disponíveis" },
-  { label: "Itens pendentes", value: "—", detail: "Aguardando inventários" },
-];
+export const metadata: Metadata = { title: "Dashboard" };
+
+const numberFormatter = new Intl.NumberFormat("pt-BR");
+
+const priorityColors: Record<InventoryPriority, string> = {
+  Urgente: "#be422f",
+  Alta: "#dc812d",
+  Média: "#c9a62d",
+  Baixa: "#58867c",
+  Atualizado: "#73a146",
+};
+
+function DashboardSkeleton() {
+  return (
+    <div className="dashboard-skeleton" aria-label="Carregando indicadores">
+      <div />
+      <div />
+      <div />
+      <div />
+    </div>
+  );
+}
+
+async function DashboardContent() {
+  await connection();
+  const year = new Date().getFullYear();
+  const { summary, sections, priorities } = await getDashboardData(
+    getCurrentOrganizationId(),
+    year,
+  );
+
+  if (summary.totalSkus === 0) {
+    return (
+      <section className="dashboard-empty panel">
+        <span>0</span>
+        <div>
+          <h2>Dashboard aguardando produtos</h2>
+          <p>Importe uma base CSV para gerar indicadores, gráficos e o resumo por seção.</p>
+        </div>
+      </section>
+    );
+  }
+
+  const metrics = [
+    { label: "Total de SKUs", value: numberFormatter.format(summary.totalSkus), detail: "Produtos na base ativa" },
+    { label: "Seções", value: numberFormatter.format(summary.totalSections), detail: "Áreas monitoradas" },
+    { label: "Grupos / Subgrupos", value: `${summary.totalGroups} / ${summary.totalSubgroups}`, detail: "Estrutura de classificação" },
+    { label: `Contados em ${year}`, value: numberFormatter.format(summary.countedSkus), detail: "Inventariados no ciclo" },
+    { label: "Pendentes", value: numberFormatter.format(summary.pendingSkus), detail: "Fora do ciclo atual" },
+    { label: "Cobertura", value: `${summary.countedPercentage.toFixed(1)}%`, detail: "Percentual inventariado" },
+    { label: "Sem data", value: numberFormatter.format(summary.noDateSkus), detail: "Sem histórico de contagem" },
+  ];
+  const maxPending = Math.max(...sections.map((section) => section.pendingSkus), 1);
+  const priorityTotal = priorities.reduce((total, item) => total + item.total, 0);
+  const priorityGradient = priorities.map((item, index) => {
+    const previousTotal = priorities
+      .slice(0, index)
+      .reduce((total, previous) => total + previous.total, 0);
+    const start = (previousTotal / priorityTotal) * 100;
+    const end = ((previousTotal + item.total) / priorityTotal) * 100;
+    return `${priorityColors[item.priority]} ${start}% ${end}%`;
+  }).join(", ");
+
+  return (
+    <>
+      <section className="dashboard-metrics" aria-label="Indicadores gerais">
+        {metrics.map((metric, index) => (
+          <article className="dashboard-metric" key={metric.label}>
+            <span>0{index + 1}</span>
+            <p>{metric.label}</p>
+            <strong>{metric.value}</strong>
+            <small>{metric.detail}</small>
+          </article>
+        ))}
+      </section>
+
+      <div className="dashboard-charts">
+        <section className="dashboard-chart panel">
+          <div className="panel-heading">
+            <div><span className="section-kicker">Cobertura</span><h2>Contados por seção</h2></div>
+            <span className="status-pill">Ciclo {year}</span>
+          </div>
+          <div className="bar-chart">
+            {sections.map((section) => (
+              <div className="bar-row" key={section.section}>
+                <span>{section.section}</span>
+                <div><i style={{ width: `${section.countedPercentage}%` }} /></div>
+                <strong>{section.countedPercentage.toFixed(1)}%</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="dashboard-chart panel">
+          <div className="panel-heading">
+            <div><span className="section-kicker">Pendências</span><h2>Volume por seção</h2></div>
+            <span className="status-pill">{numberFormatter.format(summary.pendingSkus)} SKUs</span>
+          </div>
+          <div className="bar-chart pending-chart">
+            {sections.map((section) => (
+              <div className="bar-row" key={section.section}>
+                <span>{section.section}</span>
+                <div><i style={{ width: `${(section.pendingSkus / maxPending) * 100}%` }} /></div>
+                <strong>{numberFormatter.format(section.pendingSkus)}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="priority-chart panel">
+          <div>
+            <span className="section-kicker">Prioridades</span>
+            <h2>Distribuição dos subgrupos</h2>
+            <p>Cada subgrupo recebe uma prioridade conforme volume, cobertura e antiguidade.</p>
+          </div>
+          <div
+            className="priority-ring"
+            role="img"
+            aria-label={`Distribuição de ${priorityTotal} subgrupos por prioridade`}
+            style={{ "--priority-gradient": `conic-gradient(${priorityGradient})` } as CSSProperties}
+          >
+            <strong>{numberFormatter.format(priorityTotal)}</strong>
+            <span>subgrupos</span>
+          </div>
+          <div className="priority-legend">
+            {priorities.map((item) => (
+              <div key={item.priority}>
+                <i style={{ background: priorityColors[item.priority] }} />
+                <span>{item.priority}</span>
+                <strong>{numberFormatter.format(item.total)}</strong>
+              </div>
+            ))}
+          </div>
+        </section>
+      </div>
+
+      <section className="section-dashboard panel">
+        <div className="panel-heading">
+          <div><span className="section-kicker">Detalhamento</span><h2>Resumo por seção</h2></div>
+          <span className="status-pill">{sections.length} seções</span>
+        </div>
+        <div className="section-dashboard-table">
+          <table>
+            <thead><tr><th>Seção</th><th>SKUs</th><th>Contados</th><th>Pendentes</th><th>Cobertura</th><th>Urgentes</th><th>Altas</th></tr></thead>
+            <tbody>
+              {sections.map((section) => (
+                <tr key={section.section}>
+                  <td data-label="Seção"><strong>{section.section}</strong></td>
+                  <td data-label="SKUs">{numberFormatter.format(section.totalSkus)}</td>
+                  <td data-label="Contados">{numberFormatter.format(section.countedSkus)}</td>
+                  <td data-label="Pendentes">{numberFormatter.format(section.pendingSkus)}</td>
+                  <td data-label="Cobertura"><span className="section-coverage">{section.countedPercentage.toFixed(1)}%</span></td>
+                  <td data-label="Urgentes"><span className="dashboard-priority urgent">{section.urgentGroups}</span></td>
+                  <td data-label="Altas"><span className="dashboard-priority high">{section.highPriorityGroups}</span></td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+    </>
+  );
+}
 
 export default function DashboardPage() {
   return (
@@ -14,38 +179,7 @@ export default function DashboardPage() {
         title="Dashboard"
         description="Acompanhe a cobertura dos inventários e os pontos que precisam de atenção."
       />
-
-      <section className="metric-grid" aria-label="Indicadores principais">
-        {metrics.map((metric, index) => (
-          <article className="metric-card" key={metric.label}>
-            <span className="metric-index">0{index + 1}</span>
-            <p>{metric.label}</p>
-            <strong>{metric.value}</strong>
-            <small>{metric.detail}</small>
-          </article>
-        ))}
-      </section>
-
-      <section className="panel dashboard-panel">
-        <div className="panel-heading">
-          <div>
-            <span className="section-kicker">Panorama</span>
-            <h2>Cobertura por seção</h2>
-          </div>
-          <span className="status-pill">Aguardando dados</span>
-        </div>
-        <div className="empty-visual" aria-hidden="true">
-          <span />
-          <span />
-          <span />
-          <span />
-          <span />
-        </div>
-        <p className="panel-note">
-          Os indicadores serão exibidos aqui depois que a primeira base de
-          produtos for importada.
-        </p>
-      </section>
+      <Suspense fallback={<DashboardSkeleton />}><DashboardContent /></Suspense>
     </>
   );
 }
