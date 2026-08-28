@@ -1,5 +1,4 @@
 import { importProducts } from "@/data/import-products";
-import { createImportRecord } from "@/data/imports";
 import { parseCsvBuffer } from "@/lib/csv";
 import { getCurrentOrganizationId } from "@/lib/current-organization";
 
@@ -22,18 +21,11 @@ export async function POST(request: Request) {
     }
 
     const organizationId = getCurrentOrganizationId();
-    const result = await importProducts(
-      organizationId,
-      parsed.rows,
-      parsed.errors.length,
-    );
-    await createImportRecord({
+    const result = await importProducts({
       organizationId,
       filename: file.name,
-      totalRows: result.processedRows,
-      insertedRows: result.insertedRows,
-      updatedRows: result.updatedRows,
-      errorRows: result.errorRows,
+      rows: parsed.rows,
+      errorRows: parsed.errors.length,
     });
 
     return Response.json({

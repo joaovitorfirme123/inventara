@@ -8,13 +8,14 @@ datasource db {
 }
 
 model Organization {
-  id        String         @id @default(uuid()) @db.Uuid
-  name      String
-  createdAt DateTime       @default(now()) @map("created_at")
-  updatedAt DateTime       @updatedAt @map("updated_at")
-  users     User[]
-  products  Product[]
-  imports   ImportRecord[]
+  id           String         @id @default(uuid()) @db.Uuid
+  name         String
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  users        User[]
+  products     Product[]
+  imports      ImportRecord[]
+  stockHistory StockHistory[]
 
   @@map("organizations")
 }
@@ -33,19 +34,20 @@ model User {
 }
 
 model Product {
-  id             String       @id @default(uuid()) @db.Uuid
-  organizationId String       @map("organization_id") @db.Uuid
+  id             String         @id @default(uuid()) @db.Uuid
+  organizationId String         @map("organization_id") @db.Uuid
   plu            String
   barcode        String?
   description    String
   section        String?
   group          String?
   subgroup       String?
-  lastInventory  DateTime?    @map("last_inventory") @db.Date
-  currentStock   Decimal      @default(0) @map("current_stock") @db.Decimal(15, 3)
-  createdAt      DateTime     @default(now()) @map("created_at")
-  updatedAt      DateTime     @updatedAt @map("updated_at")
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  lastInventory  DateTime?      @map("last_inventory") @db.Date
+  currentStock   Decimal        @default(0) @map("current_stock") @db.Decimal(15, 3)
+  createdAt      DateTime       @default(now()) @map("created_at")
+  updatedAt      DateTime       @updatedAt @map("updated_at")
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  stockHistory   StockHistory[]
 
   @@unique([organizationId, plu])
   @@index([organizationId, description])
@@ -55,16 +57,34 @@ model Product {
 }
 
 model ImportRecord {
-  id             String       @id @default(uuid()) @db.Uuid
-  organizationId String       @map("organization_id") @db.Uuid
+  id             String         @id @default(uuid()) @db.Uuid
+  organizationId String         @map("organization_id") @db.Uuid
   filename       String
-  importedAt     DateTime     @default(now()) @map("imported_at")
-  totalRows      Int          @map("total_rows")
-  insertedRows   Int          @map("inserted_rows")
-  updatedRows    Int          @map("updated_rows")
-  errorRows      Int          @map("error_rows")
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  importedAt     DateTime       @default(now()) @map("imported_at")
+  totalRows      Int            @map("total_rows")
+  insertedRows   Int            @map("inserted_rows")
+  updatedRows    Int            @map("updated_rows")
+  errorRows      Int            @map("error_rows")
+  organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  stockHistory   StockHistory[]
 
   @@index([organizationId, importedAt(sort: Desc)])
   @@map("imports")
+}
+
+model StockHistory {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  productId      String       @map("product_id") @db.Uuid
+  importId       String       @map("import_id") @db.Uuid
+  stock          Decimal      @db.Decimal(15, 3)
+  recordedAt     DateTime     @default(now()) @map("recorded_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  product        Product      @relation(fields: [productId], references: [id], onDelete: Restrict)
+  importRecord   ImportRecord @relation(fields: [importId], references: [id], onDelete: Restrict)
+
+  @@unique([importId, productId])
+  @@index([organizationId, productId, recordedAt(sort: Desc)])
+  @@index([organizationId, importId])
+  @@map("stock_history")
 }

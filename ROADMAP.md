@@ -659,7 +659,7 @@ Apresentar uma visao consolidada da situacao dos inventarios.
 
 ### FASE 9 — Historico de estoque
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -688,14 +688,14 @@ Nova importacao
 
 #### Tarefas
 
-- [ ] Criar tabela `stock_history`.
-- [ ] Relacionar produto.
-- [ ] Relacionar importacao.
-- [ ] Registrar snapshot.
-- [ ] Preservar snapshots antigos.
-- [ ] Calcular estoque anterior.
-- [ ] Calcular estoque atual.
-- [ ] Calcular variacao.
+- [x] Criar tabela `stock_history`.
+- [x] Relacionar produto.
+- [x] Relacionar importacao.
+- [x] Registrar snapshot.
+- [x] Preservar snapshots antigos.
+- [x] Calcular estoque anterior.
+- [x] Calcular estoque atual.
+- [x] Calcular variacao.
 
 Variacao: `estoque atual - estoque anterior`.
 
@@ -717,11 +717,11 @@ Variacao de estoque nao significa necessariamente venda.
 
 #### Checklist de conclusao
 
-- [ ] Executar duas importacoes do mesmo produto.
-- [ ] Confirmar os dois snapshots.
-- [ ] Confirmar estoque anterior e atual.
-- [ ] Confirmar calculo da variacao.
-- [ ] Testar produto novo sem estoque anterior.
+- [x] Executar duas importacoes do mesmo produto.
+- [x] Confirmar os dois snapshots.
+- [x] Confirmar estoque anterior e atual.
+- [x] Confirmar calculo da variacao.
+- [x] Testar produto novo sem estoque anterior.
 
 ---
 

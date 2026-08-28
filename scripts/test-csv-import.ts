@@ -5,6 +5,7 @@ import { prisma } from "../src/lib/prisma";
 
 const organizationAId = "11111111-1111-4111-8111-111111111111";
 const organizationBId = "22222222-2222-4222-8222-222222222222";
+const importFilenames = ["csv-a-first.csv", "csv-a-second.csv", "csv-b.csv"];
 const headers =
   "Código PLU;Código de barras;Descrição;Seção;Grupo;Subgrupo;Último Inventário;Estoque Atual";
 
@@ -73,14 +74,33 @@ ARROZ TIPO 1 5KG;00010001;7891000000011;MERCEARIA;ARROZ E FEIJAO;ARROZ;25/08/202
   assert(report.rows.length === 1, "Report row after preamble was not parsed.");
   assert(report.rows[0].plu === "00010001", "Report columns were not mapped.");
 
-  await prisma.product.deleteMany({
-    where: { plu: { in: ["990001", "990002"] } },
+  await prisma.stockHistory.deleteMany({
+    where: { importRecord: { filename: { in: importFilenames } } },
   });
+  await prisma.importRecord.deleteMany({
+    where: { filename: { in: importFilenames } },
+  });
+  await prisma.product.deleteMany({ where: { plu: { in: ["990001", "990002"] } } });
 
   try {
-    const first = await importProducts(organizationAId, semicolon.rows, semicolon.errors.length);
-    const second = await importProducts(organizationAId, semicolon.rows, semicolon.errors.length);
-    await importProducts(organizationBId, comma.rows, comma.errors.length);
+    const first = await importProducts({
+      organizationId: organizationAId,
+      filename: importFilenames[0],
+      rows: semicolon.rows,
+      errorRows: semicolon.errors.length,
+    });
+    const second = await importProducts({
+      organizationId: organizationAId,
+      filename: importFilenames[1],
+      rows: semicolon.rows,
+      errorRows: semicolon.errors.length,
+    });
+    await importProducts({
+      organizationId: organizationBId,
+      filename: importFilenames[2],
+      rows: comma.rows,
+      errorRows: comma.errors.length,
+    });
 
     assert(first.insertedRows === 1 && first.errorRows === 1, "Insert summary is incorrect.");
     assert(second.updatedRows === 1, "Update summary is incorrect.");
@@ -97,9 +117,13 @@ ARROZ TIPO 1 5KG;00010001;7891000000011;MERCEARIA;ARROZ E FEIJAO;ARROZ;25/08/202
     assert(productA?.description === "Produto CSV", "Organization A import failed.");
     assert(productB?.description === "Produto vírgula", "Organization B import failed.");
   } finally {
-    await prisma.product.deleteMany({
-      where: { plu: { in: ["990001", "990002"] } },
+    await prisma.stockHistory.deleteMany({
+      where: { importRecord: { filename: { in: importFilenames } } },
     });
+    await prisma.importRecord.deleteMany({
+      where: { filename: { in: importFilenames } },
+    });
+    await prisma.product.deleteMany({ where: { plu: { in: ["990001", "990002"] } } });
   }
 
   console.log("CSV parsing, validation, upsert, summary, and isolation passed.");
