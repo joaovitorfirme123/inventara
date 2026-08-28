@@ -91,7 +91,7 @@ Ao terminar cada fase, informar:
 
 ### FASE 1 — Inicializacao do projeto
 
-**Status: EM ANDAMENTO**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -114,7 +114,7 @@ Criar a estrutura inicial da aplicacao.
 - [x] Garantir funcionamento em desktop.
 - [x] Garantir responsividade basica.
 - [x] Inicializar Git.
-- [ ] Fazer primeiro commit.
+- [x] Fazer primeiro commit.
 
 #### Conceitos que devo aprender
 
@@ -141,7 +141,7 @@ Criar a estrutura inicial da aplicacao.
 - [x] Acessar todas as paginas pelo navegador.
 - [x] Validar desktop e viewport mobile.
 - [x] Executar lint e build.
-- [ ] Confirmar o primeiro commit.
+- [x] Confirmar o primeiro commit.
 
 ---
 
