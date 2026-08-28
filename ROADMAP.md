@@ -1231,37 +1231,405 @@ Nao divulgar:
 
 ---
 
+## AJUSTES OPERACIONAIS
+
+### Limpeza segura da base
+
+**Status: CONCLUÍDA**
+
+Permitir que uma organização substitua sua base importada sem apagar usuários,
+sessões ou dados de outros tenants.
+
+#### Tarefas
+
+- [x] Remover produtos da organização atual.
+- [x] Remover seções, grupos e subgrupos junto do catálogo.
+- [x] Remover importações e histórico de estoque relacionados.
+- [x] Exigir confirmação explícita antes da operação.
+- [x] Executar a limpeza em uma transação.
+- [x] Testar isolamento entre organizações.
+
+#### Regra
+
+Usuários e sessões permanecem intactos. A operação nunca aceita a organização
+como parâmetro livre do cliente; ela usa o tenant da sessão autenticada.
+
+---
+
 ## VERSAO 2.0 — BACKLOG
 
-Estas funcionalidades nao fazem parte do MVP.
-
-- [ ] Planejamento de inventarios.
-- [ ] Data prevista da contagem.
-- [ ] Responsavel pela contagem.
-- [ ] Status: Pendente / Programado / Em andamento / Finalizado.
-- [ ] Metas por secao.
-- [ ] Cobertura mensal.
-- [ ] Alertas.
-- [ ] Notificacoes.
-- [ ] Exportacao Excel.
-- [ ] Exportacao PDF.
-- [ ] Comparacao entre periodos.
-- [ ] Auditoria de alteracoes.
-- [ ] Perfis e permissoes.
-- [ ] Administrador da organizacao.
-- [ ] Convite de funcionarios.
-- [ ] Multiplas lojas por organizacao.
-- [ ] Configuracao personalizada do CSV.
-- [ ] Mapeamento de colunas de diferentes ERPs.
-- [ ] Regras de prioridade configuraveis.
-- [ ] PWA.
-- [ ] Tema claro/escuro.
+Estas funcionalidades nao fazem parte do MVP. A ordem abaixo organiza o
+backlog por dependencias de negocio e de dados.
 
 #### Criterio para iniciar o backlog
 
-Nenhuma funcionalidade da Versao 2.0 deve ser implementada antes da
-conclusao e autorizacao das fases previstas para o MVP, V1.0 e Portfolio,
-salvo nova autorizacao explicita.
+As fases da Versao 2.0 devem ser implementadas uma por vez, na ordem definida,
+apos autorizacao explicita para iniciar a proxima fase. Cada fase precisa ter
+seus testes e criterios validados antes de ser marcada como concluida.
+
+### FASE 19 — Planejamento de inventarios
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Transformar a prioridade calculada em um plano operacional de contagem.
+
+#### Tarefas
+
+- [ ] Criar planejamento de inventarios.
+- [ ] Definir data prevista da contagem.
+- [ ] Definir responsavel pela contagem.
+- [ ] Criar status: Pendente, Programado, Em andamento e Finalizado.
+- [ ] Permitir visualizar e filtrar planejamentos.
+- [ ] Relacionar o planejamento aos grupos e subgrupos priorizados.
+
+#### Conceitos que devo aprender
+
+- modelagem de workflow;
+- estados de dominio;
+- datas e responsaveis;
+- transicoes de status.
+
+#### Criterios para considerar a fase concluida
+
+- Um inventario pode ser criado para uma organizacao.
+- Data, responsavel e status podem ser definidos e alterados.
+- O inventario permanece isolado por organizacao.
+- O fluxo de status e validado sem transicoes ambiguas.
+
+#### Checklist de conclusao
+
+- [ ] Modelar tabelas e relacionamentos.
+- [ ] Testar criacao, edicao e filtros.
+- [ ] Testar todas as transicoes de status.
+- [ ] Testar isolamento entre organizacoes.
+
+---
+
+### FASE 20 — Metas e cobertura historica
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Permitir acompanhar metas de inventario e a evolucao da cobertura ao longo dos
+meses.
+
+#### Tarefas
+
+- [ ] Criar metas por secao.
+- [ ] Registrar cobertura mensal.
+- [ ] Comparar cobertura planejada e realizada.
+- [ ] Exibir evolucao por periodo no Dashboard.
+- [ ] Permitir consultar periodos anteriores.
+
+#### Conceitos que devo aprender
+
+- metricas temporais;
+- metas e indicadores;
+- agregacoes por periodo;
+- comparacao entre planejado e realizado.
+
+#### Criterios para considerar a fase concluida
+
+- Uma organizacao pode definir metas por secao.
+- A cobertura mensal e calculada a partir de dados consistentes.
+- O historico nao e sobrescrito por um novo periodo.
+- Os indicadores respeitam a organizacao atual.
+
+#### Checklist de conclusao
+
+- [ ] Testar metas por secao.
+- [ ] Testar fechamento de meses.
+- [ ] Testar comparacao entre meta e cobertura.
+- [ ] Testar periodos sem dados.
+
+---
+
+### FASE 21 — Relatorios e exportacoes
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Transformar os indicadores operacionais em relatorios compartilhaveis e
+comparaveis entre periodos.
+
+#### Tarefas
+
+- [ ] Exportar dados para Excel.
+- [ ] Exportar relatorios para PDF.
+- [ ] Comparar cobertura e inventarios entre periodos.
+- [ ] Definir quais filtros e metadados entram em cada exportacao.
+- [ ] Garantir que exportacoes respeitem a organizacao e as permissoes.
+
+#### Conceitos que devo aprender
+
+- geracao de arquivos;
+- relatorios e formatos de apresentacao;
+- comparacao temporal;
+- processamento de exportacoes grandes.
+
+#### Criterios para considerar a fase concluida
+
+- Um usuario autorizado consegue exportar os dados do proprio recorte.
+- Excel e PDF apresentam valores coerentes com as telas.
+- A comparacao entre periodos identifica variacoes sem misturar organizacoes.
+- Exportacoes nao expoem dados fora do escopo da sessao.
+
+#### Checklist de conclusao
+
+- [ ] Testar exportacao Excel.
+- [ ] Testar exportacao PDF.
+- [ ] Testar comparacao com periodos com e sem dados.
+- [ ] Testar filtros, permissao e isolamento.
+
+---
+
+### FASE 22 — Alertas e notificacoes
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Comunicar pendencias relevantes sem exigir consulta manual constante ao
+Dashboard.
+
+#### Tarefas
+
+- [ ] Criar alertas para prioridades e metas fora do esperado.
+- [ ] Criar notificacoes dentro da aplicacao.
+- [ ] Permitir marcar notificacoes como lidas.
+- [ ] Definir regras para evitar alertas duplicados.
+- [ ] Registrar quando um alerta foi gerado e lido.
+
+#### Conceitos que devo aprender
+
+- eventos de dominio;
+- idempotencia de notificacoes;
+- filas e processamento assincrono;
+- preferencias de comunicacao.
+
+#### Criterios para considerar a fase concluida
+
+- Alertas sao gerados apenas para a organizacao correta.
+- Uma mesma condicao nao cria notificacoes duplicadas indevidas.
+- O usuario consegue consultar e marcar notificacoes como lidas.
+- Falhas de notificacao nao corrompem os dados operacionais.
+
+#### Checklist de conclusao
+
+- [ ] Testar geracao de alertas.
+- [ ] Testar deduplicacao.
+- [ ] Testar leitura e persistencia de notificacoes.
+- [ ] Testar isolamento entre organizacoes.
+
+---
+
+### FASE 23 — Perfis, permissoes e convites
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Permitir que uma organizacao administre seus usuarios com diferentes niveis de
+acesso.
+
+#### Tarefas
+
+- [ ] Criar perfis e permissoes.
+- [ ] Criar papel de administrador da organizacao.
+- [ ] Permitir convite de funcionarios.
+- [ ] Restringir telas e operacoes conforme a permissao.
+- [ ] Permitir revogar convite e acesso.
+- [ ] Registrar alteracoes de permissao.
+- [ ] Criar auditoria de alteracoes relevantes.
+
+#### Conceitos que devo aprender
+
+- RBAC;
+- menor privilegio;
+- ciclo de vida de convites;
+- autorizacao por operacao.
+
+#### Criterios para considerar a fase concluida
+
+- Administradores conseguem gerenciar usuarios da propria organizacao.
+- Permissoes sao verificadas no servidor, nao apenas na interface.
+- Convites possuem expiracao e nao permitem acesso cruzado.
+- Usuarios nao conseguem elevar o proprio privilegio.
+
+#### Checklist de conclusao
+
+- [ ] Definir matriz de permissoes.
+- [ ] Testar convite aceito, expirado e revogado.
+- [ ] Testar cada permissao em pagina e API.
+- [ ] Testar tentativa de escalada de privilegio.
+
+---
+
+### FASE 24 — Multiplas lojas por organizacao
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Separar dados operacionais de diferentes lojas pertencentes a uma mesma
+organizacao.
+
+#### Tarefas
+
+- [ ] Criar entidade de loja.
+- [ ] Relacionar produtos, estoques, importacoes e inventarios a uma loja.
+- [ ] Permitir selecionar uma ou mais lojas na consulta.
+- [ ] Criar visao consolidada da organizacao.
+- [ ] Atualizar isolamento e permissoes por loja.
+
+#### Conceitos que devo aprender
+
+- tenancy hierarquica;
+- agregacao multi-unidade;
+- escopo de autorizacao;
+- migrations de dados existentes.
+
+#### Criterios para considerar a fase concluida
+
+- Uma organizacao pode possuir mais de uma loja.
+- Dados de uma loja nao aparecem em outra sem permissao.
+- Relatorios podem ser vistos por loja e de forma consolidada.
+- Dados existentes possuem uma estrategia de migracao segura.
+
+#### Checklist de conclusao
+
+- [ ] Definir regra de pertencimento dos dados.
+- [ ] Migrar dados existentes para uma loja padrao.
+- [ ] Testar consultas por loja e consolidadas.
+- [ ] Testar autorizacao entre lojas.
+
+---
+
+### FASE 25 — Importacao configuravel
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Permitir que diferentes ERPs usem o Inventara sem exigir alteracoes no codigo
+do parser.
+
+#### Tarefas
+
+- [ ] Criar configuracao personalizada do CSV.
+- [ ] Criar mapeamento de colunas por ERP.
+- [ ] Permitir salvar mais de um modelo por organizacao.
+- [ ] Validar campos obrigatorios conforme o modelo.
+- [ ] Mostrar a configuracao aplicada antes da importacao.
+- [ ] Manter compatibilidade com o modelo atual.
+
+#### Conceitos que devo aprender
+
+- configuracao orientada a dados;
+- contratos de importacao;
+- versionamento de schema;
+- validacao configuravel.
+
+#### Criterios para considerar a fase concluida
+
+- Um usuario autorizado consegue criar e editar um mapeamento.
+- Arquivos de formatos diferentes sao interpretados corretamente.
+- A configuracao usada fica registrada na importacao.
+- Um mapeamento de uma organizacao nao pode ser usado para alterar outra.
+
+#### Checklist de conclusao
+
+- [ ] Testar mapeamento de dois ERPs.
+- [ ] Testar campos obrigatorios e opcionais.
+- [ ] Testar alteracao de uma configuracao versionada.
+- [ ] Testar compatibilidade com o CSV atual.
+
+---
+
+### FASE 26 — Regras de prioridade configuraveis
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Permitir que cada organizacao ajuste a prioridade de inventarios sem perder uma
+formula explicavel e auditavel.
+
+#### Tarefas
+
+- [ ] Criar regras de prioridade configuraveis.
+- [ ] Permitir ajustar pesos e faixas por organizacao.
+- [ ] Validar que os pesos formam uma configuracao consistente.
+- [ ] Versionar alteracoes nas regras.
+- [ ] Mostrar a regra aplicada junto da pontuacao.
+- [ ] Preservar a formula padrao como fallback.
+
+#### Conceitos que devo aprender
+
+- configuracao de regras de negocio;
+- versionamento de configuracoes;
+- explicabilidade de pontuacao;
+- validacao de invariantes.
+
+#### Criterios para considerar a fase concluida
+
+- Uma organizacao pode configurar sua propria regra.
+- A pontuacao continua deterministica e explicavel.
+- Alteracoes novas nao reescrevem o historico de configuracoes.
+- Uma organizacao nao consegue alterar regras de outra.
+
+#### Checklist de conclusao
+
+- [ ] Testar pesos validos e invalidos.
+- [ ] Testar versionamento e vigencia.
+- [ ] Testar pontuacao com a regra padrao e personalizada.
+- [ ] Testar isolamento entre organizacoes.
+
+---
+
+### FASE 27 — PWA e temas visuais
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Melhorar o uso recorrente em dispositivos moveis e permitir preferencia visual.
+
+#### Tarefas
+
+- [ ] Transformar a aplicacao em PWA instalavel.
+- [ ] Configurar manifest e icones.
+- [ ] Definir estrategia de cache segura para dados autenticados.
+- [ ] Criar tema claro.
+- [ ] Criar tema escuro.
+- [ ] Permitir alternar ou respeitar a preferencia do sistema.
+- [ ] Validar contraste e legibilidade nos dois temas.
+
+#### Conceitos que devo aprender
+
+- service workers;
+- cache de aplicacoes autenticadas;
+- manifest web;
+- preferencias de tema;
+- acessibilidade visual.
+
+#### Criterios para considerar a fase concluida
+
+- A aplicacao pode ser instalada em um dispositivo compativel.
+- O cache nao expoe dados de uma sessao ou organizacao para outra.
+- Tema claro e escuro cobrem todas as telas principais.
+- Contraste, teclado e responsividade permanecem adequados.
+
+#### Checklist de conclusao
+
+- [ ] Testar instalacao em desktop e mobile.
+- [ ] Testar logout e troca de usuario com cache ativo.
+- [ ] Testar tema claro e escuro.
+- [ ] Validar acessibilidade visual.
 
 ---
 
@@ -1293,4 +1661,4 @@ Fases 17–18. Projeto preparado para demonstracao publica.
 
 ### V2.0
 
-Backlog baseado em necessidades reais observadas durante o uso.
+Fases 19–27. Evolucao baseada em necessidades reais observadas durante o uso.

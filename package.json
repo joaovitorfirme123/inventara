@@ -26,7 +26,8 @@
     "test:isolation": "tsx scripts/test-isolation.ts",
     "test:security": "tsx scripts/test-import-security.ts",
     "test:stock-page": "tsx scripts/test-stock-page.ts",
-    "test:demo": "tsx scripts/test-demo-account.ts"
+    "test:demo": "tsx scripts/test-demo-account.ts",
+    "test:clear-data": "tsx scripts/test-clear-organization-data.ts"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.7.2",

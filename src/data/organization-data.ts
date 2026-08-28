@@ -1,0 +1,21 @@
+import { prisma } from "@/lib/prisma";
+
+export async function clearOrganizationData(organizationId: string) {
+  return prisma.$transaction(async (transaction) => {
+    const stockHistory = await transaction.stockHistory.deleteMany({
+      where: { organizationId },
+    });
+    const imports = await transaction.importRecord.deleteMany({
+      where: { organizationId },
+    });
+    const products = await transaction.product.deleteMany({
+      where: { organizationId },
+    });
+
+    return {
+      products: products.count,
+      imports: imports.count,
+      stockHistory: stockHistory.count,
+    };
+  });
+}

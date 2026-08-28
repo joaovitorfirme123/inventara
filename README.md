@@ -56,6 +56,7 @@ sendo a origem dos dados, e o Inventara organiza a decisão operacional.
 - Produtos com busca, filtros, paginação e detalhe individual.
 - Estoque atual, estoque anterior, variação e histórico por produto.
 - Conta demonstrativa isolada com dados sintéticos.
+- Limpeza segura do catálogo para substituir a base de uma organização.
 - Autenticação por e-mail e senha com sessões persistidas.
 - Isolamento por organização em páginas, APIs, produtos, importações e histórico.
 
@@ -161,6 +162,8 @@ quando não há pendências. A especificação completa está em
 - Hash SHA-256 identifica arquivos repetidos no período de proteção.
 - Segredos ficam em variáveis de ambiente e são ignorados pelo Git.
 - A conta demo usa organização, produtos e snapshots próprios.
+- A limpeza do catálogo exige a confirmação literal `APAGAR TUDO` e remove
+  apenas produtos, importações e snapshots do tenant autenticado.
 
 Detalhes do fluxo de autenticação estão em
 [docs/authentication.md](docs/authentication.md).

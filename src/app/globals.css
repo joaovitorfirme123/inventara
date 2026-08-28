@@ -2325,6 +2325,114 @@ input {
   font-weight: 750;
 }
 
+.danger-zone {
+  max-width: 760px;
+  border-color: #d7a398;
+  background: #fff8f4;
+}
+
+.danger-zone-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.danger-zone h2 {
+  margin-top: 5px;
+  color: #813c2b;
+  font-size: clamp(1.05rem, 2vw, 1.35rem);
+}
+
+.danger-zone-mark {
+  display: grid;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  color: #fff8f4;
+  background: var(--rust);
+  border-radius: 50%;
+  font-weight: 800;
+}
+
+.danger-zone > p {
+  max-width: 620px;
+  margin-top: 14px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+.clear-data-form {
+  display: flex;
+  align-items: flex-end;
+  gap: 12px;
+  margin-top: 22px;
+}
+
+.clear-data-form label {
+  display: grid;
+  flex: 1;
+  gap: 7px;
+}
+
+.clear-data-form label span {
+  color: #813c2b;
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.clear-data-form input {
+  min-height: 42px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid #d7a398;
+  border-radius: 2px;
+  outline: none;
+  font-size: 0.75rem;
+}
+
+.clear-data-form input:focus {
+  border-color: var(--rust);
+  box-shadow: 0 0 0 3px rgba(207, 99, 63, 0.14);
+}
+
+.clear-data-form button {
+  min-height: 42px;
+  padding: 0 16px;
+  color: #fff8f4;
+  background: #9c382b;
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.clear-data-form button:hover {
+  background: #813025;
+}
+
+.clear-data-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.action-feedback {
+  margin-top: 14px;
+  font-size: 0.72rem;
+  line-height: 1.6;
+}
+
+.action-feedback.error {
+  color: #9c382b;
+}
+
+.action-feedback.success {
+  color: #31704a;
+}
+
 @media (max-width: 900px) {
   .app-shell {
     grid-template-columns: 1fr;
@@ -2516,6 +2624,14 @@ input {
 
   .filter-actions {
     justify-content: space-between;
+  }
+
+  .clear-data-form {
+    display: grid;
+  }
+
+  .clear-data-form button {
+    width: 100%;
   }
 
   .list-summary {

@@ -67,6 +67,7 @@ jobs:
           npm run test:stock &&
           npm run test:stock-page &&
           npm run test:demo &&
+          npm run test:clear-data &&
           npm run test:product-details
 
       - name: Start production server
