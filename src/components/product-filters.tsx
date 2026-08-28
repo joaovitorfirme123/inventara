@@ -15,6 +15,7 @@ type ProductFiltersProps = {
     groups: string[];
     subgroups: string[];
   };
+  clearHref?: string;
 };
 
 function applySelection(
@@ -33,7 +34,7 @@ function applySelection(
   form.requestSubmit();
 }
 
-export function ProductFilters({ filters, options }: ProductFiltersProps) {
+export function ProductFilters({ filters, options, clearHref }: ProductFiltersProps) {
   return (
     <form className="product-filters panel" method="get">
       <label className="search-field">
@@ -86,7 +87,7 @@ export function ProductFilters({ filters, options }: ProductFiltersProps) {
 
       <div className="filter-actions">
         <button type="submit">Aplicar</button>
-        <Link href="/produtos">Limpar</Link>
+        <Link href={clearHref ?? "/produtos"}>Limpar</Link>
       </div>
     </form>
   );

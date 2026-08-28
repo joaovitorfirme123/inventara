@@ -1002,7 +1002,48 @@ Melhorar a eficiencia e a clareza das telas principais.
 
 ---
 
-### FASE 15 — Deploy
+### FASE 15 — Pagina de estoque
+
+**Status: CONCLUÍDA**
+
+#### Objetivo
+
+Consolidar a posicao e a evolucao do estoque em uma tela dedicada.
+
+#### Rota
+
+`/estoque`
+
+#### Funcionalidades
+
+- listagem de produtos com estoque atual;
+- estoque anterior e variacao por produto;
+- busca por descricao, PLU ou codigo de barras;
+- filtros por secao, grupo e subgrupo;
+- paginacao;
+- estados de carregamento e vazio.
+
+#### Conceitos que devo aprender
+
+- consultas com snapshots;
+- calculo de variacao em listas;
+- reutilizacao de filtros.
+
+#### Criterios para considerar a fase concluida
+
+- A tela lista os produtos com estoque atual, anterior e variacao.
+- Os filtros e a paginacao funcionam como em Produtos.
+- A pagina protege o acesso por organizacao.
+
+#### Checklist de conclusao
+
+- [x] Testar calculo de variacao na listagem.
+- [x] Testar paginacao, busca e filtros.
+- [x] Testar isolamento entre organizacoes.
+
+---
+
+### FASE 16 — Deploy
 
 **Status: NÃO INICIADA**
 
@@ -1063,7 +1104,7 @@ Usuario
 
 ## PORTFOLIO
 
-### FASE 16 — Conta demonstrativa
+### FASE 17 — Conta demonstrativa
 
 **Status: NÃO INICIADA**
 
@@ -1110,7 +1151,7 @@ Nenhum dado real da empresa deve aparecer na demonstracao publica.
 
 ---
 
-### FASE 17 — README e apresentacao
+### FASE 18 — README e apresentacao
 
 **Status: NÃO INICIADA**
 
@@ -1244,11 +1285,11 @@ Usuario
 
 ### V1.0
 
-Fases 8–15. Sistema pronto para utilizacao real.
+Fases 8–16. Sistema pronto para utilizacao real.
 
 ### Portfolio
 
-Fases 16–17. Projeto preparado para demonstracao publica.
+Fases 17–18. Projeto preparado para demonstracao publica.
 
 ### V2.0
 

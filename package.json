@@ -24,7 +24,8 @@
     "test:product-details": "tsx scripts/test-product-details.ts",
     "test:authentication": "tsx scripts/test-authentication.ts",
     "test:isolation": "tsx scripts/test-isolation.ts",
-    "test:security": "tsx scripts/test-import-security.ts"
+    "test:security": "tsx scripts/test-import-security.ts",
+    "test:stock-page": "tsx scripts/test-stock-page.ts"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.7.2",

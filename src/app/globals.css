@@ -591,6 +591,29 @@ input {
   text-align: right;
 }
 
+.stock-variation {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 2px;
+  font-size: 0.66rem;
+  font-weight: 750;
+}
+
+.stock-variation.positive {
+  color: #2f6b3a;
+  background: #e2edd4;
+}
+
+.stock-variation.negative {
+  color: #7f281d;
+  background: #f6d8d0;
+}
+
+.stock-variation.neutral {
+  color: var(--muted);
+  background: #efeee7;
+}
+
 .pagination {
   display: grid;
   grid-template-columns: 1fr auto 1fr;
