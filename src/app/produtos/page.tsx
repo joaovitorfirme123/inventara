@@ -113,7 +113,11 @@ export default async function ProdutosPage({
                 {result.products.map((product) => (
                   <tr key={product.id}>
                     <td data-label="Produto">
-                      <strong>{product.description}</strong>
+                      <strong>
+                        <Link className="product-detail-link" href={`/produtos/${encodeURIComponent(product.plu)}`}>
+                          {product.description}
+                        </Link>
+                      </strong>
                       <small>{product.section ?? "Sem seção"}</small>
                     </td>
                     <td data-label="PLU / Código">

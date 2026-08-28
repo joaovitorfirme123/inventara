@@ -727,7 +727,7 @@ Variacao de estoque nao significa necessariamente venda.
 
 ### FASE 10 — Pagina individual do produto
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -758,10 +758,10 @@ Exibir os dados atuais e a evolucao historica de um produto.
 
 #### Tarefas
 
-- [ ] Criar rota dinamica.
-- [ ] Criar informacoes gerais.
-- [ ] Mostrar historico.
-- [ ] Criar grafico de evolucao.
+- [x] Criar rota dinamica.
+- [x] Criar informacoes gerais.
+- [x] Mostrar historico.
+- [x] Criar grafico de evolucao.
 
 #### Conceitos que devo aprender
 
@@ -779,11 +779,11 @@ Exibir os dados atuais e a evolucao historica de um produto.
 
 #### Checklist de conclusao
 
-- [ ] Abrir produto existente pela rota.
-- [ ] Testar produto inexistente.
-- [ ] Conferir informacoes gerais.
-- [ ] Conferir historico e grafico.
-- [ ] Testar isolamento entre organizacoes.
+- [x] Abrir produto existente pela rota.
+- [x] Testar produto inexistente.
+- [x] Conferir informacoes gerais.
+- [x] Conferir historico e grafico.
+- [x] Testar isolamento entre organizacoes.
 
 ---
 
