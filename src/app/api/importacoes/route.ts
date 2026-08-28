@@ -1,9 +1,15 @@
 import { importProducts } from "@/data/import-products";
 import { parseCsvBuffer } from "@/lib/csv";
-import { getCurrentOrganizationId } from "@/lib/current-organization";
+import { getSessionContext } from "@/lib/session";
 
 export async function POST(request: Request) {
   try {
+    const session = await getSessionContext(request.headers);
+
+    if (!session) {
+      return Response.json({ error: "Autenticação necessária." }, { status: 401 });
+    }
+
     const formData = await request.formData();
     const file = formData.get("file");
 
@@ -20,7 +26,7 @@ export async function POST(request: Request) {
       );
     }
 
-    const organizationId = getCurrentOrganizationId();
+    const organizationId = session.user.organizationId;
     const result = await importProducts({
       organizationId,
       filename: file.name,

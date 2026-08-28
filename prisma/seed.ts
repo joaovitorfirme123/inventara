@@ -1,4 +1,5 @@
 import "dotenv/config";
+import { hashPassword } from "better-auth/crypto";
 import { prisma } from "../src/lib/prisma";
 
 const organizations = [
@@ -59,6 +60,14 @@ const sections = [
 ] as const;
 
 async function seed() {
+  const seedPassword = process.env.SEED_USER_PASSWORD;
+
+  if (!seedPassword || seedPassword.length < 8) {
+    throw new Error("SEED_USER_PASSWORD must contain at least 8 characters.");
+  }
+
+  const password = await hashPassword(seedPassword);
+
   for (const organization of organizations) {
     await prisma.organization.upsert({
       where: { id: organization.id },
@@ -78,6 +87,23 @@ async function seed() {
       create: {
         ...organization.user,
         organizationId: organization.id,
+      },
+    });
+
+    await prisma.account.upsert({
+      where: {
+        issuer_accountId: {
+          issuer: "local:credential",
+          accountId: organization.user.id,
+        },
+      },
+      update: { password },
+      create: {
+        issuer: "local:credential",
+        accountId: organization.user.id,
+        providerId: "credential",
+        userId: organization.user.id,
+        password,
       },
     });
   }

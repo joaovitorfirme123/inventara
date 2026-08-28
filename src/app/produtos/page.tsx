@@ -51,7 +51,7 @@ export default async function ProdutosPage({
     group: getParam(params.group),
     subgroup: getParam(params.subgroup),
   };
-  const organizationId = getCurrentOrganizationId();
+  const organizationId = await getCurrentOrganizationId();
 
   const [result, options] = await Promise.all([
     listProducts({

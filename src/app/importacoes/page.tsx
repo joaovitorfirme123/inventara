@@ -16,7 +16,7 @@ const numberFormatter = new Intl.NumberFormat("pt-BR");
 
 export default async function ImportacoesPage() {
   await connection();
-  const imports = await listImportsByOrganization(getCurrentOrganizationId());
+  const imports = await listImportsByOrganization(await getCurrentOrganizationId());
 
   return (
     <>

@@ -71,7 +71,7 @@ function StockChart({ history }: { history: Array<{ id: string; stock: string }>
 
 export default async function ProductPage({ params }: ProductPageProps) {
   const { plu } = await params;
-  const product = await getProductDetailsByPlu(getCurrentOrganizationId(), plu);
+  const product = await getProductDetailsByPlu(await getCurrentOrganizationId(), plu);
 
   if (!product) notFound();
 

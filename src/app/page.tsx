@@ -34,7 +34,7 @@ async function DashboardContent() {
   await connection();
   const year = new Date().getFullYear();
   const { summary, sections, priorities } = await getDashboardData(
-    getCurrentOrganizationId(),
+    await getCurrentOrganizationId(),
     year,
   );
 

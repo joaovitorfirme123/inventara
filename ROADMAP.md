@@ -789,7 +789,7 @@ Exibir os dados atuais e a evolucao historica de um produto.
 
 ### FASE 11 — Autenticacao
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -805,12 +805,12 @@ Identificar corretamente o usuario.
 
 #### Tarefas
 
-- [ ] Escolher solucao de autenticacao.
-- [ ] Implementar login.
-- [ ] Implementar logout.
-- [ ] Criar sessao.
-- [ ] Proteger paginas.
-- [ ] Proteger APIs.
+- [x] Escolher solucao de autenticacao.
+- [x] Implementar login.
+- [x] Implementar logout.
+- [x] Criar sessao.
+- [x] Proteger paginas.
+- [x] Proteger APIs.
 
 #### Conceitos que devo aprender
 
@@ -829,11 +829,11 @@ Identificar corretamente o usuario.
 
 #### Checklist de conclusao
 
-- [ ] Testar login valido.
-- [ ] Testar credenciais invalidas.
-- [ ] Testar logout.
-- [ ] Acessar pagina protegida sem sessao.
-- [ ] Chamar API protegida sem sessao.
+- [x] Testar login valido.
+- [x] Testar credenciais invalidas.
+- [x] Testar logout.
+- [x] Acessar pagina protegida sem sessao.
+- [x] Chamar API protegida sem sessao.
 
 ---
 

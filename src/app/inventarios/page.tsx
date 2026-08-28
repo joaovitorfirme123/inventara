@@ -48,7 +48,7 @@ export default async function InventariosPage({
   const priority = isPriority(priorityParam) ? priorityParam : undefined;
   const pendingOnly = getParam(params.pending) === "1";
   const year = new Date().getFullYear();
-  const allRows = await getInventoryRows(getCurrentOrganizationId(), year);
+  const allRows = await getInventoryRows(await getCurrentOrganizationId(), year);
   const rows = filterInventoryRows(allRows, {
     section,
     priority,

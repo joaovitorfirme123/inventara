@@ -1,9 +1,6 @@
-export function getCurrentOrganizationId() {
-  const organizationId = process.env.DEVELOPMENT_ORGANIZATION_ID;
+import "server-only";
+import { requireSessionContext } from "@/lib/session";
 
-  if (!organizationId) {
-    throw new Error("DEVELOPMENT_ORGANIZATION_ID is not configured.");
-  }
-
-  return organizationId;
+export async function getCurrentOrganizationId() {
+  return (await requireSessionContext()).user.organizationId;
 }

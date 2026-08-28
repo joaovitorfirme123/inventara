@@ -1,7 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useState } from "react";
+import { authClient } from "@/lib/auth-client";
 
 const navigation = [
   { href: "/", label: "Dashboard", code: "01" },
@@ -12,8 +14,39 @@ const navigation = [
   { href: "/configuracoes", label: "Configurações", code: "06" },
 ];
 
-export function AppShell({ children }: { children: React.ReactNode }) {
+type AppShellProps = {
+  children: React.ReactNode;
+  user: {
+    id: string;
+    name: string;
+    email: string;
+    organizationId: string;
+    organizationName: string;
+  } | null;
+};
+
+export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
+  const router = useRouter();
+  const [isSigningOut, setIsSigningOut] = useState(false);
+
+  if (pathname === "/login") {
+    return <main className="auth-page">{children}</main>;
+  }
+
+  const initials = user?.organizationName
+    .split(/\s+/)
+    .slice(0, 2)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase() ?? "OR";
+
+  async function signOut() {
+    setIsSigningOut(true);
+    await authClient.signOut();
+    router.replace("/login");
+    router.refresh();
+  }
 
   return (
     <div className="app-shell">
@@ -60,11 +93,14 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             Sistema operacional
           </div>
           <div className="organization-chip">
-            <span>OR</span>
+            <span>{initials}</span>
             <div>
-              <strong>Organização</strong>
-              <small>Ambiente local</small>
+              <strong>{user?.organizationName ?? "Organização"}</strong>
+              <small>{user?.name ?? "Sessão local"}</small>
             </div>
+            <button disabled={isSigningOut} onClick={signOut} type="button">
+              {isSigningOut ? "Saindo..." : "Sair"}
+            </button>
           </div>
         </header>
         <main className="content">{children}</main>
