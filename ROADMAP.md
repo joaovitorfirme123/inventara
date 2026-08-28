@@ -1106,7 +1106,7 @@ Usuario
 
 ### FASE 17 — Conta demonstrativa
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1117,12 +1117,12 @@ continuarao importando seus proprios dados.
 
 #### Tarefas
 
-- [ ] Criar organizacao Demo.
-- [ ] Gerar produtos ficticios.
-- [ ] Gerar inventarios ficticios.
-- [ ] Gerar estoques ficticios.
-- [ ] Gerar historico ficticio.
-- [ ] Criar usuario demo.
+- [x] Criar organizacao Demo.
+- [x] Gerar produtos ficticios.
+- [x] Gerar inventarios ficticios.
+- [x] Gerar estoques ficticios.
+- [x] Gerar historico ficticio.
+- [x] Criar usuario demo.
 
 #### Regra
 
@@ -1144,10 +1144,10 @@ Nenhum dado real da empresa deve aparecer na demonstracao publica.
 
 #### Checklist de conclusao
 
-- [ ] Criar e validar a organizacao Demo.
-- [ ] Validar dados ficticios em todas as telas.
-- [ ] Testar o usuario demo.
-- [ ] Auditar a demonstracao em busca de dados reais.
+- [x] Criar e validar a organizacao Demo.
+- [x] Validar dados ficticios em todas as telas.
+- [x] Testar o usuario demo.
+- [x] Auditar a demonstracao em busca de dados reais.
 
 ---
 

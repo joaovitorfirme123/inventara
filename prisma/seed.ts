@@ -23,6 +23,151 @@ const organizations = [
   },
 ] as const;
 
+const demoOrganization = {
+  id: "33333333-3333-4333-8333-333333333333",
+  name: "Inventara Demo",
+  user: {
+    id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+    name: "Marina Demo",
+    email: "demo@inventara.test",
+  },
+} as const;
+
+const demoProducts = [
+  {
+    plu: "DEMO-1001",
+    barcode: "7900000001001",
+    description: "Grão Aurora 1kg",
+    section: "Mercearia",
+    group: "Cereais",
+    subgroup: "Grãos",
+    lastInventory: "2026-08-25",
+    previousStock: "18",
+    currentStock: "24",
+  },
+  {
+    plu: "DEMO-1002",
+    barcode: "7900000001002",
+    description: "Café Nebulosa 500g",
+    section: "Mercearia",
+    group: "Bebidas quentes",
+    subgroup: "Cafés",
+    lastInventory: "2026-08-22",
+    previousStock: "11",
+    currentStock: "7",
+  },
+  {
+    plu: "DEMO-1003",
+    barcode: "7900000001003",
+    description: "Massa Orbit 500g",
+    section: "Mercearia",
+    group: "Massas",
+    subgroup: "Secas",
+    lastInventory: null,
+    previousStock: "30",
+    currentStock: "30",
+  },
+  {
+    plu: "DEMO-1004",
+    barcode: "7900000001004",
+    description: "Biscoito Prisma 300g",
+    section: "Mercearia",
+    group: "Lanches",
+    subgroup: "Biscoitos",
+    lastInventory: "2026-07-10",
+    previousStock: "6",
+    currentStock: "15",
+  },
+  {
+    plu: "DEMO-1005",
+    barcode: "7900000001005",
+    description: "Leite Lunar 1L",
+    section: "Frios",
+    group: "Laticínios",
+    subgroup: "Leites",
+    lastInventory: "2026-08-18",
+    previousStock: "20",
+    currentStock: "12",
+  },
+  {
+    plu: "DEMO-1006",
+    barcode: "7900000001006",
+    description: "Queijo Brisa 300g",
+    section: "Frios",
+    group: "Laticínios",
+    subgroup: "Queijos",
+    lastInventory: "2026-08-05",
+    previousStock: "9",
+    currentStock: "9",
+  },
+  {
+    plu: "DEMO-1007",
+    barcode: "7900000001007",
+    description: "Suco Solar 1L",
+    section: "Bebidas",
+    group: "Sucos",
+    subgroup: "Prontos",
+    lastInventory: null,
+    previousStock: "14",
+    currentStock: "22",
+  },
+  {
+    plu: "DEMO-1008",
+    barcode: "7900000001008",
+    description: "Água Estelar 500ml",
+    section: "Bebidas",
+    group: "Águas",
+    subgroup: "Sem gás",
+    lastInventory: "2026-07-01",
+    previousStock: "40",
+    currentStock: "28",
+  },
+  {
+    plu: "DEMO-1009",
+    barcode: "7900000001009",
+    description: "Limpador Cometa 500ml",
+    section: "Limpeza",
+    group: "Superfícies",
+    subgroup: "Multiuso",
+    lastInventory: "2026-08-26",
+    previousStock: "8",
+    currentStock: "16",
+  },
+  {
+    plu: "DEMO-1010",
+    barcode: "7900000001010",
+    description: "Sabão Atlas 1kg",
+    section: "Limpeza",
+    group: "Lavanderia",
+    subgroup: "Em pó",
+    lastInventory: "2026-06-15",
+    previousStock: "13",
+    currentStock: "5",
+  },
+  {
+    plu: "DEMO-1011",
+    barcode: "7900000001011",
+    description: "Papel Nuvem 2un",
+    section: "Casa",
+    group: "Descartáveis",
+    subgroup: "Papéis",
+    lastInventory: null,
+    previousStock: "17",
+    currentStock: "17",
+  },
+  {
+    plu: "DEMO-1012",
+    barcode: "7900000001012",
+    description: "Esponja Prisma 3un",
+    section: "Casa",
+    group: "Acessórios",
+    subgroup: "Cozinha",
+    lastInventory: "2026-08-12",
+    previousStock: "4",
+    currentStock: "10",
+  },
+] as const;
+
 const productNames = [
   "Arroz integral",
   "Feijão carioca",
@@ -67,6 +212,9 @@ async function seed() {
   }
 
   const password = await hashPassword(seedPassword);
+  const demoPassword = await hashPassword(
+    process.env.DEMO_USER_PASSWORD ?? seedPassword,
+  );
 
   for (const organization of organizations) {
     await prisma.organization.upsert({
@@ -155,7 +303,158 @@ async function seed() {
     },
   });
 
-  console.log("Test organizations, users, and products created.");
+  await prisma.organization.upsert({
+    where: { id: demoOrganization.id },
+    update: { name: demoOrganization.name },
+    create: {
+      id: demoOrganization.id,
+      name: demoOrganization.name,
+    },
+  });
+
+  await prisma.user.upsert({
+    where: { email: demoOrganization.user.email },
+    update: {
+      name: demoOrganization.user.name,
+      organizationId: demoOrganization.id,
+    },
+    create: {
+      ...demoOrganization.user,
+      organizationId: demoOrganization.id,
+    },
+  });
+
+  await prisma.account.upsert({
+    where: {
+      issuer_accountId: {
+        issuer: "local:credential",
+        accountId: demoOrganization.user.id,
+      },
+    },
+    update: { password: demoPassword },
+    create: {
+      issuer: "local:credential",
+      accountId: demoOrganization.user.id,
+      providerId: "credential",
+      userId: demoOrganization.user.id,
+      password: demoPassword,
+    },
+  });
+
+  const demoImports = [
+    {
+      id: "44444444-4444-4444-8444-444444444441",
+      filename: "demo-inventario-junho.csv",
+      importedAt: new Date("2026-06-30T12:00:00.000Z"),
+    },
+    {
+      id: "44444444-4444-4444-8444-444444444442",
+      filename: "demo-inventario-agosto.csv",
+      importedAt: new Date("2026-08-26T12:00:00.000Z"),
+    },
+  ] as const;
+
+  for (const [index, demoImport] of demoImports.entries()) {
+    await prisma.importRecord.upsert({
+      where: { id: demoImport.id },
+      update: {
+        filename: demoImport.filename,
+        importedAt: demoImport.importedAt,
+        totalRows: demoProducts.length,
+        insertedRows: index === 0 ? demoProducts.length : 0,
+        updatedRows: index === 0 ? 0 : demoProducts.length,
+        errorRows: 0,
+      },
+      create: {
+        id: demoImport.id,
+        organizationId: demoOrganization.id,
+        filename: demoImport.filename,
+        importedAt: demoImport.importedAt,
+        totalRows: demoProducts.length,
+        insertedRows: index === 0 ? demoProducts.length : 0,
+        updatedRows: index === 0 ? 0 : demoProducts.length,
+        errorRows: 0,
+      },
+    });
+  }
+
+  for (const demoProduct of demoProducts) {
+    const lastInventory = demoProduct.lastInventory
+      ? new Date(`${demoProduct.lastInventory}T00:00:00.000Z`)
+      : null;
+    const product = await prisma.product.upsert({
+      where: {
+        organizationId_plu: {
+          organizationId: demoOrganization.id,
+          plu: demoProduct.plu,
+        },
+      },
+      update: {
+        barcode: demoProduct.barcode,
+        description: demoProduct.description,
+        section: demoProduct.section,
+        group: demoProduct.group,
+        subgroup: demoProduct.subgroup,
+        lastInventory,
+        currentStock: demoProduct.currentStock,
+      },
+      create: {
+        organizationId: demoOrganization.id,
+        plu: demoProduct.plu,
+        barcode: demoProduct.barcode,
+        description: demoProduct.description,
+        section: demoProduct.section,
+        group: demoProduct.group,
+        subgroup: demoProduct.subgroup,
+        lastInventory,
+        currentStock: demoProduct.currentStock,
+      },
+    });
+
+    await prisma.stockHistory.upsert({
+      where: {
+        importId_productId: {
+          importId: demoImports[0].id,
+          productId: product.id,
+        },
+      },
+      update: {
+        organizationId: demoOrganization.id,
+        stock: demoProduct.previousStock,
+        recordedAt: demoImports[0].importedAt,
+      },
+      create: {
+        organizationId: demoOrganization.id,
+        productId: product.id,
+        importId: demoImports[0].id,
+        stock: demoProduct.previousStock,
+        recordedAt: demoImports[0].importedAt,
+      },
+    });
+
+    await prisma.stockHistory.upsert({
+      where: {
+        importId_productId: {
+          importId: demoImports[1].id,
+          productId: product.id,
+        },
+      },
+      update: {
+        organizationId: demoOrganization.id,
+        stock: demoProduct.currentStock,
+        recordedAt: demoImports[1].importedAt,
+      },
+      create: {
+        organizationId: demoOrganization.id,
+        productId: product.id,
+        importId: demoImports[1].id,
+        stock: demoProduct.currentStock,
+        recordedAt: demoImports[1].importedAt,
+      },
+    });
+  }
+
+  console.log("Test and demo organizations, users, products, and stock created.");
 }
 
 seed()

@@ -28,6 +28,7 @@ jobs:
       BETTER_AUTH_SECRET: ci-secret-that-is-only-used-by-github-actions
       BETTER_AUTH_URL: http://localhost:3000
       SEED_USER_PASSWORD: ci-local-password
+      DEMO_USER_PASSWORD: ci-demo-password
       AUTH_TEST_BASE_URL: http://localhost:3000
 
     steps:
@@ -65,6 +66,7 @@ jobs:
           npm run test:dashboard &&
           npm run test:stock &&
           npm run test:stock-page &&
+          npm run test:demo &&
           npm run test:product-details
 
       - name: Start production server
