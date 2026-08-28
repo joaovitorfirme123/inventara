@@ -1045,7 +1045,7 @@ Consolidar a posicao e a evolucao do estoque em uma tela dedicada.
 
 ### FASE 16 — Deploy
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1065,15 +1065,15 @@ Usuario
 - [x] Criar repositorio GitHub.
 - [x] Revisar `.gitignore`.
 - [x] Remover secrets.
-- [ ] Configurar variaveis na Vercel.
-- [ ] Configurar Neon de producao.
-- [ ] Executar migrations.
-- [ ] Fazer deploy.
-- [ ] Testar producao.
-- [ ] Testar upload.
-- [ ] Testar banco.
-- [ ] Testar autenticacao.
-- [ ] Testar isolamento entre organizacoes.
+- [x] Configurar variaveis na Vercel.
+- [x] Configurar Neon de producao.
+- [x] Executar migrations.
+- [x] Fazer deploy.
+- [x] Testar producao.
+- [x] Testar upload.
+- [x] Testar banco.
+- [x] Testar autenticacao.
+- [x] Testar isolamento entre organizacoes.
 
 #### Conceitos que devo aprender
 
@@ -1094,10 +1094,10 @@ Usuario
 #### Checklist de conclusao
 
 - [x] Revisar arquivos versionados e preparar CI/deploy.
-- [ ] Configurar ambiente de producao.
-- [ ] Executar migrations de producao.
-- [ ] Validar deploy.
-- [ ] Executar todos os testes de producao.
+- [x] Configurar ambiente de producao.
+- [x] Executar migrations de producao.
+- [x] Validar deploy.
+- [x] Executar todos os testes de producao.
 - [x] Confirmar que nao existem secrets ou dados reais publicados.
 
 ---
