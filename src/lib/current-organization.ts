@@ -1,6 +1,6 @@
 import "server-only";
-import { requireSessionContext } from "@/lib/session";
+import { requireOrganizationSessionContext } from "@/lib/session";
 
 export async function getCurrentOrganizationId() {
-  return (await requireSessionContext()).user.organizationId;
+  return (await requireOrganizationSessionContext()).user.organizationId;
 }

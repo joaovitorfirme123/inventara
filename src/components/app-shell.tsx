@@ -20,8 +20,9 @@ type AppShellProps = {
     id: string;
     name: string;
     email: string;
-    organizationId: string;
-    organizationName: string;
+    role: "PLATFORM_ADMIN" | "OWNER" | "MEMBER";
+    organizationId: string | null;
+    organizationName: string | null;
   } | null;
 };
 
@@ -34,11 +35,15 @@ export function AppShell({ children, user }: AppShellProps) {
   }
 
   const initials = user?.organizationName
-    .split(/\s+/)
-    .slice(0, 2)
-    .map((part) => part[0])
-    .join("")
-    .toUpperCase() ?? "OR";
+    ? user.organizationName
+        .split(/\s+/)
+        .slice(0, 2)
+        .map((part) => part[0])
+        .join("")
+        .toUpperCase()
+    : user?.role === "PLATFORM_ADMIN"
+      ? "AD"
+      : "OR";
 
   async function signOut() {
     setIsSigningOut(true);
@@ -81,6 +86,16 @@ export function AppShell({ children, user }: AppShellProps) {
               </Link>
             );
           })}
+          {user?.role === "PLATFORM_ADMIN" && (
+            <Link
+              className={pathname.startsWith("/admin") ? "nav-link active" : "nav-link"}
+              href="/admin/organizacoes"
+              aria-current={pathname.startsWith("/admin") ? "page" : undefined}
+            >
+              <span>07</span>
+              Administração
+            </Link>
+          )}
         </nav>
 
         <div className="sidebar-footer">
@@ -98,7 +113,7 @@ export function AppShell({ children, user }: AppShellProps) {
           <div className="organization-chip">
             <span>{initials}</span>
             <div>
-              <strong>{user?.organizationName ?? "Organização"}</strong>
+            <strong>{user?.organizationName ?? "Plataforma"}</strong>
               <small>{user?.name ?? "Sessão local"}</small>
             </div>
             <button disabled={isSigningOut} onClick={signOut} type="button">

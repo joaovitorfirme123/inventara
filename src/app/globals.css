@@ -413,6 +413,194 @@ input {
   line-height: 1.7;
 }
 
+.admin-grid {
+  display: grid;
+  grid-template-columns: minmax(260px, 0.72fr) minmax(0, 1.28fr);
+  gap: 14px;
+}
+
+.admin-form-panel,
+.organization-list {
+  min-width: 0;
+}
+
+.panel-intro {
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+.admin-form {
+  display: grid;
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.admin-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.admin-form label > span {
+  color: var(--muted);
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.admin-form input {
+  min-height: 42px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: var(--canvas);
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  outline: none;
+  font-size: 0.76rem;
+}
+
+.admin-form input:focus {
+  border-color: var(--forest);
+  box-shadow: 0 0 0 3px rgba(23, 62, 50, 0.11);
+}
+
+.admin-form > button,
+.secondary-action {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  color: var(--paper);
+  background: var(--forest);
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.admin-form > button:disabled {
+  cursor: wait;
+  opacity: 0.62;
+}
+
+.organization-cards {
+  display: grid;
+  gap: 10px;
+  margin-top: 24px;
+}
+
+.organization-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 17px 18px;
+  background: #f3f2eb;
+  border: 1px solid var(--line);
+}
+
+.organization-card strong,
+.organization-card small {
+  display: block;
+}
+
+.organization-card strong {
+  font-size: 0.84rem;
+}
+
+.organization-card small {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.organization-card dl {
+  display: flex;
+  gap: 20px;
+}
+
+.organization-card dl div {
+  display: grid;
+  gap: 3px;
+  min-width: 54px;
+}
+
+.organization-card dt {
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.56rem;
+  text-transform: uppercase;
+}
+
+.organization-card dd {
+  font-family: var(--font-geist), monospace;
+  font-size: 0.82rem;
+}
+
+.settings-links {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 14px;
+}
+
+.settings-links h2 {
+  margin-top: 5px;
+  font-size: 1.1rem;
+}
+
+.settings-links p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.76rem;
+}
+
+.user-card-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.role-badge,
+.user-status {
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.58rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.role-badge.owner {
+  color: #8d4c25;
+}
+
+.role-badge.member {
+  color: #39705b;
+}
+
+.role-badge.platform_admin {
+  color: #604b8a;
+}
+
+.quiet-danger-button {
+  padding: 5px 8px;
+  color: #9c382b;
+  background: transparent;
+  border: 1px solid #d7a398;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.61rem;
+  font-weight: 750;
+}
+
+.quiet-danger-button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
 .empty-section {
   display: grid;
   min-height: 260px;
@@ -2509,6 +2697,10 @@ input {
     grid-template-columns: 1fr;
   }
 
+  .admin-grid {
+    grid-template-columns: 1fr;
+  }
+
   .priority-chart {
     grid-column: auto;
     grid-template-columns: 1fr 180px;
@@ -2632,6 +2824,30 @@ input {
 
   .clear-data-form button {
     width: 100%;
+  }
+
+  .settings-links,
+  .organization-card {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .settings-links .secondary-action {
+    width: 100%;
+  }
+
+  .organization-card {
+    gap: 14px;
+  }
+
+  .organization-card dl {
+    width: 100%;
+    justify-content: space-between;
+  }
+
+  .user-card-actions {
+    width: 100%;
+    justify-content: space-between;
   }
 
   .list-summary {

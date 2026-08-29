@@ -14,6 +14,7 @@
     "db:status": "prisma migrate status",
     "db:check": "tsx scripts/check-database.ts",
     "db:seed": "tsx prisma/seed.ts",
+    "db:bootstrap-admin": "tsx scripts/bootstrap-platform-admin.ts",
     "test:tenancy": "tsx scripts/test-tenancy.ts",
     "test:products": "tsx scripts/test-products.ts",
     "test:csv": "tsx scripts/test-csv-import.ts",
@@ -27,7 +28,9 @@
     "test:security": "tsx scripts/test-import-security.ts",
     "test:stock-page": "tsx scripts/test-stock-page.ts",
     "test:demo": "tsx scripts/test-demo-account.ts",
-    "test:clear-data": "tsx scripts/test-clear-organization-data.ts"
+    "test:clear-data": "tsx scripts/test-clear-organization-data.ts",
+    "test:organization-admin": "tsx scripts/test-organization-admin.ts",
+    "test:admin-http": "tsx scripts/test-admin-http.ts"
   },
   "dependencies": {
     "@better-auth/prisma-adapter": "^1.7.2",

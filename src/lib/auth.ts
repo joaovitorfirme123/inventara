@@ -16,6 +16,16 @@ export const auth = betterAuth({
     additionalFields: {
       organizationId: {
         type: "string",
+        required: false,
+        input: false,
+      },
+      role: {
+        type: "string",
+        required: true,
+        input: false,
+      },
+      isActive: {
+        type: "boolean",
         required: true,
         input: false,
       },

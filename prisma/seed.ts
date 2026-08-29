@@ -230,11 +230,14 @@ async function seed() {
       where: { email: organization.user.email },
       update: {
         name: organization.user.name,
+        role: "OWNER",
+        isActive: true,
         organizationId: organization.id,
       },
       create: {
         ...organization.user,
         organizationId: organization.id,
+        role: "OWNER",
       },
     });
 
@@ -314,14 +317,17 @@ async function seed() {
 
   await prisma.user.upsert({
     where: { email: demoOrganization.user.email },
-    update: {
-      name: demoOrganization.user.name,
-      organizationId: demoOrganization.id,
-    },
-    create: {
-      ...demoOrganization.user,
-      organizationId: demoOrganization.id,
-    },
+      update: {
+        name: demoOrganization.user.name,
+        role: "OWNER",
+        isActive: true,
+        organizationId: demoOrganization.id,
+      },
+      create: {
+        ...demoOrganization.user,
+        organizationId: demoOrganization.id,
+        role: "OWNER",
+      },
   });
 
   await prisma.account.upsert({

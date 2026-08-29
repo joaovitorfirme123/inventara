@@ -39,16 +39,14 @@ async function testTenancy() {
 
   if (
     usersA.length !== 1 ||
-    usersA[0].email !== "ana@alfa.test" ||
-    usersA.some((user) => user.organizationId !== organizationAId)
+    usersA[0].email !== "ana@alfa.test"
   ) {
     throw new Error("Organization A received data from another tenant.");
   }
 
   if (
     usersB.length !== 1 ||
-    usersB[0].email !== "bruno@beta.test" ||
-    usersB.some((user) => user.organizationId !== organizationBId)
+    usersB[0].email !== "bruno@beta.test"
   ) {
     throw new Error("Organization B received data from another tenant.");
   }

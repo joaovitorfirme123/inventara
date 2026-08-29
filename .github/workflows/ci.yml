@@ -29,6 +29,9 @@ jobs:
       BETTER_AUTH_URL: http://localhost:3000
       SEED_USER_PASSWORD: ci-local-password
       DEMO_USER_PASSWORD: ci-demo-password
+      PLATFORM_ADMIN_EMAIL: platform-admin@test.invalid
+      PLATFORM_ADMIN_NAME: CI Platform Admin
+      PLATFORM_ADMIN_PASSWORD: ci-platform-password
       AUTH_TEST_BASE_URL: http://localhost:3000
       AUTH_RATE_LIMIT_ENABLED: "false"
 
@@ -51,6 +54,9 @@ jobs:
       - name: Seed test accounts
         run: npm run db:seed
 
+      - name: Bootstrap platform admin
+        run: npm run db:bootstrap-admin
+
       - name: Lint
         run: npm run lint
 
@@ -67,9 +73,10 @@ jobs:
           npm run test:dashboard &&
           npm run test:stock &&
           npm run test:stock-page &&
-          npm run test:demo &&
-          npm run test:clear-data &&
-          npm run test:product-details
+           npm run test:demo &&
+           npm run test:clear-data &&
+           npm run test:organization-admin &&
+           npm run test:product-details
 
       - name: Start production server
         run: npm run start > /tmp/inventara-next.log 2>&1 &
@@ -87,6 +94,7 @@ jobs:
 
       - name: Run HTTP tests
         run: |
-          npm run test:authentication
-          npm run test:isolation
-          npm run test:security
+           npm run test:authentication
+           npm run test:isolation
+           npm run test:security
+           npm run test:admin-http

@@ -25,7 +25,7 @@ export async function POST(request: Request) {
   try {
     const session = await getSessionContext(request.headers);
 
-    if (!session) {
+    if (!session || !session.user.organizationId) {
       return Response.json({ error: "Autenticação necessária." }, { status: 401 });
     }
 

@@ -58,6 +58,7 @@ sendo a origem dos dados, e o Inventara organiza a decisão operacional.
 - Conta demonstrativa isolada com dados sintéticos.
 - Limpeza segura do catálogo para substituir a base de uma organização.
 - Autenticação por e-mail e senha com sessões persistidas.
+- Administração de organizações e usuários com papéis `platform_admin`, `owner` e `member`.
 - Isolamento por organização em páginas, APIs, produtos, importações e histórico.
 
 ## Rotas
@@ -71,6 +72,8 @@ sendo a origem dos dados, e o Inventara organiza a decisão operacional.
 | `/importacoes` | Histórico dos arquivos importados |
 | `/estoque` | Posição atual e evolução do estoque |
 | `/configuracoes` | Informações da organização e da sessão |
+| `/configuracoes/usuarios` | Gestão de usuários da organização pelo owner |
+| `/admin/organizacoes` | Criação de organizações pelo platform admin |
 | `/login` | Autenticação |
 | `/api/importacoes` | Upload protegido de CSV |
 
@@ -108,7 +111,7 @@ fornecido pelo navegador.
 O schema contém as seguintes entidades principais:
 
 - `Organization`: tenant da aplicação.
-- `User`: usuário vinculado a uma organização.
+- `User`: usuário, papel, status de acesso e vínculo opcional com uma organização.
 - `Account` e `Session`: credenciais e sessões do Better Auth.
 - `Product`: catálogo e estoque atual.
 - `ImportRecord`: execução de cada importação.
@@ -205,6 +208,10 @@ docker compose down
 | `DEMO_USER_PASSWORD` | Senha opcional da conta sintética Demo |
 
 Nunca versione `.env` ou coloque credenciais em variáveis `NEXT_PUBLIC_*`.
+
+Para criar o administrador global em um ambiente controlado, use o comando
+`npm run db:bootstrap-admin` com `PLATFORM_ADMIN_EMAIL`,
+`PLATFORM_ADMIN_NAME` e `PLATFORM_ADMIN_PASSWORD` definidos apenas no terminal.
 
 ## Testes e qualidade
 

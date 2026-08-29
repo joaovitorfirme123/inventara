@@ -38,18 +38,37 @@ o Prisma usa `DATABASE_URL` como fallback.
 `npm run db:seed`. Não configure essa variável na produção e não execute o seed
 com dados reais sem uma decisão explícita.
 
+## Bootstrap do administrador da plataforma
+
+O cadastro público permanece desativado. Para criar o primeiro administrador
+global, carregue as variáveis somente no terminal local e execute o comando uma
+vez apontando para o banco do ambiente desejado:
+
+```bash
+PLATFORM_ADMIN_EMAIL="admin@example.com" \
+PLATFORM_ADMIN_NAME="Platform Admin" \
+PLATFORM_ADMIN_PASSWORD="uma-senha-segura" \
+npm run db:bootstrap-admin
+```
+
+O comando cria um usuário sem organização com papel `PLATFORM_ADMIN`. Esse
+usuário acessa `/admin/organizacoes` e pode criar uma organização junto com seu
+primeiro `OWNER`. Não coloque as variáveis de bootstrap no GitHub Actions ou no
+ambiente de runtime da Vercel.
+
 Para Preview, use um banco Neon separado ou uma branch isolada. Não reutilize o
 banco de produção em previews.
 
 ## Primeiro deploy
 
 1. Importe o repositório na Vercel.
-2. Cadastre as três variáveis de produção.
+2. Cadastre as variáveis de produção.
 3. Faça o deploy pela branch `main`.
 4. Confirme nos logs que `npm run db:deploy` terminou antes do build.
 5. Acesse a URL pública e confirme que `/login` responde.
 6. Crie ou provisione uma conta de teste fora do banco de produção real.
-7. Valide autenticação, upload CSV, leitura do banco e isolamento entre organizações.
+7. Execute o bootstrap do `PLATFORM_ADMIN` se a administração da plataforma for necessária.
+8. Valide autenticação, upload CSV, leitura do banco e isolamento entre organizações.
 
 ## Validação local do build de produção
 

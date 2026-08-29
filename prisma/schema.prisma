@@ -7,6 +7,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum UserRole {
+  PLATFORM_ADMIN
+  OWNER
+  MEMBER
+}
+
 model Organization {
   id           String         @id @default(uuid()) @db.Uuid
   name         String
@@ -26,10 +32,12 @@ model User {
   email          String       @unique
   emailVerified  Boolean      @default(false) @map("email_verified")
   image          String?
-  organizationId String       @map("organization_id") @db.Uuid
+  role           UserRole     @default(MEMBER)
+  isActive       Boolean      @default(true) @map("is_active")
+  organizationId String?      @map("organization_id") @db.Uuid
   createdAt      DateTime     @default(now()) @map("created_at")
   updatedAt      DateTime     @updatedAt @map("updated_at")
-  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   sessions       Session[]
   accounts       Account[]
 
