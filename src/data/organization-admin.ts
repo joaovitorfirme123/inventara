@@ -37,6 +37,44 @@ export async function listOrganizations() {
   }));
 }
 
+export async function getOrganizationAdminDetails(organizationId: string) {
+  const organization = await prisma.organization.findUnique({
+    where: { id: organizationId },
+    select: {
+      id: true,
+      name: true,
+      createdAt: true,
+      _count: { select: { users: true, products: true, imports: true } },
+      users: {
+        orderBy: [{ isActive: "desc" }, { name: "asc" }],
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+        },
+      },
+    },
+  });
+
+  if (!organization) return null;
+
+  return {
+    id: organization.id,
+    name: organization.name,
+    createdAt: organization.createdAt.toLocaleDateString("pt-BR"),
+    usersCount: organization._count.users,
+    productsCount: organization._count.products,
+    importsCount: organization._count.imports,
+    users: organization.users.map((user) => ({
+      ...user,
+      createdAt: user.createdAt.toLocaleDateString("pt-BR"),
+    })),
+  };
+}
+
 export async function createOrganizationWithOwner(input: CreateOrganizationInput) {
   const password = await hashPassword(input.ownerPassword);
 
@@ -115,6 +153,51 @@ export async function createOrganizationUser(input: CreateUserInput) {
     });
 
     return { id: user.id, name: user.name, email: user.email };
+  }, transactionOptions);
+}
+
+export async function deleteOrganization({
+  organizationId,
+  confirmation,
+}: {
+  organizationId: string;
+  confirmation: string;
+}) {
+  return prisma.$transaction(async (transaction) => {
+    const organization = await transaction.organization.findUnique({
+      where: { id: organizationId },
+      select: { id: true, name: true },
+    });
+
+    if (!organization) throw new Error("ORGANIZATION_NOT_FOUND");
+    if (confirmation !== organization.name) throw new Error("CONFIRMATION_MISMATCH");
+
+    const users = await transaction.user.findMany({
+      where: { organizationId: organization.id },
+      select: { id: true },
+    });
+    const userIds = users.map(({ id }) => id);
+    const stockHistory = await transaction.stockHistory.deleteMany({
+      where: { organizationId: organization.id },
+    });
+    const imports = await transaction.importRecord.deleteMany({
+      where: { organizationId: organization.id },
+    });
+    const products = await transaction.product.deleteMany({
+      where: { organizationId: organization.id },
+    });
+    await transaction.session.deleteMany({ where: { userId: { in: userIds } } });
+    await transaction.account.deleteMany({ where: { userId: { in: userIds } } });
+    await transaction.user.deleteMany({ where: { id: { in: userIds } } });
+    await transaction.organization.delete({ where: { id: organization.id } });
+
+    return {
+      organizationName: organization.name,
+      products: products.count,
+      imports: imports.count,
+      stockHistory: stockHistory.count,
+      users: users.length,
+    };
   }, transactionOptions);
 }
 

@@ -45,6 +45,13 @@ async function testAdminHttp() {
       throw new Error("Platform admin could not access organization administration.");
     }
 
+    const organizationPage = await fetch(`${baseUrl}/admin/organizacoes/11111111-1111-4111-8111-111111111111`, {
+      headers: { cookie: platformCookie },
+    });
+    if (organizationPage.status !== 200 || !(await organizationPage.text()).includes("Usuários e permissões")) {
+      throw new Error("Platform admin could not inspect organization users and permissions.");
+    }
+
     const ownerCookie = await login("ana@alfa.test", ownerPassword);
     const ownerAdminPage = await fetch(`${baseUrl}/admin/organizacoes`, {
       headers: { cookie: ownerCookie },
@@ -52,6 +59,14 @@ async function testAdminHttp() {
     });
     if (ownerAdminPage.status !== 307) {
       throw new Error(`Tenant owner should not access platform admin: ${ownerAdminPage.status}`);
+    }
+
+    const ownerOrganizationPage = await fetch(`${baseUrl}/admin/organizacoes/11111111-1111-4111-8111-111111111111`, {
+      headers: { cookie: ownerCookie },
+      redirect: "manual",
+    });
+    if (ownerOrganizationPage.status !== 307) {
+      throw new Error(`Tenant owner should not inspect platform organizations: ${ownerOrganizationPage.status}`);
     }
 
     const ownerUsersPage = await fetch(`${baseUrl}/configuracoes/usuarios`, { headers: { cookie: ownerCookie } });

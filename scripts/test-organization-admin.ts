@@ -1,6 +1,12 @@
 import "dotenv/config";
 
-import { createOrganizationUser, createOrganizationWithOwner, deactivateOrganizationUser } from "../src/data/organization-admin";
+import {
+  createOrganizationUser,
+  createOrganizationWithOwner,
+  deactivateOrganizationUser,
+  deleteOrganization,
+  getOrganizationAdminDetails,
+} from "../src/data/organization-admin";
 import { listUsersByOrganization } from "../src/data/users";
 import { prisma } from "../src/lib/prisma";
 
@@ -78,6 +84,27 @@ async function testOrganizationAdmin() {
     });
     if (deactivated?.isActive !== false) {
       throw new Error("Member was not deactivated.");
+    }
+
+    const details = await getOrganizationAdminDetails(organizationA.organizationId);
+    if (!details || details.users.length !== 2 || details.users[0].role !== "OWNER") {
+      throw new Error("Organization details did not expose users and roles correctly.");
+    }
+
+    try {
+      await deleteOrganization({ organizationId: organizationB.organizationId, confirmation: "wrong name" });
+    } catch (error) {
+      if (!(error instanceof Error) || error.message !== "CONFIRMATION_MISMATCH") throw error;
+    }
+    if (!(await prisma.organization.findUnique({ where: { id: organizationB.organizationId } }))) {
+      throw new Error("Organization was deleted with an invalid confirmation.");
+    }
+    await deleteOrganization({ organizationId: organizationB.organizationId, confirmation: "Admin Test B" });
+    if (await prisma.organization.findUnique({ where: { id: organizationB.organizationId } })) {
+      throw new Error("Organization was not deleted.");
+    }
+    if (await prisma.user.findUnique({ where: { email: emails[2] } })) {
+      throw new Error("Organization users were not deleted with the organization.");
     }
 
     try {

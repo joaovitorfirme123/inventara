@@ -521,6 +521,82 @@ input {
   gap: 20px;
 }
 
+.organization-card-actions {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.compact-action {
+  min-height: 34px;
+  padding: 0 11px;
+  font-size: 0.62rem;
+}
+
+.delete-organization {
+  position: relative;
+  color: #9c382b;
+  font-size: 0.62rem;
+}
+
+.delete-organization summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.delete-organization summary::-webkit-details-marker {
+  display: none;
+}
+
+.delete-organization summary::before {
+  margin-right: 5px;
+  content: "!";
+}
+
+.delete-organization-form {
+  position: absolute;
+  z-index: 2;
+  right: 0;
+  display: grid;
+  width: min(260px, 70vw);
+  gap: 8px;
+  margin-top: 8px;
+  padding: 14px;
+  background: #fff8f4;
+  border: 1px solid #d7a398;
+  box-shadow: 0 8px 24px rgba(81, 38, 29, 0.12);
+}
+
+.delete-organization-form label {
+  display: grid;
+  gap: 5px;
+}
+
+.delete-organization-form label span {
+  color: #813c2b;
+  font-size: 0.61rem;
+  font-weight: 750;
+}
+
+.delete-organization-form input {
+  min-height: 34px;
+  padding: 0 8px;
+  background: var(--paper);
+  border: 1px solid #d7a398;
+  outline: none;
+  font-size: 0.66rem;
+}
+
+.delete-organization-form button {
+  min-height: 34px;
+  color: #fff8f4;
+  background: #9c382b;
+  border: 0;
+  cursor: pointer;
+  font-size: 0.62rem;
+  font-weight: 750;
+}
+
 .organization-card dl div {
   display: grid;
   gap: 3px;
@@ -562,6 +638,119 @@ input {
   display: flex;
   align-items: center;
   gap: 12px;
+}
+
+.detail-page-header {
+  display: grid;
+  max-width: 780px;
+  gap: 18px;
+  margin-bottom: 30px;
+}
+
+.detail-page-header h1 {
+  margin-top: 8px;
+  font-size: clamp(2rem, 5vw, 3.7rem);
+  letter-spacing: -0.065em;
+  line-height: 0.96;
+}
+
+.detail-page-header p {
+  max-width: 620px;
+  margin-top: 16px;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.7;
+}
+
+.back-link {
+  display: block;
+  margin-bottom: 28px;
+  color: var(--forest);
+  font-size: 0.69rem;
+  font-weight: 750;
+}
+
+.admin-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.admin-summary-card {
+  display: grid;
+  gap: 10px;
+  padding: 22px;
+}
+
+.admin-summary-card span {
+  color: var(--muted);
+  font-size: 0.65rem;
+  font-weight: 750;
+  text-transform: uppercase;
+}
+
+.admin-summary-card strong {
+  font-family: var(--font-geist), monospace;
+  font-size: 2rem;
+  font-weight: 500;
+}
+
+.permission-user-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 24px;
+}
+
+.permission-user-card {
+  padding: 18px;
+  background: #f3f2eb;
+  border: 1px solid var(--line);
+}
+
+.permission-user-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.permission-user-heading strong,
+.permission-user-heading small {
+  display: block;
+}
+
+.permission-user-heading strong {
+  font-size: 0.86rem;
+}
+
+.permission-user-heading small {
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.user-status.active {
+  color: #39705b;
+}
+
+.user-status.inactive {
+  color: #9c382b;
+}
+
+.permission-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 16px;
+}
+
+.permission-list span {
+  padding: 7px 9px;
+  color: #53645c;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  font-size: 0.63rem;
 }
 
 .role-badge,
@@ -2701,6 +2890,10 @@ input {
     grid-template-columns: 1fr;
   }
 
+  .admin-summary-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+
   .priority-chart {
     grid-column: auto;
     grid-template-columns: 1fr 180px;
@@ -2843,6 +3036,28 @@ input {
   .organization-card dl {
     width: 100%;
     justify-content: space-between;
+  }
+
+  .organization-card-actions {
+    width: 100%;
+    justify-items: stretch;
+  }
+
+  .compact-action {
+    width: 100%;
+  }
+
+  .delete-organization {
+    justify-self: end;
+  }
+
+  .permission-user-heading {
+    display: grid;
+  }
+
+  .permission-user-heading .user-card-actions {
+    width: auto;
+    justify-content: flex-start;
   }
 
   .user-card-actions {

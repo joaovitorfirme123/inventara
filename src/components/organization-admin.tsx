@@ -1,7 +1,11 @@
 "use client";
 
 import { useActionState } from "react";
-import { createOrganizationAction } from "@/app/admin/organizacoes/actions";
+import Link from "next/link";
+import {
+  createOrganizationAction,
+  deleteOrganizationAction,
+} from "@/app/admin/organizacoes/actions";
 import type { OrganizationAdminState } from "@/app/admin/organizacoes/types";
 
 type OrganizationSummary = {
@@ -16,6 +20,7 @@ const initialState: OrganizationAdminState = { status: "idle", message: "" };
 
 export function OrganizationAdmin({ organizations }: { organizations: OrganizationSummary[] }) {
   const [state, formAction, isPending] = useActionState(createOrganizationAction, initialState);
+  const [deleteState, deleteAction, isDeleting] = useActionState(deleteOrganizationAction, initialState);
 
   return (
     <div className="admin-grid">
@@ -66,6 +71,11 @@ export function OrganizationAdmin({ organizations }: { organizations: Organizati
           </div>
           <span className="status-pill">{organizations.length} tenants</span>
         </div>
+        {deleteState.message && (
+          <p className={`action-feedback ${deleteState.status}`} role={deleteState.status === "error" ? "alert" : "status"}>
+            {deleteState.message}
+          </p>
+        )}
         {organizations.length > 0 ? (
           <div className="organization-cards">
             {organizations.map((organization) => (
@@ -78,6 +88,22 @@ export function OrganizationAdmin({ organizations }: { organizations: Organizati
                   <div><dt>Usuários</dt><dd>{organization.users}</dd></div>
                   <div><dt>Produtos</dt><dd>{organization.products}</dd></div>
                 </dl>
+                <div className="organization-card-actions">
+                  <Link className="secondary-action compact-action" href={`/admin/organizacoes/${organization.id}`}>
+                    Abrir organização
+                  </Link>
+                  <details className="delete-organization">
+                    <summary>Apagar</summary>
+                    <form action={deleteAction} className="delete-organization-form">
+                      <input name="organizationId" type="hidden" value={organization.id} />
+                      <label>
+                        <span>Digite o nome para confirmar</span>
+                        <input autoComplete="off" name="confirmation" required type="text" />
+                      </label>
+                      <button disabled={isDeleting} type="submit">{isDeleting ? "Apagando..." : "Confirmar exclusão"}</button>
+                    </form>
+                  </details>
+                </div>
               </article>
             ))}
           </div>

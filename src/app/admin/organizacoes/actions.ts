@@ -1,7 +1,7 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { createOrganizationWithOwner } from "@/data/organization-admin";
+import { createOrganizationWithOwner, deleteOrganization } from "@/data/organization-admin";
 import { requirePlatformAdminContext } from "@/lib/session";
 import type { OrganizationAdminState } from "./types";
 
@@ -52,5 +52,33 @@ export async function createOrganizationAction(
     }
 
     return { status: "error", message: "Não foi possível criar a organização." };
+  }
+}
+
+export async function deleteOrganizationAction(
+  _previousState: OrganizationAdminState,
+  formData: FormData,
+): Promise<OrganizationAdminState> {
+  await requirePlatformAdminContext();
+  const organizationId = field(formData, "organizationId");
+  const confirmation = field(formData, "confirmation");
+
+  if (!organizationId || !confirmation) {
+    return { status: "error", message: "Informe o nome da organização para confirmar a exclusão." };
+  }
+
+  try {
+    const organization = await deleteOrganization({ organizationId, confirmation });
+    revalidatePath("/admin/organizacoes");
+    return { status: "success", message: `Organização "${organization.organizationName}" excluída com todos os seus dados.` };
+  } catch (error) {
+    console.error("Failed to delete organization", { organizationId, error });
+    if (error instanceof Error && error.message === "CONFIRMATION_MISMATCH") {
+      return { status: "error", message: "O nome digitado não corresponde à organização." };
+    }
+    if (error instanceof Error && error.message === "ORGANIZATION_NOT_FOUND") {
+      return { status: "error", message: "Organização não encontrada." };
+    }
+    return { status: "error", message: "Não foi possível excluir a organização." };
   }
 }
