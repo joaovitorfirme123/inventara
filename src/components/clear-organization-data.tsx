@@ -1,8 +1,8 @@
 "use client";
 
 import { useActionState } from "react";
-import type { ClearOrganizationState } from "@/app/configuracoes/actions";
 import { clearCurrentOrganizationData } from "@/app/configuracoes/actions";
+import type { ClearOrganizationState } from "@/app/configuracoes/types";
 
 const numberFormatter = new Intl.NumberFormat("pt-BR");
 const initialClearOrganizationState: ClearOrganizationState = {

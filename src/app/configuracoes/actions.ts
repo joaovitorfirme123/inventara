@@ -3,16 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { clearOrganizationData } from "@/data/organization-data";
 import { getOptionalSessionContext } from "@/lib/session";
-
-export type ClearOrganizationState = {
-  status: "idle" | "success" | "error";
-  message: string;
-  counts: {
-    products: number;
-    imports: number;
-    stockHistory: number;
-  } | null;
-};
+import type { ClearOrganizationState } from "@/app/configuracoes/types";
 
 export async function clearCurrentOrganizationData(
   _previousState: ClearOrganizationState,
