@@ -1269,7 +1269,7 @@ seus testes e criterios validados antes de ser marcada como concluida.
 
 ### FASE 19 — Administracao da plataforma e organizacoes
 
-**Status: NAO INICIADA**
+**Status: CONCLUIDA**
 
 #### Objetivo
 
@@ -1291,17 +1291,17 @@ sem misturar permissoes globais da plataforma com dados de cada tenant.
 
 #### Tarefas
 
-- [ ] Modelar papeis globais e papeis por organizacao.
-- [ ] Criar o usuario inicial `platform_admin` por seed ou bootstrap protegido.
-- [ ] Criar organizacao junto com seu primeiro usuario `owner` em uma transacao.
-- [ ] Criar tela administrativa de listagem e criacao de organizacoes.
-- [ ] Criar tela de usuarios da organizacao atual.
-- [ ] Permitir criar e desativar usuarios da propria organizacao.
-- [ ] Impedir que `owner` ou `member` criem organizacoes.
-- [ ] Proteger paginas, Server Actions e APIs no servidor.
-- [ ] Impedir elevacao de privilegio pelo cliente.
-- [ ] Registrar alteracoes administrativas relevantes.
-- [ ] Garantir isolamento entre organizacoes durante todo o fluxo.
+- [x] Modelar papeis globais e papeis por organizacao.
+- [x] Criar o usuario inicial `platform_admin` por seed ou bootstrap protegido.
+- [x] Criar organizacao junto com seu primeiro usuario `owner` em uma transacao.
+- [x] Criar tela administrativa de listagem e criacao de organizacoes.
+- [x] Criar tela de usuarios da organizacao atual.
+- [x] Permitir criar e desativar usuarios da propria organizacao.
+- [x] Impedir que `owner` ou `member` criem organizacoes.
+- [x] Proteger paginas, Server Actions e APIs no servidor.
+- [x] Impedir elevacao de privilegio pelo cliente.
+- [x] Registrar alteracoes administrativas relevantes.
+- [x] Garantir isolamento entre organizacoes durante todo o fluxo.
 
 #### Conceitos que devo aprender
 
@@ -1324,13 +1324,13 @@ sem misturar permissoes globais da plataforma com dados de cada tenant.
 
 #### Checklist de conclusao
 
-- [ ] Testar criacao de organizacao e primeiro owner.
-- [ ] Testar criacao e desativacao de usuario pelo owner.
-- [ ] Testar acesso de platform_admin, owner e member.
-- [ ] Testar tentativa de acesso cruzado entre organizacoes.
-- [ ] Testar tentativa de elevacao de privilegio.
-- [ ] Testar rollback quando a criacao falhar.
-- [ ] Validar desktop e mobile.
+- [x] Testar criacao de organizacao e primeiro owner.
+- [x] Testar criacao e desativacao de usuario pelo owner.
+- [x] Testar acesso de platform_admin, owner e member.
+- [x] Testar tentativa de acesso cruzado entre organizacoes.
+- [x] Testar tentativa de elevacao de privilegio.
+- [x] Testar rollback quando a criacao falhar.
+- [x] Validar desktop e mobile.
 
 ---
 
@@ -1500,13 +1500,13 @@ Dashboard.
 
 #### Objetivo
 
-Permitir que uma organizacao administre seus usuarios com diferentes niveis de
-acesso.
+Aprofundar a autorizacao por operacao e adicionar convites para equipes, sobre
+a base de papeis criada na Fase 19.
 
 #### Tarefas
 
-- [ ] Criar perfis e permissoes.
-- [ ] Criar papel de administrador da organizacao.
+- [ ] Expandir perfis e permissoes por operacao.
+- [ ] Criar matriz de permissao da organizacao.
 - [ ] Permitir convite de funcionarios.
 - [ ] Restringir telas e operacoes conforme a permissao.
 - [ ] Permitir revogar convite e acesso.
