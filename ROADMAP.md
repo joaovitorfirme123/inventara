@@ -1267,7 +1267,74 @@ As fases da Versao 2.0 devem ser implementadas uma por vez, na ordem definida,
 apos autorizacao explicita para iniciar a proxima fase. Cada fase precisa ter
 seus testes e criterios validados antes de ser marcada como concluida.
 
-### FASE 19 — Planejamento de inventarios
+### FASE 19 — Administracao da plataforma e organizacoes
+
+**Status: NAO INICIADA**
+
+#### Objetivo
+
+Criar o onboarding controlado de organizacoes e a administracao dos usuarios
+sem misturar permissoes globais da plataforma com dados de cada tenant.
+
+#### Papeis
+
+- `platform_admin`: administra a plataforma e cria organizacoes.
+- `owner`: administra usuarios da propria organizacao.
+- `member`: utiliza os modulos operacionais da propria organizacao.
+
+#### Rotas
+
+- `/admin/organizacoes`: acesso do `platform_admin` para listar e criar
+  organizacoes.
+- `/configuracoes/usuarios`: acesso do `owner` para gerenciar usuarios da
+  propria organizacao.
+
+#### Tarefas
+
+- [ ] Modelar papeis globais e papeis por organizacao.
+- [ ] Criar o usuario inicial `platform_admin` por seed ou bootstrap protegido.
+- [ ] Criar organizacao junto com seu primeiro usuario `owner` em uma transacao.
+- [ ] Criar tela administrativa de listagem e criacao de organizacoes.
+- [ ] Criar tela de usuarios da organizacao atual.
+- [ ] Permitir criar e desativar usuarios da propria organizacao.
+- [ ] Impedir que `owner` ou `member` criem organizacoes.
+- [ ] Proteger paginas, Server Actions e APIs no servidor.
+- [ ] Impedir elevacao de privilegio pelo cliente.
+- [ ] Registrar alteracoes administrativas relevantes.
+- [ ] Garantir isolamento entre organizacoes durante todo o fluxo.
+
+#### Conceitos que devo aprender
+
+- RBAC e menor privilegio;
+- onboarding multi-tenant;
+- bootstrap de administrador;
+- transacoes de provisionamento;
+- autorizacao server-side;
+- ciclo de vida de usuarios.
+
+#### Criterios para considerar a fase concluida
+
+- Um `platform_admin` consegue criar uma organizacao e seu primeiro `owner`.
+- O `owner` consegue gerenciar somente usuarios da propria organizacao.
+- `member` nao acessa rotas administrativas.
+- Nenhuma permissao depende apenas de esconder elementos da interface.
+- A criacao de organizacao e usuario inicial e atomica.
+- Tentativas de acessar outra organizacao ou elevar privilegio sao rejeitadas.
+- O fluxo funciona sem cadastro publico aberto por padrao.
+
+#### Checklist de conclusao
+
+- [ ] Testar criacao de organizacao e primeiro owner.
+- [ ] Testar criacao e desativacao de usuario pelo owner.
+- [ ] Testar acesso de platform_admin, owner e member.
+- [ ] Testar tentativa de acesso cruzado entre organizacoes.
+- [ ] Testar tentativa de elevacao de privilegio.
+- [ ] Testar rollback quando a criacao falhar.
+- [ ] Validar desktop e mobile.
+
+---
+
+### FASE 20 — Planejamento de inventarios
 
 **Status: NÃO INICIADA**
 
@@ -1307,7 +1374,7 @@ Transformar a prioridade calculada em um plano operacional de contagem.
 
 ---
 
-### FASE 20 — Metas e cobertura historica
+### FASE 21 — Metas e cobertura historica
 
 **Status: NÃO INICIADA**
 
@@ -1347,7 +1414,7 @@ meses.
 
 ---
 
-### FASE 21 — Relatorios e exportacoes
+### FASE 22 — Relatorios e exportacoes
 
 **Status: NÃO INICIADA**
 
@@ -1387,7 +1454,7 @@ comparaveis entre periodos.
 
 ---
 
-### FASE 22 — Alertas e notificacoes
+### FASE 23 — Alertas e notificacoes
 
 **Status: NÃO INICIADA**
 
@@ -1427,7 +1494,7 @@ Dashboard.
 
 ---
 
-### FASE 23 — Perfis, permissoes e convites
+### FASE 24 — Perfis, permissoes e convites
 
 **Status: NÃO INICIADA**
 
@@ -1469,7 +1536,7 @@ acesso.
 
 ---
 
-### FASE 24 — Multiplas lojas por organizacao
+### FASE 25 — Multiplas lojas por organizacao
 
 **Status: NÃO INICIADA**
 
@@ -1509,7 +1576,7 @@ organizacao.
 
 ---
 
-### FASE 25 — Importacao configuravel
+### FASE 26 — Importacao configuravel
 
 **Status: NÃO INICIADA**
 
@@ -1550,7 +1617,7 @@ do parser.
 
 ---
 
-### FASE 26 — Regras de prioridade configuraveis
+### FASE 27 — Regras de prioridade configuraveis
 
 **Status: NÃO INICIADA**
 
@@ -1591,7 +1658,7 @@ formula explicavel e auditavel.
 
 ---
 
-### FASE 27 — PWA e temas visuais
+### FASE 28 — PWA e temas visuais
 
 **Status: NÃO INICIADA**
 
@@ -1661,4 +1728,4 @@ Fases 17–18. Projeto preparado para demonstracao publica.
 
 ### V2.0
 
-Fases 19–27. Evolucao baseada em necessidades reais observadas durante o uso.
+Fases 19–28. Evolucao baseada em necessidades reais observadas durante o uso.
