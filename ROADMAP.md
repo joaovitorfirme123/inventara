@@ -1302,6 +1302,8 @@ sem misturar permissoes globais da plataforma com dados de cada tenant.
 - [x] Impedir elevacao de privilegio pelo cliente.
 - [x] Registrar alteracoes administrativas relevantes.
 - [x] Garantir isolamento entre organizacoes durante todo o fluxo.
+- [x] Consultar usuarios, papeis e permissoes efetivas de cada organizacao.
+- [x] Excluir organizacoes com confirmacao pelo nome e limpeza transacional.
 
 #### Conceitos que devo aprender
 
@@ -1330,6 +1332,8 @@ sem misturar permissoes globais da plataforma com dados de cada tenant.
 - [x] Testar tentativa de acesso cruzado entre organizacoes.
 - [x] Testar tentativa de elevacao de privilegio.
 - [x] Testar rollback quando a criacao falhar.
+- [x] Testar exclusao com confirmacao invalida e valida.
+- [x] Testar consulta administrativa de usuarios e permissoes.
 - [x] Validar desktop e mobile.
 
 ---
