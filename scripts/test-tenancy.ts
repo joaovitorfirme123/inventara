@@ -70,7 +70,7 @@ async function testTenancy() {
     () =>
       prisma.user.create({
         data: {
-          id: "cccccccc-cccc-4ccc-8ccc-cccccccccccc",
+          id: "dddddddd-dddd-4ddd-8ddd-dddddddddddd",
           name: "Invalid organization",
           email: "invalid-fk@test.invalid",
           organizationId: "99999999-9999-4999-8999-999999999999",
