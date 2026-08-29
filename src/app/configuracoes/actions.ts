@@ -14,12 +14,6 @@ export type ClearOrganizationState = {
   } | null;
 };
 
-export const initialClearOrganizationState: ClearOrganizationState = {
-  status: "idle",
-  message: "",
-  counts: null,
-};
-
 export async function clearCurrentOrganizationData(
   _previousState: ClearOrganizationState,
   formData: FormData,

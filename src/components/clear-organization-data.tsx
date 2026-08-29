@@ -1,12 +1,15 @@
 "use client";
 
 import { useActionState } from "react";
-import {
-  clearCurrentOrganizationData,
-  initialClearOrganizationState,
-} from "@/app/configuracoes/actions";
+import type { ClearOrganizationState } from "@/app/configuracoes/actions";
+import { clearCurrentOrganizationData } from "@/app/configuracoes/actions";
 
 const numberFormatter = new Intl.NumberFormat("pt-BR");
+const initialClearOrganizationState: ClearOrganizationState = {
+  status: "idle",
+  message: "",
+  counts: null,
+};
 
 export function ClearOrganizationData() {
   const [state, formAction, isPending] = useActionState(
