@@ -197,7 +197,8 @@ docker compose down
 
 | Variável | Uso |
 | --- | --- |
-| `DATABASE_URL` | Connection string do PostgreSQL |
+| `DATABASE_URL` | Connection string do PostgreSQL para o runtime |
+| `DIRECT_URL` | Connection string direct para migrations de produção |
 | `BETTER_AUTH_SECRET` | Segredo da autenticação, mínimo de 32 caracteres |
 | `BETTER_AUTH_URL` | URL base da aplicação |
 | `SEED_USER_PASSWORD` | Senha das contas locais Alfa/Beta |

@@ -24,9 +24,15 @@ valores em arquivos versionados:
 
 | Variável | Valor |
 | --- | --- |
-| `DATABASE_URL` | Connection string PostgreSQL do Neon |
+| `DATABASE_URL` | Connection string pooled do Neon para o runtime |
+| `DIRECT_URL` | Connection string direct do Neon para migrations |
 | `BETTER_AUTH_SECRET` | Segredo aleatório com pelo menos 32 caracteres |
 | `BETTER_AUTH_URL` | URL pública exata da aplicação |
+
+O `DATABASE_URL` é usado pela aplicação e pode apontar para o endpoint pooled
+(`-pooler`). O `DIRECT_URL` é usado pelo Prisma durante o build para aplicar
+migrations e deve apontar para o endpoint direct. Se `DIRECT_URL` não existir,
+o Prisma usa `DATABASE_URL` como fallback.
 
 `SEED_USER_PASSWORD` é usada apenas para provisionar contas locais com
 `npm run db:seed`. Não configure essa variável na produção e não execute o seed
