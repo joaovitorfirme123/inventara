@@ -2,7 +2,7 @@
 
 import { revalidatePath } from "next/cache";
 import { clearOrganizationData } from "@/data/organization-data";
-import { requireSessionContext } from "@/lib/session";
+import { getOptionalSessionContext } from "@/lib/session";
 
 export type ClearOrganizationState = {
   status: "idle" | "success" | "error";
@@ -24,7 +24,26 @@ export async function clearCurrentOrganizationData(
   _previousState: ClearOrganizationState,
   formData: FormData,
 ): Promise<ClearOrganizationState> {
-  const session = await requireSessionContext();
+  let session;
+
+  try {
+    session = await getOptionalSessionContext();
+  } catch (error) {
+    console.error("Failed to load session for organization cleanup", { error });
+    return {
+      status: "error",
+      message: "Não foi possível validar sua sessão. Faça login novamente e tente outra vez.",
+      counts: null,
+    };
+  }
+
+  if (!session) {
+    return {
+      status: "error",
+      message: "Sua sessão expirou. Faça login novamente e tente outra vez.",
+      counts: null,
+    };
+  }
 
   if (formData.get("confirmation") !== "APAGAR TUDO") {
     return {
