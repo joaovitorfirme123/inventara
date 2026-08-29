@@ -30,6 +30,7 @@ jobs:
       SEED_USER_PASSWORD: ci-local-password
       DEMO_USER_PASSWORD: ci-demo-password
       AUTH_TEST_BASE_URL: http://localhost:3000
+      AUTH_RATE_LIMIT_ENABLED: "false"
 
     steps:
       - name: Checkout
