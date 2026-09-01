@@ -1415,7 +1415,7 @@ dos dados.
 
 ### FASE 21 — Ranking de Inventarios -> Produtos filtrados
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1427,14 +1427,14 @@ Secao/Grupo/Subgrupo para os SKUs correspondentes sem criar novas paginas.
 
 #### Tarefas
 
-- [ ] Tornar investigavel a quantidade de produtos pendentes de um subgrupo.
-- [ ] Permitir abrir produtos contados no ano quando fizer sentido.
-- [ ] Permitir abrir produtos sem data.
-- [ ] Permitir abrir o total de produtos do recorte quando fizer sentido.
-- [ ] Enviar Secao, Grupo, Subgrupo e status para a pagina Produtos.
-- [ ] Reutilizar os filtros existentes da pagina Produtos.
-- [ ] Garantir consistencia entre os numeros do ranking e o resultado filtrado.
-- [ ] Manter os filtros combinaveis com busca, ordenacao e paginacao.
+- [x] Tornar investigavel a quantidade de produtos pendentes de um subgrupo.
+- [x] Permitir abrir produtos contados no ano quando fizer sentido.
+- [x] Permitir abrir produtos sem data.
+- [x] Permitir abrir o total de produtos do recorte quando fizer sentido.
+- [x] Enviar Secao, Grupo, Subgrupo e status para a pagina Produtos.
+- [x] Reutilizar os filtros existentes da pagina Produtos.
+- [x] Garantir consistencia entre os numeros do ranking e o resultado filtrado.
+- [x] Manter os filtros combinaveis com busca, ordenacao e paginacao.
 
 #### Exemplo conceitual
 
@@ -1479,13 +1479,13 @@ Podem ser utilizados:
 
 #### Checklist de conclusao
 
-- [ ] Testar pendentes por Subgrupo.
-- [ ] Testar contados por Subgrupo.
-- [ ] Testar sem data por Subgrupo.
-- [ ] Testar combinacao Secao + Grupo + Subgrupo + status.
-- [ ] Comparar agregados com a listagem detalhada.
-- [ ] Testar isolamento entre organizacoes.
-- [ ] Executar testes, lint e build.
+- [x] Testar pendentes por Subgrupo.
+- [x] Testar contados por Subgrupo.
+- [x] Testar sem data por Subgrupo.
+- [x] Testar combinacao Secao + Grupo + Subgrupo + status.
+- [x] Comparar agregados com a listagem detalhada.
+- [x] Testar isolamento entre organizacoes.
+- [x] Executar testes, lint e build.
 
 ---
 
