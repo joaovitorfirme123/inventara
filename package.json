@@ -18,6 +18,7 @@
     "test:tenancy": "tsx scripts/test-tenancy.ts",
     "test:products": "tsx scripts/test-products.ts",
     "test:csv": "tsx scripts/test-csv-import.ts",
+    "test:csv-export": "tsx scripts/test-csv-export.ts",
     "test:history": "tsx scripts/test-import-history.ts",
     "test:inventories": "tsx scripts/test-inventories.ts",
     "test:dashboard": "tsx scripts/test-dashboard.ts",

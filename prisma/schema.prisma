@@ -13,6 +13,12 @@ enum UserRole {
   MEMBER
 }
 
+enum ImportRowStatus {
+  INSERTED
+  UPDATED
+  ERROR
+}
+
 model Organization {
   id           String         @id @default(uuid()) @db.Uuid
   name         String
@@ -109,6 +115,7 @@ model Product {
   updatedAt      DateTime       @updatedAt @map("updated_at")
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   stockHistory   StockHistory[]
+  importRows     ImportRow[]
 
   @@unique([organizationId, plu])
   @@index([organizationId, description])
@@ -129,10 +136,29 @@ model ImportRecord {
   errorRows      Int            @map("error_rows")
   organization   Organization   @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   stockHistory   StockHistory[]
+  rows           ImportRow[]
 
   @@index([organizationId, importedAt(sort: Desc)])
   @@index([organizationId, fileHash])
   @@map("imports")
+}
+
+model ImportRow {
+  id             String         @id @default(uuid()) @db.Uuid
+  importId       String         @map("import_id") @db.Uuid
+  rowNumber      Int            @map("row_number")
+  status         ImportRowStatus
+  plu            String?
+  description    String?
+  field          String?
+  message        String?
+  productId      String?        @map("product_id") @db.Uuid
+  importRecord   ImportRecord    @relation(fields: [importId], references: [id], onDelete: Cascade)
+  product        Product?        @relation(fields: [productId], references: [id], onDelete: SetNull)
+
+  @@unique([importId, rowNumber])
+  @@index([importId, status])
+  @@map("import_rows")
 }
 
 model StockHistory {

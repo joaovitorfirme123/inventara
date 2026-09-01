@@ -107,6 +107,23 @@ export async function listProducts(filters: ProductQuery) {
   };
 }
 
+export function listProductsForExport(organizationId: string) {
+  return prisma.product.findMany({
+    where: { organizationId },
+    orderBy: [{ plu: "asc" }, { id: "asc" }],
+    select: {
+      plu: true,
+      barcode: true,
+      description: true,
+      section: true,
+      group: true,
+      subgroup: true,
+      lastInventory: true,
+      currentStock: true,
+    },
+  });
+}
+
 export async function getProductFilterOptions(
   organizationId: string,
   filters: Pick<ProductQuery, "section" | "group"> = {},

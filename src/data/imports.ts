@@ -22,3 +22,28 @@ export function listImportsByOrganization(organizationId: string) {
     take: 50,
   });
 }
+
+export function getImportDetails(organizationId: string, importId: string) {
+  if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(importId)) {
+    return Promise.resolve(null);
+  }
+
+  return prisma.importRecord.findFirst({
+    where: { id: importId, organizationId },
+    include: {
+      rows: {
+        orderBy: { rowNumber: "asc" },
+        select: {
+          id: true,
+          rowNumber: true,
+          status: true,
+          plu: true,
+          description: true,
+          field: true,
+          message: true,
+          productId: true,
+        },
+      },
+    },
+  });
+}

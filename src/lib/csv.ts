@@ -1,6 +1,7 @@
 import Papa from "papaparse";
 
 export type CsvProduct = {
+  row?: number;
   plu: string;
   barcode: string | null;
   description: string;
@@ -13,6 +14,9 @@ export type CsvProduct = {
 
 export type CsvRowError = {
   row: number;
+  plu: string | null;
+  description: string | null;
+  field: string;
   message: string;
 };
 
@@ -24,6 +28,36 @@ export type CsvParseResult = {
   errors: CsvRowError[];
   fatalErrors: string[];
 };
+
+const exportFields = [
+  "Código PLU",
+  "Código de barras",
+  "Descrição",
+  "Seção",
+  "Grupo",
+  "Subgrupo",
+  "Último Inventário",
+  "Estoque Atual",
+];
+
+export function serializeProductsToCsv(products: CsvProduct[]) {
+  return Papa.unparse(
+    {
+      fields: exportFields,
+      data: products.map((product) => [
+        product.plu,
+        product.barcode ?? "",
+        product.description,
+        product.section ?? "",
+        product.group ?? "",
+        product.subgroup ?? "",
+        product.lastInventory ?? "",
+        product.currentStock,
+      ]),
+    },
+    { delimiter: ";", newline: "\r\n" },
+  );
+}
 
 const headerAliases = {
   plu: ["codigo plu", "plu"],
@@ -39,7 +73,7 @@ const headerAliases = {
     "last inventory",
   ],
   currentStock: ["estoque atual", "current stock"],
-} satisfies Record<keyof CsvProduct, string[]>;
+} satisfies Record<Exclude<keyof CsvProduct, "row">, string[]>;
 
 function normalizeHeader(value: string) {
   return value
@@ -174,7 +208,13 @@ export function parseCsvBuffer(buffer: ArrayBuffer): CsvParseResult {
     const rowParserErrors = parserErrors.get(rowNumber);
 
     if (rowParserErrors) {
-      errors.push({ row: rowNumber, message: rowParserErrors.join(" ") });
+      errors.push({
+        row: rowNumber,
+        plu: null,
+        description: null,
+        field: "Estrutura do CSV",
+        message: "Estrutura da linha inválida.",
+      });
       return;
     }
 
@@ -184,22 +224,41 @@ export function parseCsvBuffer(buffer: ArrayBuffer): CsvParseResult {
     const description = getValue("description");
 
     if (!plu) {
-      errors.push({ row: rowNumber, message: "Código PLU é obrigatório." });
+      errors.push({
+        row: rowNumber,
+        plu: null,
+        description: description || null,
+        field: "PLU",
+        message: "Código PLU é obrigatório.",
+      });
       return;
     }
 
     if (seenPlus.has(plu)) {
-      errors.push({ row: rowNumber, message: `PLU ${plu} duplicado no arquivo.` });
+      errors.push({
+        row: rowNumber,
+        plu,
+        description: description || null,
+        field: "PLU",
+        message: "PLU duplicado no arquivo.",
+      });
       return;
     }
 
     if (!description) {
-      errors.push({ row: rowNumber, message: "Descrição é obrigatória." });
+      errors.push({
+        row: rowNumber,
+        plu,
+        description: null,
+        field: "Descrição",
+        message: "Descrição é obrigatória.",
+      });
       return;
     }
 
     try {
       rows.push({
+        row: rowNumber,
         plu,
         barcode: getValue("barcode") || null,
         description,
@@ -211,9 +270,13 @@ export function parseCsvBuffer(buffer: ArrayBuffer): CsvParseResult {
       });
       seenPlus.add(plu);
     } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : "Linha inválida.";
       errors.push({
         row: rowNumber,
-        message: error instanceof Error ? error.message : "Linha inválida.",
+        plu,
+        description,
+        field: message.includes("Data") ? "Último inventário" : "Estoque atual",
+        message,
       });
     }
   });

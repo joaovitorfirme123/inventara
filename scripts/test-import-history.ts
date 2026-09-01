@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { createImportRecord, listImportsByOrganization } from "../src/data/imports";
+import { createImportRecord, getImportDetails, listImportsByOrganization } from "../src/data/imports";
 import { prisma } from "../src/lib/prisma";
 
 const organizationAId = "11111111-1111-4111-8111-111111111111";
@@ -44,6 +44,15 @@ async function testImportHistory() {
       updatedRows: 0,
       errorRows: 0,
     });
+    await prisma.importRow.create({
+      data: {
+        importId: oldImport.id,
+        rowNumber: 7,
+        status: "ERROR",
+        field: "PLU",
+        message: "Código PLU é obrigatório.",
+      },
+    });
 
     await Promise.all([
       prisma.importRecord.update({
@@ -68,6 +77,10 @@ async function testImportHistory() {
         testHistory[1].errorRows === 5,
       "Import counters do not match the processed result.",
     );
+
+    const details = await getImportDetails(organizationAId, oldImport.id);
+    assert(details?.rows.length === 1 && details.rows[0].status === "ERROR", "Import details were not loaded.");
+    assert(await getImportDetails(organizationBId, oldImport.id) === null, "Import details leaked across organizations.");
   } finally {
     await prisma.importRecord.deleteMany({
       where: { filename: { in: filenames } },

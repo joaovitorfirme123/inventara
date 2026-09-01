@@ -1583,7 +1583,7 @@ sendo determinada pela sessao autenticada no servidor.
 
 ### FASE 23 — Drill-down das importacoes
 
-**Status: NÃO INICIADA**
+**Status: EM ANDAMENTO**
 
 #### Objetivo
 
@@ -1596,15 +1596,15 @@ dados que o importador realmente consegue determinar.
 
 #### Tarefas
 
-- [ ] Revisar o significado atual de inserted, updated, error e outros estados.
-- [ ] Exibir resumo detalhado de cada importacao.
-- [ ] Permitir abrir os produtos criados naquela importacao.
-- [ ] Permitir abrir os produtos atualizados naquela importacao.
-- [ ] Criar visualizacao dos erros da importacao.
-- [ ] Criar visualizacao de linhas ignoradas, caso esse estado exista.
-- [ ] Permitir abrir detalhes a partir do Historico de Importacoes.
-- [ ] Relacionar o drill-down a um identificador real da importacao.
-- [ ] Exibir mensagens compreensiveis sem vazar detalhes internos.
+- [x] Revisar o significado atual de inserted, updated, error e outros estados.
+- [x] Exibir resumo detalhado de cada importacao.
+- [x] Permitir abrir os produtos criados naquela importacao.
+- [x] Permitir abrir os produtos atualizados naquela importacao.
+- [x] Criar visualizacao dos erros da importacao.
+- [x] Criar visualizacao de linhas ignoradas, caso esse estado exista (nao aplicavel: o importador nao possui estado separado).
+- [x] Permitir abrir detalhes a partir do Historico de Importacoes.
+- [x] Relacionar o drill-down a um identificador real da importacao.
+- [x] Exibir mensagens compreensiveis sem vazar detalhes internos.
 
 #### Informacoes de erro
 
@@ -1654,14 +1654,14 @@ forma explicada antes de implementar.
 
 #### Checklist de conclusao
 
-- [ ] Testar importacao apenas com produtos novos.
-- [ ] Testar importacao com atualizacoes.
-- [ ] Testar importacao com erros.
-- [ ] Testar linhas ignoradas, se aplicavel.
-- [ ] Testar detalhes pelo historico.
-- [ ] Testar identificador de importacao de outra organizacao.
-- [ ] Revisar mensagens expostas ao usuario.
-- [ ] Executar testes, lint e build.
+- [x] Testar importacao apenas com produtos novos.
+- [x] Testar importacao com atualizacoes.
+- [x] Testar importacao com erros.
+- [x] Testar linhas ignoradas, se aplicavel (nao aplicavel: o importador nao possui estado separado).
+- [x] Testar detalhes pelo historico.
+- [x] Testar identificador de importacao de outra organizacao.
+- [x] Revisar mensagens expostas ao usuario.
+- [x] Executar testes, lint e build.
 
 ---
 

@@ -89,6 +89,7 @@ ARROZ TIPO 1 5KG;00010001;7891000000011;MERCEARIA;ARROZ E FEIJAO;ARROZ;25/08/202
       fileHash: "csv-test-hash-first",
       rows: semicolon.rows,
       errorRows: semicolon.errors.length,
+      errors: semicolon.errors,
     });
     const second = await importProducts({
       organizationId: organizationAId,
@@ -96,6 +97,7 @@ ARROZ TIPO 1 5KG;00010001;7891000000011;MERCEARIA;ARROZ E FEIJAO;ARROZ;25/08/202
       fileHash: "csv-test-hash-second",
       rows: semicolon.rows,
       errorRows: semicolon.errors.length,
+      errors: semicolon.errors,
     });
     await importProducts({
       organizationId: organizationBId,
@@ -103,10 +105,19 @@ ARROZ TIPO 1 5KG;00010001;7891000000011;MERCEARIA;ARROZ E FEIJAO;ARROZ;25/08/202
       fileHash: "csv-test-hash-b",
       rows: comma.rows,
       errorRows: comma.errors.length,
+      errors: comma.errors,
     });
 
     assert(first.insertedRows === 1 && first.errorRows === 1, "Insert summary is incorrect.");
     assert(second.updatedRows === 1, "Update summary is incorrect.");
+
+    const firstRows = await prisma.importRow.findMany({
+      where: { importId: first.importId },
+      orderBy: { rowNumber: "asc" },
+    });
+    assert(firstRows.length === 2, "Import row details were not persisted.");
+    assert(firstRows[0].status === "INSERTED", "Inserted row detail is incorrect.");
+    assert(firstRows[1].status === "ERROR" && firstRows[1].field === "PLU", "Error row detail is incorrect.");
 
     const [productA, productB] = await Promise.all([
       prisma.product.findUnique({

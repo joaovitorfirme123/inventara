@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
 import { Prisma } from "@/generated/prisma/client";
-import type { CsvProduct } from "@/lib/csv";
+import type { CsvProduct, CsvRowError } from "@/lib/csv";
 import { prisma } from "@/lib/prisma";
 
 const IMPORT_BATCH_SIZE = 500;
@@ -20,20 +20,24 @@ export async function importProducts(
     fileHash: string;
     rows: CsvProduct[];
     errorRows: number;
+    errors?: CsvRowError[];
   },
 ): Promise<ImportResult> {
   return prisma.$transaction(async (transaction) => {
     let insertedRows = 0;
     let updatedRows = 0;
+    const errors = input.errors ?? [];
+    const errorRows = input.errors ? errors.length : input.errorRows;
+    const rowDetails: Prisma.ImportRowCreateManyInput[] = [];
     const importRecord = await transaction.importRecord.create({
       data: {
         organizationId: input.organizationId,
         filename: input.filename,
         fileHash: input.fileHash,
-        totalRows: input.rows.length + input.errorRows,
+        totalRows: input.rows.length + errorRows,
         insertedRows: 0,
         updatedRows: 0,
-        errorRows: input.errorRows,
+        errorRows,
       },
     });
 
@@ -120,6 +124,34 @@ export async function importProducts(
 
       updatedRows += existingPlus.size;
       insertedRows += batch.length - existingPlus.size;
+      rowDetails.push(
+        ...batch.map((row, batchIndex) => ({
+          id: randomUUID(),
+          importId: importRecord.id,
+          rowNumber: row.row ?? offset + batchIndex + 2,
+          status: existingPlus.has(row.plu) ? ("UPDATED" as const) : ("INSERTED" as const),
+          plu: row.plu,
+          description: row.description,
+          productId: productIds.get(row.plu),
+        })),
+      );
+    }
+
+    rowDetails.push(
+      ...errors.map((error) => ({
+        id: randomUUID(),
+        importId: importRecord.id,
+        rowNumber: error.row,
+        status: "ERROR" as const,
+        plu: error.plu,
+        description: error.description,
+        field: error.field,
+        message: error.message,
+      })),
+    );
+
+    if (rowDetails.length > 0) {
+      await transaction.importRow.createMany({ data: rowDetails });
     }
 
     await transaction.importRecord.update({
@@ -129,10 +161,10 @@ export async function importProducts(
 
     return {
       importId: importRecord.id,
-      processedRows: input.rows.length + input.errorRows,
+      processedRows: input.rows.length + errorRows,
       insertedRows,
       updatedRows,
-      errorRows: input.errorRows,
+      errorRows,
     };
   }, { maxWait: 10_000, timeout: 60_000 });
 }

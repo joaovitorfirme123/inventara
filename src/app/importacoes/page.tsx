@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { connection } from "next/server";
 import { CsvImporter } from "@/components/csv-importer";
 import { PageHeader } from "@/components/page-header";
@@ -25,6 +26,14 @@ export default async function ImportacoesPage() {
         title="Importações"
         description="Valide a exportação do ERP e acompanhe os resultados processados."
       />
+      <section className="csv-export-bar panel">
+        <div>
+          <span className="section-kicker">Saída de dados</span>
+          <h2>Baixar cadastro atual</h2>
+          <p>Exporte os produtos atuais da sua organização no mesmo formato aceito pelo importador.</p>
+        </div>
+        <a className="export-button" download href="/api/produtos/export">Baixar CSV atual</a>
+      </section>
       <CsvImporter />
 
       <section className="import-history panel">
@@ -53,7 +62,11 @@ export default async function ImportacoesPage() {
                 {imports.map((item) => (
                   <tr key={item.id}>
                     <td data-label="Data">{dateFormatter.format(item.importedAt)}</td>
-                    <td data-label="Arquivo"><strong>{item.filename}</strong></td>
+                    <td data-label="Arquivo">
+                      <Link className="history-file-link" href={`/importacoes/${item.id}`}>
+                        <strong>{item.filename}</strong>
+                      </Link>
+                    </td>
                     <td data-label="Processados">{numberFormatter.format(item.totalRows)}</td>
                     <td data-label="Inseridos">{numberFormatter.format(item.insertedRows)}</td>
                     <td data-label="Atualizados">{numberFormatter.format(item.updatedRows)}</td>

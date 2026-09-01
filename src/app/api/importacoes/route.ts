@@ -104,6 +104,7 @@ export async function POST(request: Request) {
       fileHash,
       rows: parsed.rows,
       errorRows: parsed.errors.length,
+      errors: parsed.errors,
     });
 
     return Response.json({

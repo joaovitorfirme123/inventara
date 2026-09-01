@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { ChangeEvent, DragEvent } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { parseCsvBuffer } from "@/lib/csv";
 import type { CsvParseResult, CsvRowError } from "@/lib/csv";
@@ -12,6 +13,7 @@ import {
 } from "@/lib/import-limits";
 
 type ImportSummary = {
+  importId: string;
   processedRows: number;
   insertedRows: number;
   updatedRows: number;
@@ -269,6 +271,9 @@ export function CsvImporter() {
             <article><strong>{numberFormatter.format(summary.updatedRows)}</strong><span>Atualizados</span></article>
             <article><strong>{numberFormatter.format(summary.errorRows)}</strong><span>Erros</span></article>
           </div>
+          <Link className="import-detail-link" href={`/importacoes/${summary.importId}`}>
+            Ver detalhes desta importação →
+          </Link>
           {summary.errors.length > 0 && (
             <div className="result-errors">
               <strong>{summary.errors.length} linhas ignoradas</strong>

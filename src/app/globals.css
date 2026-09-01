@@ -1144,6 +1144,45 @@ input {
   padding: 30px;
 }
 
+.csv-export-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 28px;
+  margin-bottom: 14px;
+  padding: 22px 30px;
+}
+
+.csv-export-bar h2 {
+  font-size: 1.1rem;
+  letter-spacing: -0.03em;
+}
+
+.csv-export-bar p {
+  max-width: 660px;
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.export-button {
+  display: grid;
+  min-height: 44px;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0 20px;
+  color: var(--forest);
+  background: var(--lime);
+  border-radius: 2px;
+  font-size: 0.72rem;
+  font-weight: 750;
+}
+
+.export-button:hover {
+  background: #d2e5a7;
+}
+
 .import-step {
   display: grid;
   width: 64px;
@@ -1415,6 +1454,16 @@ input {
   text-transform: uppercase;
 }
 
+.import-detail-link {
+  grid-column: 1 / -1;
+  justify-self: end;
+  color: var(--forest);
+  font-size: 0.7rem;
+  text-decoration: underline;
+  text-decoration-color: #b9c98d;
+  text-underline-offset: 3px;
+}
+
 .import-history {
   margin-top: 14px;
   padding: 0;
@@ -1479,6 +1528,77 @@ input {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.history-file-link,
+.table-link {
+  color: var(--forest);
+  text-decoration: underline;
+  text-decoration-color: #b9c98d;
+  text-underline-offset: 3px;
+}
+
+.history-file-link:hover,
+.table-link:hover {
+  color: var(--rust);
+}
+
+.import-detail-summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1px;
+  padding: 0;
+  overflow: hidden;
+  background: var(--line);
+}
+
+.import-detail-summary article {
+  display: grid;
+  gap: 7px;
+  padding: 22px;
+  background: var(--paper);
+}
+
+.import-detail-summary span {
+  color: var(--muted);
+  font-size: 0.61rem;
+  text-transform: uppercase;
+}
+
+.import-detail-summary strong {
+  font-family: var(--font-geist), monospace;
+  font-size: 1.35rem;
+}
+
+.import-detail-summary .has-errors strong {
+  color: var(--rust);
+}
+
+.import-detail-summary .no-errors strong {
+  color: var(--forest);
+}
+
+.import-detail-section {
+  margin-top: 14px;
+  padding: 0;
+  overflow: hidden;
+}
+
+.import-detail-section .panel-heading {
+  padding: 24px 30px;
+}
+
+.import-row-status {
+  display: inline-block;
+  padding: 5px 8px;
+  font-family: var(--font-geist), monospace;
+  font-size: 0.57rem;
+  text-transform: uppercase;
+}
+
+.import-row-status.success {
+  color: var(--forest);
+  background: #e7efd9;
 }
 
 .error-count,
@@ -3273,6 +3393,23 @@ input {
 
   .history-heading {
     display: grid;
+    padding: 22px 18px;
+  }
+
+  .csv-export-bar {
+    display: grid;
+    padding: 22px 18px;
+  }
+
+  .export-button {
+    width: 100%;
+  }
+
+  .import-detail-summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .import-detail-section .panel-heading {
     padding: 22px 18px;
   }
 
