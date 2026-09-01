@@ -172,30 +172,30 @@ async function DashboardContent({
 
       <section className="dashboard-recommendations panel">
         <div className="panel-heading">
-          <div><span className="section-kicker">Próxima contagem</span><h2>Produtos recomendados</h2></div>
+          <div><span className="section-kicker">Próxima contagem</span><h2>Subgrupos recomendados</h2></div>
           <span className="status-pill">{recommendations.length} de 6</span>
         </div>
         {recommendations.length > 0 ? (
           <div className="recommendation-grid">
-            {recommendations.map((product, index) => (
-              <article className="recommendation-card" key={product.id}>
+            {recommendations.map((subgroup, index) => (
+              <article className="recommendation-card" key={`${subgroup.section}-${subgroup.group}-${subgroup.subgroup}`}>
                 <span className="recommendation-rank">0{index + 1}</span>
                 <div className="recommendation-card-heading">
                   <div>
-                    <strong><Link className="product-detail-link" href={`/produtos/${encodeURIComponent(product.plu)}`}>{product.description}</Link></strong>
-                    <small>PLU {product.plu}</small>
+                    <strong><Link className="recommendation-link" href={`/inventarios?q=${encodeURIComponent(`${subgroup.section} ${subgroup.group} ${subgroup.subgroup}`)}&pending=1`}>{subgroup.subgroup}</Link></strong>
+                    <small>{subgroup.section} / {subgroup.group}</small>
                   </div>
-                  <span className={`dashboard-priority ${priorityClasses[product.priority]}`}>{product.priority}</span>
+                  <span className={`dashboard-priority ${priorityClasses[subgroup.priority]}`}>{subgroup.priority}</span>
                 </div>
                 <dl>
-                  <div><dt>Grupo</dt><dd>{product.group ?? "Sem grupo"}</dd></div>
-                  <div><dt>Pontuação</dt><dd>{numberFormatter.format(product.priorityScore)} pts · {product.lastInventory ? "contagem antiga" : "sem contagem"}</dd></div>
+                  <div><dt>Pendentes</dt><dd>{numberFormatter.format(subgroup.pendingSkus)} de {numberFormatter.format(subgroup.totalSkus)} SKUs</dd></div>
+                  <div><dt>Cobertura</dt><dd>{subgroup.countedPercentage.toFixed(1)}% · {numberFormatter.format(subgroup.score)} pts</dd></div>
                 </dl>
               </article>
             ))}
           </div>
         ) : (
-          <div className="dashboard-recommendation-empty"><p>Não há produtos pendentes para recomendar neste ciclo.</p></div>
+          <div className="dashboard-recommendation-empty"><p>Não há subgrupos pendentes para recomendar neste ciclo.</p></div>
         )}
       </section>
 

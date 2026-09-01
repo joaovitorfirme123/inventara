@@ -2477,6 +2477,15 @@ input {
   white-space: nowrap;
 }
 
+.recommendation-link {
+  color: var(--forest);
+  text-decoration: none;
+}
+
+.recommendation-link:hover {
+  color: var(--rust);
+}
+
 .recommendation-card small {
   margin-top: 5px;
   color: var(--muted);
