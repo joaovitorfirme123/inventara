@@ -1338,7 +1338,451 @@ sem misturar permissoes globais da plataforma com dados de cada tenant.
 
 ---
 
-### FASE 20 — Planejamento de inventarios
+### FASE 20 — Dashboard -> Produtos filtrados
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Transformar os principais indicadores do Dashboard em atalhos para os produtos
+que originaram cada metrica, reutilizando a pagina existente de Produtos.
+
+Nao criar paginas separadas para cada indicador. Os filtros devem ser
+representados na URL sempre que possivel.
+
+#### Tarefas
+
+- [ ] Tornar o card Total de SKUs clicavel e direcionar para `/produtos`.
+- [ ] Tornar o card Contados no ano atual clicavel.
+- [ ] Calcular o ano atual dinamicamente, sem fixar 2026 no codigo.
+- [ ] Tornar o card Pendentes clicavel.
+- [ ] Tornar o card Sem data clicavel.
+- [ ] Aplicar o filtro correspondente na pagina Produtos.
+- [ ] Exibir visualmente o filtro ativo.
+- [ ] Permitir remover o filtro sem voltar ao Dashboard.
+- [ ] Manter busca, paginacao, ordenacao e demais filtros existentes.
+- [ ] Garantir que o card inteiro seja clicavel e acessivel por teclado.
+- [ ] Reutilizar as mesmas regras de negocio usadas pelo Dashboard.
+
+#### Exemplos conceituais
+
+```text
+/produtos
+/produtos?status=contado
+/produtos?status=pendente
+/produtos?status=sem-data
+```
+
+#### Regra critica
+
+Os numeros do Dashboard e os resultados do drill-down devem usar a mesma regra
+de negocio.
+
+Exemplo: se o Dashboard mostrar 6.715 pendentes, o filtro correspondente deve
+representar os mesmos 6.715 produtos para a mesma organizacao e o mesmo estado
+dos dados.
+
+#### Conceitos que devo aprender
+
+- drill-down;
+- navegacao orientada a dados;
+- query parameters;
+- reutilizacao de regras de negocio;
+- links semanticos e acessibilidade.
+
+#### Criterios para considerar a fase concluida
+
+- Os quatro cards definidos abrem a pagina de Produtos com o recorte correto.
+- O filtro ativo fica visivel e pode ser removido.
+- Os filtros continuam combinaveis com busca, ordenacao e paginacao.
+- As quantidades sao consistentes com o Dashboard.
+- Os cards sao navegaveis por teclado e possuem foco visivel.
+- O isolamento por organizacao permanece protegido.
+
+#### Checklist de conclusao
+
+- [ ] Testar Total de SKUs.
+- [ ] Testar Contados no ano atual.
+- [ ] Testar Pendentes.
+- [ ] Testar Sem data.
+- [ ] Comparar quantidades do Dashboard com a listagem filtrada.
+- [ ] Testar combinacao com filtros existentes.
+- [ ] Testar teclado e foco.
+- [ ] Testar isolamento entre organizacoes.
+- [ ] Executar testes, lint e build.
+
+---
+
+### FASE 21 — Ranking de Inventarios -> Produtos filtrados
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Permitir investigar diretamente quais produtos formam os indicadores exibidos
+no ranking de inventarios.
+
+A pagina de Inventarios deve permitir sair de uma informacao agregada de
+Secao/Grupo/Subgrupo para os SKUs correspondentes sem criar novas paginas.
+
+#### Tarefas
+
+- [ ] Tornar investigavel a quantidade de produtos pendentes de um subgrupo.
+- [ ] Permitir abrir produtos contados no ano quando fizer sentido.
+- [ ] Permitir abrir produtos sem data.
+- [ ] Permitir abrir o total de produtos do recorte quando fizer sentido.
+- [ ] Enviar Secao, Grupo, Subgrupo e status para a pagina Produtos.
+- [ ] Reutilizar os filtros existentes da pagina Produtos.
+- [ ] Garantir consistencia entre os numeros do ranking e o resultado filtrado.
+- [ ] Manter os filtros combinaveis com busca, ordenacao e paginacao.
+
+#### Exemplo conceitual
+
+```text
+/inventarios
+  -> MERCEARIA
+  -> ALIMENTOS
+  -> MOLHOS
+  -> 183 pendentes
+  -> /produtos?secao=MERCEARIA&grupo=ALIMENTOS&subgrupo=MOLHOS&status=pendente
+```
+
+Os nomes dos parametros sao apenas referencia. A implementacao deve utilizar a
+estrutura mais adequada ao codigo atual.
+
+#### UX
+
+Nem todo numero precisa virar link. Tornar clicaveis somente os indicadores que
+possuem um destino util e claramente compreensivel.
+
+Podem ser utilizados:
+
+- numero clicavel;
+- link discreto;
+- acao Ver produtos;
+- outro componente coerente com o design atual.
+
+#### Conceitos que devo aprender
+
+- drill-down hierarquico;
+- composicao de filtros;
+- reutilizacao de componentes;
+- consistencia entre agregacao e detalhe.
+
+#### Criterios para considerar a fase concluida
+
+- Um indicador do ranking pode abrir os SKUs que o compoem.
+- Secao, Grupo, Subgrupo e status sao aplicados corretamente.
+- Os numeros do ranking batem com os resultados detalhados.
+- O usuario pode continuar refinando a listagem depois do drill-down.
+- O isolamento por organizacao permanece protegido.
+
+#### Checklist de conclusao
+
+- [ ] Testar pendentes por Subgrupo.
+- [ ] Testar contados por Subgrupo.
+- [ ] Testar sem data por Subgrupo.
+- [ ] Testar combinacao Secao + Grupo + Subgrupo + status.
+- [ ] Comparar agregados com a listagem detalhada.
+- [ ] Testar isolamento entre organizacoes.
+- [ ] Executar testes, lint e build.
+
+---
+
+### FASE 22 — Filtros persistidos na URL e breadcrumbs
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Representar o estado relevante da pagina Produtos na URL e melhorar a
+orientacao do usuario com breadcrumbs contextuais.
+
+#### Filtros que devem ser avaliados para persistencia
+
+- status;
+- Secao;
+- Grupo;
+- Subgrupo;
+- busca;
+- ordenacao;
+- pagina;
+- demais filtros existentes que sejam relevantes.
+
+Exemplo:
+
+```text
+/produtos?secao=MERCEARIA&grupo=ALIMENTOS&status=pendente&sort=ultimoInventario
+```
+
+#### Tarefas
+
+- [ ] Sincronizar os filtros relevantes com query parameters.
+- [ ] Preservar os filtros ao recarregar a pagina.
+- [ ] Permitir abrir diretamente uma URL filtrada.
+- [ ] Fazer voltar/avancar do navegador respeitar o estado da listagem.
+- [ ] Remover parametros obsoletos ao limpar filtros.
+- [ ] Tratar filtros hierarquicos incompativeis.
+- [ ] Criar breadcrumbs contextuais.
+- [ ] Tornar niveis aplicaveis dos breadcrumbs clicaveis.
+- [ ] Evitar breadcrumbs excessivos quando nao houver contexto.
+
+#### Exemplo de breadcrumb
+
+Produtos > Mercearia > Alimentos > Molhos > Pendentes
+
+#### Comportamento esperado
+
+- Produtos: remove o contexto de filtros.
+- Mercearia: mantem apenas o recorte da Secao.
+- Alimentos: mantem Secao + Grupo.
+- Molhos: mantem Secao + Grupo + Subgrupo.
+- Pendentes: representa o status atual.
+
+#### Regra de hierarquia
+
+Filtros filhos incompativeis nao podem permanecer silenciosamente ativos.
+
+Exemplo: ao trocar de Secao, um Grupo pertencente a Secao anterior deve ser
+removido ou validado.
+
+#### Regra de seguranca
+
+Query parameters sao filtros, nunca autorizacao. A organizacao deve continuar
+sendo determinada pela sessao autenticada no servidor.
+
+#### Conceitos que devo aprender
+
+- URL como estado;
+- query parameters;
+- navegacao do navegador;
+- breadcrumbs;
+- filtros hierarquicos.
+
+#### Criterios para considerar a fase concluida
+
+- URLs filtradas podem ser copiadas, recarregadas e abertas diretamente.
+- Voltar e avancar preservam um comportamento previsivel.
+- Filtros incompativeis sao tratados corretamente.
+- Breadcrumbs representam o contexto atual.
+- A organizacao nunca e determinada por parametros livres da URL.
+
+#### Checklist de conclusao
+
+- [ ] Testar reload com filtros.
+- [ ] Testar URL aberta diretamente.
+- [ ] Testar voltar e avancar.
+- [ ] Testar remocao de filtros.
+- [ ] Testar mudanca de filtros hierarquicos.
+- [ ] Testar breadcrumbs.
+- [ ] Testar manipulacao manual da URL.
+- [ ] Testar isolamento entre organizacoes.
+- [ ] Executar testes, lint e build.
+
+---
+
+### FASE 23 — Drill-down das importacoes
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Transformar o resultado e o historico de importacoes em informacoes
+investigaveis.
+
+Depois de uma importacao, o usuario deve conseguir identificar quais registros
+foram novos, quais foram atualizados e quais apresentaram problemas, conforme os
+dados que o importador realmente consegue determinar.
+
+#### Tarefas
+
+- [ ] Revisar o significado atual de inserted, updated, error e outros estados.
+- [ ] Exibir resumo detalhado de cada importacao.
+- [ ] Permitir abrir os produtos criados naquela importacao.
+- [ ] Permitir abrir os produtos atualizados naquela importacao.
+- [ ] Criar visualizacao dos erros da importacao.
+- [ ] Criar visualizacao de linhas ignoradas, caso esse estado exista.
+- [ ] Permitir abrir detalhes a partir do Historico de Importacoes.
+- [ ] Relacionar o drill-down a um identificador real da importacao.
+- [ ] Exibir mensagens compreensiveis sem vazar detalhes internos.
+
+#### Informacoes de erro
+
+Quando disponiveis, apresentar:
+
+- linha do CSV;
+- PLU recebido;
+- descricao recebida;
+- campo problematico;
+- motivo do erro.
+
+Exemplo:
+
+```text
+Linha | PLU  | Descricao   | Problema
+148   | -    | ARROZ XYZ   | PLU ausente
+293   | 8172 | FEIJAO XYZ  | Data invalida
+```
+
+Nunca expor stack traces, SQL, secrets ou mensagens internas desnecessarias ao
+usuario final.
+
+#### Regra importante
+
+Nao confundir produto presente no CSV com produto efetivamente alterado
+sem antes verificar como o importador atual define updated.
+
+Se a arquitetura atual nao registrar detalhe suficiente para reconstruir
+novos/atualizados/erros por importacao, modelar a persistencia necessaria de
+forma explicada antes de implementar.
+
+#### Conceitos que devo aprender
+
+- rastreabilidade de importacoes;
+- auditoria;
+- relacionamento entre processamento e registros;
+- mensagens de erro seguras;
+- observabilidade.
+
+#### Criterios para considerar a fase concluida
+
+- Cada importacao possui uma visao detalhada.
+- Novos e atualizados podem ser investigados quando suportados pela regra atual.
+- Erros possuem motivo compreensivel.
+- O Historico de Importacoes permite acessar os detalhes.
+- Nenhum dado de outra organizacao pode ser acessado pelo identificador da importacao.
+
+#### Checklist de conclusao
+
+- [ ] Testar importacao apenas com produtos novos.
+- [ ] Testar importacao com atualizacoes.
+- [ ] Testar importacao com erros.
+- [ ] Testar linhas ignoradas, se aplicavel.
+- [ ] Testar detalhes pelo historico.
+- [ ] Testar identificador de importacao de outra organizacao.
+- [ ] Revisar mensagens expostas ao usuario.
+- [ ] Executar testes, lint e build.
+
+---
+
+### FASE 24 — Drawer rapido do produto
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Permitir consultar rapidamente as principais informacoes de um produto sem
+abandonar a tabela ou perder o contexto atual.
+
+O Drawer complementa a pagina individual do produto, mas nao a substitui.
+
+#### Onde aplicar inicialmente
+
+- pagina Produtos;
+- listagens acessadas por drill-down;
+- pagina Estoque, quando fizer sentido.
+
+Nao aplicar automaticamente a todas as tabelas sem avaliar utilidade.
+
+#### Informacoes do Drawer
+
+Mostrar, quando disponivel:
+
+- descricao;
+- PLU;
+- codigo de barras;
+- estoque atual;
+- estoque anterior;
+- variacao;
+- ultimo inventario;
+- Secao;
+- Grupo;
+- Subgrupo;
+- status de inventario;
+- atalhos relevantes.
+
+#### Tarefas
+
+- [ ] Criar componente reutilizavel de Drawer do produto.
+- [ ] Permitir abertura a partir das tabelas priorizadas.
+- [ ] Preservar filtros, busca, ordenacao e paginacao ao abrir/fechar.
+- [ ] Criar acao Ver produto completo.
+- [ ] Reutilizar os drill-downs das fases anteriores quando fizer sentido.
+- [ ] Permitir fechar por botao.
+- [ ] Permitir fechar com Esc quando apropriado.
+- [ ] Implementar gerenciamento correto de foco.
+- [ ] Garantir comportamento responsivo.
+- [ ] Avaliar se o produto aberto deve ser representado na URL.
+- [ ] Evitar consultas N+1.
+- [ ] Buscar detalhes sob demanda quando necessario.
+- [ ] Mostrar estado de loading em consultas assincronas.
+
+#### Exemplo conceitual opcional
+
+```text
+/produtos?status=pendente&produto=1847
+```
+
+A URL acima nao e obrigatoria. Antes de implementar, avaliar se o beneficio
+justifica a complexidade e explicar a decisao.
+
+#### Performance
+
+Nao carregar detalhes pesados de todos os produtos antecipadamente.
+
+Reutilizar dados ja carregados quando forem suficientes.
+
+Buscar dados adicionais somente quando necessario.
+
+Mostrar estado de loading em consultas assincronas.
+
+Nao introduzir N+1 queries.
+
+#### Acessibilidade
+
+Drawer com titulo acessivel.
+
+Foco movido de forma adequada ao abrir.
+
+Foco devolvido ao elemento de origem ao fechar.
+
+Navegacao por teclado.
+
+Botao de fechar acessivel.
+
+Evitar que o foco percorra conteudo da pagina que esta atras do Drawer.
+
+#### Conceitos que devo aprender
+
+- drawers/dialogs acessiveis;
+- gerenciamento de foco;
+- carregamento sob demanda;
+- reutilizacao de componentes;
+- prevencao de N+1.
+
+#### Criterios para considerar a fase concluida
+
+- O usuario consulta um produto sem perder o contexto da tabela.
+- O Drawer exibe as informacoes principais.
+- A pagina completa do produto continua acessivel.
+- A abertura nao provoca consultas desnecessarias em massa.
+- O componente funciona por teclado e em telas menores.
+- O isolamento por organizacao permanece protegido.
+
+#### Checklist de conclusao
+
+- [ ] Testar abertura e fechamento.
+- [ ] Testar preservacao de filtros e pagina.
+- [ ] Testar Esc e foco.
+- [ ] Testar acesso ao produto completo.
+- [ ] Testar responsividade.
+- [ ] Revisar queries e verificar N+1.
+- [ ] Testar produto pertencente a outra organizacao.
+- [ ] Executar testes, lint e build.
+
+---
+
+### FASE 25 — Planejamento de inventarios
 
 **Status: NÃO INICIADA**
 
@@ -1378,7 +1822,7 @@ Transformar a prioridade calculada em um plano operacional de contagem.
 
 ---
 
-### FASE 21 — Metas e cobertura historica
+### FASE 26 — Metas e cobertura historica
 
 **Status: NÃO INICIADA**
 
@@ -1418,7 +1862,7 @@ meses.
 
 ---
 
-### FASE 22 — Relatorios e exportacoes
+### FASE 27 — Relatorios e exportacoes
 
 **Status: NÃO INICIADA**
 
@@ -1458,7 +1902,7 @@ comparaveis entre periodos.
 
 ---
 
-### FASE 23 — Alertas e notificacoes
+### FASE 28 — Alertas e notificacoes
 
 **Status: NÃO INICIADA**
 
@@ -1498,7 +1942,7 @@ Dashboard.
 
 ---
 
-### FASE 24 — Perfis, permissoes e convites
+### FASE 29 — Perfis, permissoes e convites
 
 **Status: NÃO INICIADA**
 
@@ -1540,7 +1984,7 @@ a base de papeis criada na Fase 19.
 
 ---
 
-### FASE 25 — Multiplas lojas por organizacao
+### FASE 30 — Multiplas lojas por organizacao
 
 **Status: NÃO INICIADA**
 
@@ -1580,7 +2024,7 @@ organizacao.
 
 ---
 
-### FASE 26 — Importacao configuravel
+### FASE 31 — Importacao configuravel
 
 **Status: NÃO INICIADA**
 
@@ -1621,7 +2065,7 @@ do parser.
 
 ---
 
-### FASE 27 — Regras de prioridade configuraveis
+### FASE 32 — Regras de prioridade configuraveis
 
 **Status: NÃO INICIADA**
 
@@ -1662,7 +2106,7 @@ formula explicavel e auditavel.
 
 ---
 
-### FASE 28 — PWA e temas visuais
+### FASE 33 — PWA e temas visuais
 
 **Status: NÃO INICIADA**
 
@@ -1732,4 +2176,4 @@ Fases 17–18. Projeto preparado para demonstracao publica.
 
 ### V2.0
 
-Fases 19–28. Evolucao baseada em necessidades reais observadas durante o uso.
+Fases 19–33. Evolucao baseada em necessidades reais observadas durante o uso.
