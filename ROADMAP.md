@@ -1667,7 +1667,7 @@ forma explicada antes de implementar.
 
 ### FASE 24 — Drawer rapido do produto
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1703,19 +1703,23 @@ Mostrar, quando disponivel:
 
 #### Tarefas
 
-- [ ] Criar componente reutilizavel de Drawer do produto.
-- [ ] Permitir abertura a partir das tabelas priorizadas.
-- [ ] Preservar filtros, busca, ordenacao e paginacao ao abrir/fechar.
-- [ ] Criar acao Ver produto completo.
-- [ ] Reutilizar os drill-downs das fases anteriores quando fizer sentido.
-- [ ] Permitir fechar por botao.
-- [ ] Permitir fechar com Esc quando apropriado.
-- [ ] Implementar gerenciamento correto de foco.
-- [ ] Garantir comportamento responsivo.
-- [ ] Avaliar se o produto aberto deve ser representado na URL.
-- [ ] Evitar consultas N+1.
-- [ ] Buscar detalhes sob demanda quando necessario.
-- [ ] Mostrar estado de loading em consultas assincronas.
+- [x] Criar componente reutilizavel de Drawer do produto.
+- [x] Permitir abertura a partir das tabelas priorizadas.
+- [x] Preservar filtros, busca, ordenacao e paginacao ao abrir/fechar.
+- [x] Criar acao Ver produto completo.
+- [x] Reutilizar os drill-downs das fases anteriores quando fizer sentido.
+- [x] Permitir fechar por botao.
+- [x] Permitir fechar com Esc quando apropriado.
+- [x] Implementar gerenciamento correto de foco.
+- [x] Garantir comportamento responsivo.
+- [x] Avaliar se o produto aberto deve ser representado na URL.
+- [x] Evitar consultas N+1.
+- [x] Buscar detalhes sob demanda quando necessario.
+- [x] Mostrar estado de loading em consultas assincronas.
+
+Decisao: o produto aberto permanece apenas no estado temporario do Drawer, sem
+ser adicionado a URL. Assim, filtros, busca, ordenacao e paginacao continuam
+representados pela URL atual sem criar estados canonicos adicionais.
 
 #### Exemplo conceitual opcional
 
@@ -1771,14 +1775,14 @@ Evitar que o foco percorra conteudo da pagina que esta atras do Drawer.
 
 #### Checklist de conclusao
 
-- [ ] Testar abertura e fechamento.
-- [ ] Testar preservacao de filtros e pagina.
-- [ ] Testar Esc e foco.
-- [ ] Testar acesso ao produto completo.
-- [ ] Testar responsividade.
-- [ ] Revisar queries e verificar N+1.
-- [ ] Testar produto pertencente a outra organizacao.
-- [ ] Executar testes, lint e build.
+- [x] Testar abertura e fechamento.
+- [x] Testar preservacao de filtros e pagina.
+- [x] Testar Esc e foco.
+- [x] Testar acesso ao produto completo.
+- [x] Testar responsividade.
+- [x] Revisar queries e verificar N+1.
+- [x] Testar produto pertencente a outra organizacao.
+- [x] Executar testes, lint e build.
 
 ---
 

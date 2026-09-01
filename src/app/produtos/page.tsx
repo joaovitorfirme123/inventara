@@ -3,6 +3,8 @@ import Link from "next/link";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/page-header";
+import { ProductTable } from "@/components/product-table";
+import type { ProductTableItem } from "@/components/product-table";
 import { ProductFilters } from "@/components/product-filters";
 import {
   DEFAULT_PRODUCT_SORT,
@@ -39,15 +41,6 @@ function createPageUrl(
   const query = params.toString();
   return query ? `/produtos?${query}` : "/produtos";
 }
-
-const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
-  timeZone: "UTC",
-});
-
-const stockFormatter = new Intl.NumberFormat("pt-BR", {
-  minimumFractionDigits: 0,
-  maximumFractionDigits: 3,
-});
 
 const sortOptions: Array<{ value: ProductSort; label: string }> = [
   { value: "description", label: "Descrição" },
@@ -245,49 +238,19 @@ async function ProductsContent({
         </div>
 
         {result.products.length > 0 ? (
-          <div className="table-scroll">
-            <table>
-              <thead>
-                <tr>
-                  <th>Produto</th>
-                  <th>PLU / Código</th>
-                  <th>Classificação</th>
-                  <th>Último inventário</th>
-                  <th className="numeric">Estoque</th>
-                </tr>
-              </thead>
-              <tbody>
-                {result.products.map((product) => (
-                  <tr key={product.id}>
-                    <td data-label="Produto">
-                      <strong>
-                        <Link className="product-detail-link" href={`/produtos/${encodeURIComponent(product.plu)}`}>
-                          {product.description}
-                        </Link>
-                      </strong>
-                      <small>{product.section ?? "Sem seção"}</small>
-                    </td>
-                    <td data-label="PLU / Código">
-                      <span className="code-value">{product.plu}</span>
-                      <small>{product.barcode ?? "Sem código"}</small>
-                    </td>
-                    <td data-label="Classificação">
-                      <span>{product.group ?? "—"}</span>
-                      <small>{product.subgroup ?? "Sem subgrupo"}</small>
-                    </td>
-                    <td data-label="Último inventário">
-                      {product.lastInventory
-                        ? dateFormatter.format(product.lastInventory)
-                        : "Sem data"}
-                    </td>
-                    <td className="numeric" data-label="Estoque">
-                      {stockFormatter.format(Number(product.currentStock))}
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <ProductTable
+            products={result.products.map((product): ProductTableItem => ({
+              id: product.id,
+              plu: product.plu,
+              barcode: product.barcode,
+              description: product.description,
+              section: product.section,
+              group: product.group,
+              subgroup: product.subgroup,
+              lastInventory: product.lastInventory?.toISOString() ?? null,
+              currentStock: product.currentStock.toString(),
+            }))}
+          />
         ) : (
           <div className="list-empty">
             <span>0</span>

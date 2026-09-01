@@ -1,6 +1,9 @@
 import "dotenv/config";
 import { importProducts } from "../src/data/import-products";
-import { getProductDetailsByPlu } from "../src/data/stock-history";
+import {
+  getProductDetailsByPlu,
+  getQuickProductDetailsByPlu,
+} from "../src/data/stock-history";
 import type { CsvProduct } from "../src/lib/csv";
 import { prisma } from "../src/lib/prisma";
 
@@ -55,10 +58,12 @@ async function testProductDetails() {
       errorRows: 0,
     });
 
-    const [details, missing, crossTenant] = await Promise.all([
+    const [details, quickDetails, missing, crossTenant, quickCrossTenant] = await Promise.all([
       getProductDetailsByPlu(organizationAId, plu),
+      getQuickProductDetailsByPlu(organizationAId, plu),
       getProductDetailsByPlu(organizationAId, "PLU-INEXISTENTE"),
       getProductDetailsByPlu(organizationBId, plu),
+      getQuickProductDetailsByPlu(organizationBId, plu),
     ]);
 
     assert(details !== null, "Existing product details were not found.");
@@ -77,8 +82,12 @@ async function testProductDetails() {
     assert(details.history.length === 2, "Product history is incomplete.");
     assert(details.history[0].filename === filenames[1], "History is not newest first.");
     assert(details.history[1].stock === "8", "Old snapshot was not preserved.");
+    assert(quickDetails?.currentStock === "11.5", "Quick product details are incorrect.");
+    assert(quickDetails.previousStock === "8" && quickDetails.variation === "3.5", "Quick stock variation is incorrect.");
+    assert(quickDetails.status === "contado", "Quick inventory status is incorrect.");
     assert(missing === null, "Missing product unexpectedly exists.");
     assert(crossTenant === null, "Product details leaked between organizations.");
+    assert(quickCrossTenant === null, "Quick product details leaked between organizations.");
   } finally {
     await cleanTestData();
   }
