@@ -1788,7 +1788,7 @@ Evitar que o foco percorra conteudo da pagina que esta atras do Drawer.
 
 ### FASE 25 — Planejamento de inventarios
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1796,12 +1796,12 @@ Transformar a prioridade calculada em um plano operacional de contagem.
 
 #### Tarefas
 
-- [ ] Criar planejamento de inventarios.
-- [ ] Definir data prevista da contagem.
-- [ ] Definir responsavel pela contagem.
-- [ ] Criar status: Pendente, Programado, Em andamento e Finalizado.
-- [ ] Permitir visualizar e filtrar planejamentos.
-- [ ] Relacionar o planejamento aos grupos e subgrupos priorizados.
+- [x] Criar planejamento de inventarios.
+- [x] Definir data prevista da contagem.
+- [x] Definir responsavel pela contagem.
+- [x] Criar status: Pendente, Programado, Em andamento e Finalizado.
+- [x] Permitir visualizar e filtrar planejamentos.
+- [x] Relacionar o planejamento aos grupos e subgrupos priorizados.
 
 #### Conceitos que devo aprender
 
@@ -1819,10 +1819,10 @@ Transformar a prioridade calculada em um plano operacional de contagem.
 
 #### Checklist de conclusao
 
-- [ ] Modelar tabelas e relacionamentos.
-- [ ] Testar criacao, edicao e filtros.
-- [ ] Testar todas as transicoes de status.
-- [ ] Testar isolamento entre organizacoes.
+- [x] Modelar tabelas e relacionamentos.
+- [x] Testar criacao, edicao e filtros.
+- [x] Testar todas as transicoes de status.
+- [x] Testar isolamento entre organizacoes.
 
 ---
 

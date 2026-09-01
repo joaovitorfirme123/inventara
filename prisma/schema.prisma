@@ -19,6 +19,13 @@ enum ImportRowStatus {
   ERROR
 }
 
+enum InventoryPlanStatus {
+  PENDING
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+}
+
 model Organization {
   id           String         @id @default(uuid()) @db.Uuid
   name         String
@@ -28,6 +35,7 @@ model Organization {
   products     Product[]
   imports      ImportRecord[]
   stockHistory StockHistory[]
+  inventoryPlans InventoryPlan[]
 
   @@map("organizations")
 }
@@ -46,6 +54,7 @@ model User {
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   sessions       Session[]
   accounts       Account[]
+  inventoryPlans InventoryPlan[]
 
   @@index([organizationId])
   @@map("users")
@@ -176,4 +185,27 @@ model StockHistory {
   @@index([organizationId, productId, recordedAt(sort: Desc)])
   @@index([organizationId, importId])
   @@map("stock_history")
+}
+
+model InventoryPlan {
+  id             String              @id @default(uuid()) @db.Uuid
+  organizationId String              @map("organization_id") @db.Uuid
+  section        String
+  group          String
+  subgroup       String
+  priority       String
+  priorityScore  Float               @map("priority_score")
+  totalSkus      Int                 @map("total_skus")
+  pendingSkus    Int                 @map("pending_skus")
+  plannedDate    DateTime?           @map("planned_date") @db.Date
+  responsibleId  String?             @map("responsible_id") @db.Uuid
+  status         InventoryPlanStatus @default(PENDING)
+  createdAt      DateTime            @default(now()) @map("created_at")
+  updatedAt      DateTime            @updatedAt @map("updated_at")
+  organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  responsible    User?               @relation(fields: [responsibleId], references: [id], onDelete: SetNull)
+
+  @@index([organizationId, status, plannedDate])
+  @@index([organizationId, section, group, subgroup])
+  @@map("inventory_plans")
 }

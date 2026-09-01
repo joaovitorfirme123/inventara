@@ -1661,6 +1661,172 @@ input {
   border: 1px solid var(--line);
 }
 
+.inventory-planner {
+  display: grid;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.inventory-planner-create,
+.inventory-planner-list {
+  padding: 0;
+  overflow: hidden;
+}
+
+.inventory-planner .panel-heading {
+  padding: 24px 28px;
+}
+
+.inventory-planner .panel-heading > select {
+  min-width: 170px;
+  height: 40px;
+  padding: 0 10px;
+  color: var(--ink);
+  background: #f7f6f0;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 0.68rem;
+}
+
+.inventory-planner .panel-intro {
+  margin: -8px 28px 20px;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
+.inventory-plan-create-form,
+.inventory-plan-form {
+  display: grid;
+  grid-template-columns: minmax(240px, 1.7fr) minmax(150px, 0.8fr) minmax(180px, 1fr) auto;
+  align-items: end;
+  gap: 14px;
+  padding: 0 28px 24px;
+}
+
+.inventory-plan-create-form label,
+.inventory-plan-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.inventory-plan-create-form label > span,
+.inventory-plan-form label > span {
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.inventory-plan-create-form select,
+.inventory-plan-create-form input,
+.inventory-plan-form select,
+.inventory-plan-form input {
+  width: 100%;
+  height: 42px;
+  min-width: 0;
+  padding: 0 10px;
+  color: var(--ink);
+  background: #f7f6f0;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 0.68rem;
+}
+
+.inventory-plan-create-form button,
+.inventory-plan-form button {
+  height: 42px;
+  padding: 0 16px;
+  color: var(--forest);
+  background: var(--lime);
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 800;
+  white-space: nowrap;
+}
+
+.inventory-plan-create-form button:disabled,
+.inventory-plan-form button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.inventory-planner-create .action-feedback {
+  margin: 0 28px 22px;
+}
+
+.inventory-plan-cards {
+  display: grid;
+  gap: 1px;
+  background: var(--line);
+}
+
+.inventory-plan-card {
+  display: grid;
+  gap: 18px;
+  padding: 24px 28px;
+  background: var(--paper);
+}
+
+.inventory-plan-card-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.inventory-plan-card h3 {
+  font-size: 1rem;
+  letter-spacing: -0.025em;
+}
+
+.inventory-plan-card .section-kicker {
+  margin-bottom: 6px;
+  font-size: 0.57rem;
+}
+
+.plan-status {
+  flex: 0 0 auto;
+  padding: 6px 8px;
+  color: var(--forest);
+  background: #e7efd9;
+  font-family: var(--font-geist), monospace;
+  font-size: 0.58rem;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.plan-status.in-progress {
+  color: #8a5a25;
+  background: #f4e8ca;
+}
+
+.plan-status.completed {
+  color: #69746f;
+  background: #e8e8e1;
+}
+
+.inventory-plan-metrics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+  color: var(--muted);
+  font-size: 0.66rem;
+}
+
+.inventory-plan-metrics strong {
+  color: var(--ink);
+  font-family: var(--font-geist), monospace;
+}
+
+.inventory-plan-form {
+  grid-template-columns: minmax(150px, 0.8fr) minmax(180px, 1fr) minmax(150px, 0.8fr) auto;
+  padding: 0;
+}
+
 .inventory-summary article {
   display: grid;
   gap: 9px;
@@ -3680,6 +3846,38 @@ input {
 
   .inventory-summary strong {
     font-size: 1.35rem;
+  }
+
+  .inventory-planner .panel-heading {
+    display: grid;
+    align-items: start;
+    padding: 20px 18px;
+  }
+
+  .inventory-planner .panel-heading > select {
+    width: 100%;
+  }
+
+  .inventory-planner .panel-intro {
+    margin: -2px 18px 18px;
+  }
+
+  .inventory-plan-create-form,
+  .inventory-plan-form {
+    grid-template-columns: 1fr;
+    padding: 0 18px 20px;
+  }
+
+  .inventory-planner-create .action-feedback {
+    margin: 0 18px 18px;
+  }
+
+  .inventory-plan-card {
+    padding: 20px 18px;
+  }
+
+  .inventory-plan-form button {
+    width: 100%;
   }
 
   .inventory-filters {

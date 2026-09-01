@@ -177,6 +177,9 @@ export async function deleteOrganization({
       select: { id: true },
     });
     const userIds = users.map(({ id }) => id);
+    await transaction.inventoryPlan.deleteMany({
+      where: { organizationId: organization.id },
+    });
     const stockHistory = await transaction.stockHistory.deleteMany({
       where: { organizationId: organization.id },
     });
