@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ChangeEvent } from "react";
+import type { ProductSort } from "@/data/products";
 import type { ProductInventoryStatus } from "@/lib/inventory-status";
 
 type ProductFiltersProps = {
@@ -11,6 +12,7 @@ type ProductFiltersProps = {
     group: string;
     subgroup: string;
     status?: ProductInventoryStatus;
+    sort?: ProductSort;
   };
   options: {
     sections: string[];
@@ -18,6 +20,7 @@ type ProductFiltersProps = {
     subgroups: string[];
   };
   statusOptions?: Array<{ value: ProductInventoryStatus; label: string }>;
+  sortOptions?: Array<{ value: ProductSort; label: string }>;
   clearHref?: string;
 };
 
@@ -37,7 +40,13 @@ function applySelection(
   form.requestSubmit();
 }
 
-export function ProductFilters({ filters, options, statusOptions, clearHref }: ProductFiltersProps) {
+export function ProductFilters({
+  filters,
+  options,
+  statusOptions,
+  sortOptions,
+  clearHref,
+}: ProductFiltersProps) {
   return (
     <form className="product-filters panel" method="get">
       <label className="search-field">
@@ -94,6 +103,19 @@ export function ProductFilters({ filters, options, statusOptions, clearHref }: P
           <select defaultValue={filters.status ?? ""} name="status">
             <option value="">Todos</option>
             {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
+
+      {sortOptions ? (
+        <label>
+          <span>Ordenação</span>
+          <select defaultValue={filters.sort ?? "description"} name="sort">
+            {sortOptions.map((option) => (
               <option key={option.value} value={option.value}>
                 {option.label}
               </option>

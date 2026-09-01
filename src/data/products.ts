@@ -6,6 +6,8 @@ import {
 } from "@/lib/inventory-status";
 
 export const PRODUCT_PAGE_SIZE = 10;
+export const DEFAULT_PRODUCT_SORT = "description" as const;
+export type ProductSort = "description" | "lastInventory" | "currentStock";
 
 type ProductClassificationField = "section" | "group" | "subgroup";
 
@@ -24,6 +26,7 @@ export type ProductQuery = {
   subgroup?: string;
   status?: ProductInventoryStatus;
   year?: number;
+  sort?: ProductSort;
 };
 
 function createClassificationWhere(
@@ -86,7 +89,12 @@ export async function listProducts(filters: ProductQuery) {
   const page = Math.min(filters.page, totalPages);
   const products = await prisma.product.findMany({
     where,
-    orderBy: [{ description: "asc" }, { id: "asc" }],
+    orderBy:
+      filters.sort === "lastInventory"
+        ? [{ lastInventory: "desc" }, { description: "asc" }, { id: "asc" }]
+        : filters.sort === "currentStock"
+          ? [{ currentStock: "desc" }, { description: "asc" }, { id: "asc" }]
+          : [{ description: "asc" }, { id: "asc" }],
     skip: (page - 1) * PRODUCT_PAGE_SIZE,
     take: PRODUCT_PAGE_SIZE,
   });

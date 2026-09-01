@@ -822,7 +822,7 @@ input {
 
 .product-filters {
   display: grid;
-  grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(120px, 0.7fr));
+  grid-template-columns: minmax(200px, 1.3fr) repeat(5, minmax(112px, 0.7fr));
   gap: 16px;
   margin-bottom: 14px;
   padding: 24px;
@@ -884,6 +884,52 @@ input {
   color: var(--muted);
   font-size: 0.76rem;
   font-weight: 700;
+}
+
+.product-breadcrumbs {
+  margin: 0 0 14px;
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.62rem;
+}
+
+.product-breadcrumbs ol {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  list-style: none;
+}
+
+.product-breadcrumbs li {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.product-breadcrumbs li:not(:last-child)::after {
+  color: #9ba29d;
+  content: "/";
+}
+
+.product-breadcrumbs a {
+  color: var(--forest);
+  text-decoration: underline;
+  text-decoration-color: #b8c99a;
+  text-underline-offset: 3px;
+}
+
+.product-breadcrumbs a:hover {
+  color: var(--rust);
+}
+
+.product-breadcrumbs a:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 3px;
+}
+
+.product-breadcrumbs [aria-current="page"] {
+  color: var(--ink);
+  font-weight: 750;
 }
 
 .product-list {

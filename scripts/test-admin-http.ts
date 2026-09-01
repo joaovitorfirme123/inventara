@@ -95,6 +95,36 @@ async function testAdminHttp() {
       throw new Error("Product status filter was not preserved with search.");
     }
 
+    const directFilteredPage = await fetch(
+      `${baseUrl}/produtos?section=Mercearia&group=Alimentos&subgroup=Secos&status=pendente&sort=currentStock&page=1`,
+      { headers: { cookie: ownerCookie } },
+    );
+    const directFilteredHtml = await directFilteredPage.text();
+    if (
+      directFilteredPage.status !== 200 ||
+      !directFilteredPage.url.includes("status=pendente") ||
+      !directFilteredPage.url.includes("sort=currentStock") ||
+      directFilteredPage.url.includes("page=1") ||
+      !directFilteredHtml.includes("Breadcrumb") ||
+      !directFilteredHtml.includes("Filtro ativo")
+    ) {
+      throw new Error("Product URL state or breadcrumbs were not preserved.");
+    }
+
+    const incompatibleHierarchyPage = await fetch(
+      `${baseUrl}/produtos?section=Mercearia&group=Grupo%20inexistente&subgroup=Subgrupo%20inexistente&sort=description`,
+      { headers: { cookie: ownerCookie } },
+    );
+    if (
+      incompatibleHierarchyPage.status !== 200 ||
+      !incompatibleHierarchyPage.url.includes("section=Mercearia") ||
+      incompatibleHierarchyPage.url.includes("group=") ||
+      incompatibleHierarchyPage.url.includes("subgroup=") ||
+      incompatibleHierarchyPage.url.includes("sort=")
+    ) {
+      throw new Error("Incompatible product hierarchy was not canonicalized.");
+    }
+
     const ownerAdminPage = await fetch(`${baseUrl}/admin/organizacoes`, {
       headers: { cookie: ownerCookie },
       redirect: "manual",

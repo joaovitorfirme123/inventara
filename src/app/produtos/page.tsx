@@ -1,13 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { PageHeader } from "@/components/page-header";
 import { ProductFilters } from "@/components/product-filters";
 import {
+  DEFAULT_PRODUCT_SORT,
   getProductFilterOptions,
   listProducts,
   PRODUCT_PAGE_SIZE,
 } from "@/data/products";
+import type { ProductSort } from "@/data/products";
 import { getCurrentOrganizationId } from "@/lib/current-organization";
 import {
   getProductInventoryStatusLabel,
@@ -46,6 +49,16 @@ const stockFormatter = new Intl.NumberFormat("pt-BR", {
   maximumFractionDigits: 3,
 });
 
+const sortOptions: Array<{ value: ProductSort; label: string }> = [
+  { value: "description", label: "Descrição" },
+  { value: "lastInventory", label: "Último inventário" },
+  { value: "currentStock", label: "Maior estoque" },
+];
+
+function isProductSort(value: string): value is ProductSort {
+  return sortOptions.some((option) => option.value === value);
+}
+
 function ProductsSkeleton() {
   return (
     <div className="product-loading" aria-label="Carregando produtos">
@@ -65,32 +78,100 @@ type ProductFiltersType = {
   group: string;
   subgroup: string;
   status?: ProductInventoryStatus;
+  sort?: ProductSort;
 };
+
+type ProductFilterOptions = Awaited<ReturnType<typeof getProductFilterOptions>>;
+
+async function resolveProductFilters(
+  organizationId: string,
+  requested: ProductFiltersType,
+) {
+  const allOptions = await getProductFilterOptions(organizationId);
+  const sectionIsValid =
+    !requested.section || allOptions.sections.includes(requested.section);
+  const section = sectionIsValid ? requested.section : "";
+  const sectionOptions = section
+    ? await getProductFilterOptions(organizationId, { section })
+    : allOptions;
+  const groupIsValid =
+    sectionIsValid &&
+    (!requested.group || sectionOptions.groups.includes(requested.group));
+  const group = groupIsValid ? requested.group : "";
+  const finalOptions = section || group
+    ? await getProductFilterOptions(organizationId, { section, group })
+    : sectionOptions;
+  const subgroup =
+    groupIsValid &&
+    (!requested.subgroup || finalOptions.subgroups.includes(requested.subgroup))
+      ? requested.subgroup
+      : "";
+
+  return {
+    filters: { ...requested, section, group, subgroup },
+    options: finalOptions,
+  } satisfies { filters: ProductFiltersType; options: ProductFilterOptions };
+}
+
+function createProductsCanonicalUrl(filters: ProductFiltersType, page: number) {
+  const activeFilters = Object.fromEntries(
+    Object.entries(filters).filter(([, value]) => value),
+  );
+  return createPageUrl(activeFilters, page);
+}
+
+function createProductsBreadcrumbs(filters: ProductFiltersType, year: number) {
+  const items: Array<{ label: string; href?: string; current?: boolean }> = [
+    { label: "Produtos", href: "/produtos" },
+  ];
+  const selected: Record<string, string> = {};
+
+  for (const [field, value] of [
+    ["section", filters.section],
+    ["group", filters.group],
+    ["subgroup", filters.subgroup],
+  ] as const) {
+    if (!value) continue;
+    selected[field] = value;
+    items.push({ label: value, href: createPageUrl(selected, 1) });
+  }
+
+  if (filters.status) {
+    items.push({
+      label: getProductInventoryStatusLabel(filters.status, year),
+      current: true,
+    });
+  } else if (items.length > 1) {
+    items[items.length - 1].current = true;
+  }
+
+  return items.length > 1 ? items : null;
+}
 
 async function ProductsContent({
   organizationId,
   filters,
   page,
   year,
+  options,
 }: {
   organizationId: string;
   filters: ProductFiltersType;
   page: number;
   year: number;
+  options: ProductFilterOptions;
 }) {
-  const [result, options] = await Promise.all([
-    listProducts({
-      organizationId,
-      page,
-      query: filters.q,
-      section: filters.section,
-      group: filters.group,
-      subgroup: filters.subgroup,
-      status: filters.status,
-      year,
-    }),
-    getProductFilterOptions(organizationId, filters),
-  ]);
+  const result = await listProducts({
+    organizationId,
+    page,
+    query: filters.q,
+    section: filters.section,
+    group: filters.group,
+    subgroup: filters.subgroup,
+    status: filters.status,
+    year,
+    sort: filters.sort,
+  });
 
   const activeFilters = Object.fromEntries(
     Object.entries(filters).filter(([, value]) => value),
@@ -105,17 +186,42 @@ async function ProductsContent({
     Object.entries(activeFilters).filter(([key]) => key !== "status"),
   );
   const removeStatusHref = createPageUrl(filtersWithoutStatus, 1);
+  const breadcrumbs = createProductsBreadcrumbs(filters, year);
 
   return (
     <>
+      {breadcrumbs ? (
+        <nav className="product-breadcrumbs" aria-label="Breadcrumb">
+          <ol>
+            {breadcrumbs.map((item) => (
+              <li key={item.label}>
+                {item.href ? (
+                  <Link
+                    href={item.href}
+                    aria-current={item.current ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                ) : (
+                  <span aria-current={item.current ? "page" : undefined}>
+                    {item.label}
+                  </span>
+                )}
+              </li>
+            ))}
+          </ol>
+        </nav>
+      ) : null}
+
       <ProductFilters
-         key={`${filters.q}:${filters.section}:${filters.group}:${filters.subgroup}:${filters.status ?? ""}`}
-         filters={filters}
-         options={options}
-         statusOptions={PRODUCT_INVENTORY_STATUSES.map((status) => ({
-           value: status,
-           label: getProductInventoryStatusLabel(status, year),
-         }))}
+        key={`${filters.q}:${filters.section}:${filters.group}:${filters.subgroup}:${filters.status ?? ""}:${filters.sort ?? ""}`}
+        filters={filters}
+        options={options}
+        statusOptions={PRODUCT_INVENTORY_STATUSES.map((status) => ({
+          value: status,
+          label: getProductInventoryStatusLabel(status, year),
+        }))}
+        sortOptions={sortOptions}
       />
 
       <section className="product-list panel">
@@ -226,15 +332,35 @@ export default async function ProdutosPage({
   const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
   const statusParam = getParam(params.status);
   const status = isProductInventoryStatus(statusParam) ? statusParam : undefined;
+  const sortParam = getParam(params.sort);
+  const sort = isProductSort(sortParam) && sortParam !== DEFAULT_PRODUCT_SORT
+    ? sortParam
+    : undefined;
   const filters = {
     q: getParam(params.q),
     section: getParam(params.section),
     group: getParam(params.group),
     subgroup: getParam(params.subgroup),
     status,
+    sort,
   };
-  const year = new Date().getFullYear();
   const organizationId = await getCurrentOrganizationId();
+  const { filters: resolvedFilters, options } = await resolveProductFilters(
+    organizationId,
+    filters,
+  );
+  const year = new Date().getFullYear();
+  const canonicalUrl = createProductsCanonicalUrl(resolvedFilters, page);
+  const currentParams = new URLSearchParams();
+  for (const [key, value] of Object.entries(params)) {
+    for (const item of Array.isArray(value) ? value : [value]) {
+      if (item !== undefined) currentParams.append(key, item);
+    }
+  }
+  const currentUrl = currentParams.toString()
+    ? `/produtos?${currentParams.toString()}`
+    : "/produtos";
+  if (canonicalUrl !== currentUrl) redirect(canonicalUrl);
 
   return (
     <>
@@ -247,9 +373,10 @@ export default async function ProdutosPage({
       <Suspense fallback={<ProductsSkeleton />}>
         <ProductsContent
           organizationId={organizationId}
-          filters={filters}
+          filters={resolvedFilters}
           page={page}
           year={year}
+          options={options}
         />
       </Suspense>
     </>
