@@ -1667,6 +1667,154 @@ input {
   margin-bottom: 14px;
 }
 
+.assistant-panel {
+  display: grid;
+  gap: 22px;
+  padding: 28px;
+}
+
+.assistant-transcript {
+  display: grid;
+  max-height: 560px;
+  gap: 14px;
+  overflow-y: auto;
+  padding: 4px;
+}
+
+.assistant-message {
+  width: min(760px, 88%);
+  padding: 16px 18px;
+  background: #f0efe8;
+  border-left: 3px solid var(--line);
+}
+
+.assistant-message.assistant {
+  border-left-color: var(--lime);
+}
+
+.assistant-message.user {
+  justify-self: end;
+  color: var(--paper);
+  background: var(--forest);
+  border-left-color: var(--rust);
+}
+
+.assistant-message span,
+.assistant-suggestions > span,
+.assistant-form label > span {
+  display: block;
+  margin-bottom: 7px;
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.57rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.assistant-message.user span {
+  color: #c9f263;
+}
+
+.assistant-message p {
+  white-space: pre-wrap;
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+
+.assistant-loading {
+  color: var(--muted);
+  font-size: 0.7rem;
+  font-style: italic;
+}
+
+.assistant-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.assistant-suggestions > span {
+  width: 100%;
+  margin-bottom: 0;
+}
+
+.assistant-suggestions button {
+  padding: 8px 10px;
+  color: var(--forest);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.65rem;
+  text-align: left;
+}
+
+.assistant-suggestions button:hover {
+  background: #edf4d7;
+  border-color: #c8dca1;
+}
+
+.assistant-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+}
+
+.assistant-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.assistant-form textarea {
+  display: block;
+  width: 100%;
+  min-height: 86px;
+  resize: vertical;
+  padding: 12px;
+  color: var(--ink);
+  background: #f7f6f0;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 0.76rem;
+  line-height: 1.5;
+}
+
+.assistant-form button {
+  min-height: 44px;
+  padding: 0 22px;
+  color: var(--forest);
+  background: var(--lime);
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.72rem;
+  font-weight: 800;
+}
+
+.assistant-form button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.assistant-form small {
+  grid-column: 1 / -1;
+  color: var(--muted);
+  font-size: 0.63rem;
+}
+
+.assistant-error {
+  padding: 14px 16px;
+  color: #813c2b;
+  background: #f7e9e3;
+  border-left: 3px solid var(--rust);
+  font-size: 0.7rem;
+}
+
 .inventory-planner-create,
 .inventory-planner-list {
   padding: 0;
@@ -3857,6 +4005,22 @@ input {
 
   .inventory-summary article {
     padding: 17px;
+  }
+
+  .assistant-panel {
+    padding: 18px;
+  }
+
+  .assistant-message {
+    width: 100%;
+  }
+
+  .assistant-form {
+    grid-template-columns: 1fr;
+  }
+
+  .assistant-form button {
+    width: 100%;
   }
 
   .inventory-summary strong {
