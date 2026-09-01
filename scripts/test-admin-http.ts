@@ -53,6 +53,32 @@ async function testAdminHttp() {
     }
 
     const ownerCookie = await login("ana@alfa.test", ownerPassword);
+    const dashboardPage = await fetch(baseUrl, { headers: { cookie: ownerCookie } });
+    const dashboardHtml = await dashboardPage.text();
+    if (
+      dashboardPage.status !== 200 ||
+      !dashboardHtml.includes('href="/produtos"') ||
+      !dashboardHtml.includes('href="/produtos?status=contado"') ||
+      !dashboardHtml.includes('href="/produtos?status=pendente"') ||
+      !dashboardHtml.includes('href="/produtos?status=sem-data"')
+    ) {
+      throw new Error("Dashboard product drill-down links are incomplete.");
+    }
+
+    const filteredProductsPage = await fetch(
+      `${baseUrl}/produtos?status=pendente&q=Arroz`,
+      { headers: { cookie: ownerCookie } },
+    );
+    const filteredProductsHtml = await filteredProductsPage.text();
+    if (
+      filteredProductsPage.status !== 200 ||
+      !filteredProductsHtml.includes("Filtro ativo") ||
+      !filteredProductsHtml.includes("Pendentes") ||
+      !filteredProductsHtml.includes("Arroz")
+    ) {
+      throw new Error("Product status filter was not preserved with search.");
+    }
+
     const ownerAdminPage = await fetch(`${baseUrl}/admin/organizacoes`, {
       headers: { cookie: ownerCookie },
       redirect: "manual",

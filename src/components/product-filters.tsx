@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { ChangeEvent } from "react";
+import type { ProductInventoryStatus } from "@/lib/inventory-status";
 
 type ProductFiltersProps = {
   filters: {
@@ -9,12 +10,14 @@ type ProductFiltersProps = {
     section: string;
     group: string;
     subgroup: string;
+    status?: ProductInventoryStatus;
   };
   options: {
     sections: string[];
     groups: string[];
     subgroups: string[];
   };
+  statusOptions?: Array<{ value: ProductInventoryStatus; label: string }>;
   clearHref?: string;
 };
 
@@ -34,7 +37,7 @@ function applySelection(
   form.requestSubmit();
 }
 
-export function ProductFilters({ filters, options, clearHref }: ProductFiltersProps) {
+export function ProductFilters({ filters, options, statusOptions, clearHref }: ProductFiltersProps) {
   return (
     <form className="product-filters panel" method="get">
       <label className="search-field">
@@ -84,6 +87,20 @@ export function ProductFilters({ filters, options, clearHref }: ProductFiltersPr
           ))}
         </select>
       </label>
+
+      {statusOptions ? (
+        <label>
+          <span>Status de inventário</span>
+          <select defaultValue={filters.status ?? ""} name="status">
+            <option value="">Todos</option>
+            {statusOptions.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </label>
+      ) : null}
 
       <div className="filter-actions">
         <button type="submit">Aplicar</button>

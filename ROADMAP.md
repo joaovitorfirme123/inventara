@@ -1340,7 +1340,7 @@ sem misturar permissoes globais da plataforma com dados de cada tenant.
 
 ### FASE 20 — Dashboard -> Produtos filtrados
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1352,17 +1352,17 @@ representados na URL sempre que possivel.
 
 #### Tarefas
 
-- [ ] Tornar o card Total de SKUs clicavel e direcionar para `/produtos`.
-- [ ] Tornar o card Contados no ano atual clicavel.
-- [ ] Calcular o ano atual dinamicamente, sem fixar 2026 no codigo.
-- [ ] Tornar o card Pendentes clicavel.
-- [ ] Tornar o card Sem data clicavel.
-- [ ] Aplicar o filtro correspondente na pagina Produtos.
-- [ ] Exibir visualmente o filtro ativo.
-- [ ] Permitir remover o filtro sem voltar ao Dashboard.
-- [ ] Manter busca, paginacao, ordenacao e demais filtros existentes.
-- [ ] Garantir que o card inteiro seja clicavel e acessivel por teclado.
-- [ ] Reutilizar as mesmas regras de negocio usadas pelo Dashboard.
+- [x] Tornar o card Total de SKUs clicavel e direcionar para `/produtos`.
+- [x] Tornar o card Contados no ano atual clicavel.
+- [x] Calcular o ano atual dinamicamente, sem fixar 2026 no codigo.
+- [x] Tornar o card Pendentes clicavel.
+- [x] Tornar o card Sem data clicavel.
+- [x] Aplicar o filtro correspondente na pagina Produtos.
+- [x] Exibir visualmente o filtro ativo.
+- [x] Permitir remover o filtro sem voltar ao Dashboard.
+- [x] Manter busca, paginacao, ordenacao e demais filtros existentes.
+- [x] Garantir que o card inteiro seja clicavel e acessivel por teclado.
+- [x] Reutilizar as mesmas regras de negocio usadas pelo Dashboard.
 
 #### Exemplos conceituais
 
@@ -1401,15 +1401,15 @@ dos dados.
 
 #### Checklist de conclusao
 
-- [ ] Testar Total de SKUs.
-- [ ] Testar Contados no ano atual.
-- [ ] Testar Pendentes.
-- [ ] Testar Sem data.
-- [ ] Comparar quantidades do Dashboard com a listagem filtrada.
-- [ ] Testar combinacao com filtros existentes.
-- [ ] Testar teclado e foco.
-- [ ] Testar isolamento entre organizacoes.
-- [ ] Executar testes, lint e build.
+- [x] Testar Total de SKUs.
+- [x] Testar Contados no ano atual.
+- [x] Testar Pendentes.
+- [x] Testar Sem data.
+- [x] Comparar quantidades do Dashboard com a listagem filtrada.
+- [x] Testar combinacao com filtros existentes.
+- [x] Testar teclado e foco.
+- [x] Testar isolamento entre organizacoes.
+- [x] Executar testes, lint e build.
 
 ---
 

@@ -1,9 +1,11 @@
 import "dotenv/config";
+import { getDashboardData } from "../src/data/dashboard";
 import {
   getProductFilterOptions,
   listProducts,
   PRODUCT_PAGE_SIZE,
 } from "../src/data/products";
+import type { ProductInventoryStatus } from "../src/lib/inventory-status";
 import { getProductDetailsByPlu } from "../src/data/stock-history";
 import { prisma } from "../src/lib/prisma";
 
@@ -95,6 +97,54 @@ async function testProducts() {
 
   if (searches.some((result) => result.total === 0)) {
     throw new Error("A product search or filter returned no test records.");
+  }
+
+  const dashboard = await getDashboardData(
+    organizationAId,
+    2026,
+    new Date("2026-08-28T12:00:00Z"),
+  );
+  const statusResults = await Promise.all(
+    (["contado", "pendente", "sem-data"] as ProductInventoryStatus[]).map(
+      (status) =>
+        listProducts({
+          organizationId: organizationAId,
+          page: 1,
+          status,
+          year: 2026,
+        }),
+    ),
+  );
+
+  if (
+    statusResults[0].total !== dashboard.summary.countedSkus ||
+    statusResults[1].total !== dashboard.summary.pendingSkus ||
+    statusResults[2].total !== dashboard.summary.noDateSkus
+  ) {
+    throw new Error("Product status filters do not match dashboard totals.");
+  }
+
+  const betaPending = await listProducts({
+    organizationId: organizationBId,
+    page: 1,
+    status: "pendente",
+    year: 2026,
+  });
+  const betaPendingCount = await prisma.product.count({
+    where: {
+      organizationId: organizationBId,
+      OR: [
+        { lastInventory: null },
+        { lastInventory: { lt: new Date("2026-01-01T00:00:00.000Z") } },
+        { lastInventory: { gte: new Date("2027-01-01T00:00:00.000Z") } },
+      ],
+    },
+  });
+  if (
+    betaPending.total !== betaPendingCount ||
+    betaPending.products.some((product) => product.organizationId !== organizationBId)
+  ) {
+    throw new Error("Product status filter isolation failed.");
   }
 
   const [sectionOptions, groupOptions] = await Promise.all([

@@ -4,6 +4,7 @@ import {
 } from "@/lib/inventory-priority";
 import type { InventoryPriority } from "@/lib/inventory-priority";
 import { prisma } from "@/lib/prisma";
+import { getInventoryYearBounds } from "@/lib/inventory-status";
 
 type RawInventoryGroup = {
   section: string;
@@ -70,6 +71,7 @@ export async function getInventoryRows(
   now = new Date(),
   sort: InventorySort = "priority",
 ) {
+  const { start, end } = getInventoryYearBounds(year);
   const groups = await prisma.$queryRaw<RawInventoryGroup[]>`
     SELECT
       COALESCE(NULLIF(BTRIM("section"), ''), 'Sem seção') AS "section",
@@ -77,13 +79,13 @@ export async function getInventoryRows(
       COALESCE(NULLIF(BTRIM("subgroup"), ''), 'Sem subgrupo') AS "subgroup",
       COUNT(*)::int AS "total_skus",
       COUNT(*) FILTER (
-        WHERE "last_inventory" >= make_date(${year}::int, 1, 1)
-          AND "last_inventory" < make_date(${year + 1}::int, 1, 1)
+        WHERE "last_inventory" >= ${start}::date
+          AND "last_inventory" < ${end}::date
       )::int AS "counted_skus",
       COUNT(*) FILTER (
         WHERE "last_inventory" IS NULL
-          OR "last_inventory" < make_date(${year}::int, 1, 1)
-          OR "last_inventory" >= make_date(${year + 1}::int, 1, 1)
+          OR "last_inventory" < ${start}::date
+          OR "last_inventory" >= ${end}::date
       )::int AS "pending_skus",
       COUNT(*) FILTER (WHERE "last_inventory" IS NULL)::int AS "no_date_skus",
       MIN("last_inventory") AS "oldest_date",
@@ -91,8 +93,8 @@ export async function getInventoryRows(
       MIN("last_inventory") FILTER (
         WHERE "last_inventory" IS NOT NULL
           AND (
-            "last_inventory" < make_date(${year}::int, 1, 1)
-            OR "last_inventory" >= make_date(${year + 1}::int, 1, 1)
+            "last_inventory" < ${start}::date
+            OR "last_inventory" >= ${end}::date
           )
       ) AS "oldest_pending_date"
     FROM "products"

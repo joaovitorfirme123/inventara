@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import { Suspense } from "react";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { connection } from "next/server";
 import { PageHeader } from "@/components/page-header";
 import { getDashboardData } from "@/data/dashboard";
@@ -55,13 +56,13 @@ async function DashboardContent({
   }
 
   const metrics = [
-    { label: "Total de SKUs", value: numberFormatter.format(summary.totalSkus), detail: "Produtos na base ativa" },
+    { label: "Total de SKUs", value: numberFormatter.format(summary.totalSkus), detail: "Produtos na base ativa", href: "/produtos" },
     { label: "Seções", value: numberFormatter.format(summary.totalSections), detail: "Áreas monitoradas" },
     { label: "Grupos / Subgrupos", value: `${summary.totalGroups} / ${summary.totalSubgroups}`, detail: "Estrutura de classificação" },
-    { label: `Contados em ${year}`, value: numberFormatter.format(summary.countedSkus), detail: "Inventariados no ciclo" },
-    { label: "Pendentes", value: numberFormatter.format(summary.pendingSkus), detail: "Fora do ciclo atual" },
+    { label: `Contados em ${year}`, value: numberFormatter.format(summary.countedSkus), detail: "Inventariados no ciclo", href: "/produtos?status=contado" },
+    { label: "Pendentes", value: numberFormatter.format(summary.pendingSkus), detail: "Fora do ciclo atual", href: "/produtos?status=pendente" },
     { label: "Cobertura", value: `${summary.countedPercentage.toFixed(1)}%`, detail: "Percentual inventariado" },
-    { label: "Sem data", value: numberFormatter.format(summary.noDateSkus), detail: "Sem histórico de contagem" },
+    { label: "Sem data", value: numberFormatter.format(summary.noDateSkus), detail: "Sem histórico de contagem", href: "/produtos?status=sem-data" },
   ];
   const maxPending = Math.max(...sections.map((section) => section.pendingSkus), 1);
   const priorityTotal = priorities.reduce((total, item) => total + item.total, 0);
@@ -78,12 +79,26 @@ async function DashboardContent({
     <>
       <section className="dashboard-metrics" aria-label="Indicadores gerais">
         {metrics.map((metric, index) => (
-          <article className="dashboard-metric" key={metric.label}>
-            <span>0{index + 1}</span>
-            <p>{metric.label}</p>
-            <strong>{metric.value}</strong>
-            <small>{metric.detail}</small>
-          </article>
+          metric.href ? (
+            <Link
+              aria-label={`${metric.label}: ${metric.value}. Abrir produtos`}
+              className="dashboard-metric"
+              href={metric.href}
+              key={metric.label}
+            >
+              <span>0{index + 1}</span>
+              <p>{metric.label}</p>
+              <strong>{metric.value}</strong>
+              <small>{metric.detail}</small>
+            </Link>
+          ) : (
+            <article className="dashboard-metric" key={metric.label}>
+              <span>0{index + 1}</span>
+              <p>{metric.label}</p>
+              <strong>{metric.value}</strong>
+              <small>{metric.detail}</small>
+            </article>
+          )
         ))}
       </section>
 

@@ -1,5 +1,9 @@
 import type { Prisma } from "@/generated/prisma/client";
 import { prisma } from "@/lib/prisma";
+import {
+  getInventoryYearBounds,
+  type ProductInventoryStatus,
+} from "@/lib/inventory-status";
 
 export const PRODUCT_PAGE_SIZE = 10;
 
@@ -10,18 +14,40 @@ export type ProductQuery = {
   section?: string;
   group?: string;
   subgroup?: string;
+  status?: ProductInventoryStatus;
+  year?: number;
 };
 
 function createProductWhere(filters: ProductQuery): Prisma.ProductWhereInput {
-  return {
-    organizationId: filters.organizationId,
-    ...(filters.query && {
+  const { start, end } = getInventoryYearBounds(filters.year);
+  const conditions: Prisma.ProductWhereInput[] = [];
+  const inventoryStatus = filters.status === "contado"
+    ? { lastInventory: { gte: start, lt: end } }
+    : filters.status === "pendente"
+      ? {
+          OR: [
+            { lastInventory: null },
+            { lastInventory: { lt: start } },
+            { lastInventory: { gte: end } },
+          ],
+        }
+      : filters.status === "sem-data"
+        ? { lastInventory: null }
+        : {};
+  if (Object.keys(inventoryStatus).length > 0) conditions.push(inventoryStatus);
+  if (filters.query) {
+    conditions.push({
       OR: [
         { description: { contains: filters.query, mode: "insensitive" } },
         { plu: { contains: filters.query, mode: "insensitive" } },
         { barcode: { contains: filters.query, mode: "insensitive" } },
       ],
-    }),
+    });
+  }
+
+  return {
+    organizationId: filters.organizationId,
+    ...(conditions.length > 0 && { AND: conditions }),
     ...(filters.section && { section: filters.section }),
     ...(filters.group && { group: filters.group }),
     ...(filters.subgroup && { subgroup: filters.subgroup }),

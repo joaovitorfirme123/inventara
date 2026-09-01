@@ -822,7 +822,7 @@ input {
 
 .product-filters {
   display: grid;
-  grid-template-columns: minmax(250px, 1.5fr) repeat(3, minmax(130px, 0.7fr));
+  grid-template-columns: minmax(220px, 1.4fr) repeat(4, minmax(120px, 0.7fr));
   gap: 16px;
   margin-bottom: 14px;
   padding: 24px;
@@ -909,6 +909,37 @@ input {
   color: var(--muted);
   font-family: var(--font-geist), monospace;
   font-size: 0.66rem;
+}
+
+.list-summary-meta {
+  display: grid;
+  justify-items: end;
+  gap: 8px;
+}
+
+.active-product-filter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 9px;
+  color: var(--forest);
+  background: #edf4d7;
+  border: 1px solid #d5e6a4;
+  font-size: 0.66rem;
+}
+
+.active-product-filter span {
+  color: #6c7d38;
+  font-family: var(--font-geist), monospace;
+  font-size: 0.57rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.active-product-filter a {
+  color: var(--muted);
+  font-weight: 750;
+  text-decoration: underline;
 }
 
 .table-scroll {
@@ -1874,6 +1905,21 @@ input {
 
 .dashboard-metric:first-child small {
   color: #8fa99e;
+}
+
+.dashboard-metric[href] {
+  cursor: pointer;
+  transition: filter 160ms ease;
+}
+
+.dashboard-metric[href]:hover {
+  filter: brightness(0.96);
+}
+
+.dashboard-metric[href]:focus-visible {
+  z-index: 1;
+  outline: 3px solid var(--rust);
+  outline-offset: -3px;
 }
 
 .dashboard-charts {

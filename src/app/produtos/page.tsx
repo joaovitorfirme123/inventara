@@ -9,6 +9,12 @@ import {
   PRODUCT_PAGE_SIZE,
 } from "@/data/products";
 import { getCurrentOrganizationId } from "@/lib/current-organization";
+import {
+  getProductInventoryStatusLabel,
+  isProductInventoryStatus,
+  PRODUCT_INVENTORY_STATUSES,
+} from "@/lib/inventory-status";
+import type { ProductInventoryStatus } from "@/lib/inventory-status";
 
 export const metadata: Metadata = { title: "Produtos" };
 
@@ -25,8 +31,10 @@ function createPageUrl(
   page: number,
 ) {
   const params = new URLSearchParams(filters);
-  params.set("page", String(page));
-  return `/produtos?${params.toString()}`;
+  if (page > 1) params.set("page", String(page));
+  else params.delete("page");
+  const query = params.toString();
+  return query ? `/produtos?${query}` : "/produtos";
 }
 
 const dateFormatter = new Intl.DateTimeFormat("pt-BR", {
@@ -56,16 +64,19 @@ type ProductFiltersType = {
   section: string;
   group: string;
   subgroup: string;
+  status?: ProductInventoryStatus;
 };
 
 async function ProductsContent({
   organizationId,
   filters,
   page,
+  year,
 }: {
   organizationId: string;
   filters: ProductFiltersType;
   page: number;
+  year: number;
 }) {
   const [result, options] = await Promise.all([
     listProducts({
@@ -75,6 +86,8 @@ async function ProductsContent({
       section: filters.section,
       group: filters.group,
       subgroup: filters.subgroup,
+      status: filters.status,
+      year,
     }),
     getProductFilterOptions(organizationId, filters),
   ]);
@@ -85,13 +98,24 @@ async function ProductsContent({
   const firstItem =
     result.total === 0 ? 0 : (result.page - 1) * PRODUCT_PAGE_SIZE + 1;
   const lastItem = Math.min(result.page * PRODUCT_PAGE_SIZE, result.total);
+  const statusLabel = filters.status
+    ? getProductInventoryStatusLabel(filters.status, year)
+    : null;
+  const filtersWithoutStatus = Object.fromEntries(
+    Object.entries(activeFilters).filter(([key]) => key !== "status"),
+  );
+  const removeStatusHref = createPageUrl(filtersWithoutStatus, 1);
 
   return (
     <>
       <ProductFilters
-        key={`${filters.q}:${filters.section}:${filters.group}:${filters.subgroup}`}
-        filters={filters}
-        options={options}
+         key={`${filters.q}:${filters.section}:${filters.group}:${filters.subgroup}:${filters.status ?? ""}`}
+         filters={filters}
+         options={options}
+         statusOptions={PRODUCT_INVENTORY_STATUSES.map((status) => ({
+           value: status,
+           label: getProductInventoryStatusLabel(status, year),
+         }))}
       />
 
       <section className="product-list panel">
@@ -100,9 +124,18 @@ async function ProductsContent({
             <span className="section-kicker">Base atual</span>
             <h2>{result.total} produtos encontrados</h2>
           </div>
-          <p>
-            Exibindo {firstItem}–{lastItem} de {result.total}
-          </p>
+          <div className="list-summary-meta">
+            {statusLabel ? (
+              <div className="active-product-filter" aria-label={`Filtro ativo: ${statusLabel}`}>
+                <span>Filtro ativo</span>
+                <strong>{statusLabel}</strong>
+                <Link href={removeStatusHref}>Remover</Link>
+              </div>
+            ) : null}
+            <p>
+              Exibindo {firstItem}–{lastItem} de {result.total}
+            </p>
+          </div>
         </div>
 
         {result.products.length > 0 ? (
@@ -191,12 +224,16 @@ export default async function ProdutosPage({
   const params = await searchParams;
   const rawPage = Number.parseInt(getParam(params.page), 10);
   const page = Number.isFinite(rawPage) && rawPage > 0 ? rawPage : 1;
+  const statusParam = getParam(params.status);
+  const status = isProductInventoryStatus(statusParam) ? statusParam : undefined;
   const filters = {
     q: getParam(params.q),
     section: getParam(params.section),
     group: getParam(params.group),
     subgroup: getParam(params.subgroup),
+    status,
   };
+  const year = new Date().getFullYear();
   const organizationId = await getCurrentOrganizationId();
 
   return (
@@ -212,6 +249,7 @@ export default async function ProdutosPage({
           organizationId={organizationId}
           filters={filters}
           page={page}
+          year={year}
         />
       </Suspense>
     </>
