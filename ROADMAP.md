@@ -1491,7 +1491,7 @@ Podem ser utilizados:
 
 ### FASE 22 — Filtros persistidos na URL e breadcrumbs
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1517,15 +1517,15 @@ Exemplo:
 
 #### Tarefas
 
-- [ ] Sincronizar os filtros relevantes com query parameters.
-- [ ] Preservar os filtros ao recarregar a pagina.
-- [ ] Permitir abrir diretamente uma URL filtrada.
-- [ ] Fazer voltar/avancar do navegador respeitar o estado da listagem.
-- [ ] Remover parametros obsoletos ao limpar filtros.
-- [ ] Tratar filtros hierarquicos incompativeis.
-- [ ] Criar breadcrumbs contextuais.
-- [ ] Tornar niveis aplicaveis dos breadcrumbs clicaveis.
-- [ ] Evitar breadcrumbs excessivos quando nao houver contexto.
+- [x] Sincronizar os filtros relevantes com query parameters.
+- [x] Preservar os filtros ao recarregar a pagina.
+- [x] Permitir abrir diretamente uma URL filtrada.
+- [x] Fazer voltar/avancar do navegador respeitar o estado da listagem.
+- [x] Remover parametros obsoletos ao limpar filtros.
+- [x] Tratar filtros hierarquicos incompativeis.
+- [x] Criar breadcrumbs contextuais.
+- [x] Tornar niveis aplicaveis dos breadcrumbs clicaveis.
+- [x] Evitar breadcrumbs excessivos quando nao houver contexto.
 
 #### Exemplo de breadcrumb
 
@@ -1569,15 +1569,15 @@ sendo determinada pela sessao autenticada no servidor.
 
 #### Checklist de conclusao
 
-- [ ] Testar reload com filtros.
-- [ ] Testar URL aberta diretamente.
-- [ ] Testar voltar e avancar.
-- [ ] Testar remocao de filtros.
-- [ ] Testar mudanca de filtros hierarquicos.
-- [ ] Testar breadcrumbs.
-- [ ] Testar manipulacao manual da URL.
-- [ ] Testar isolamento entre organizacoes.
-- [ ] Executar testes, lint e build.
+- [x] Testar reload com filtros.
+- [x] Testar URL aberta diretamente.
+- [x] Testar voltar e avancar.
+- [x] Testar remocao de filtros.
+- [x] Testar mudanca de filtros hierarquicos.
+- [x] Testar breadcrumbs.
+- [x] Testar manipulacao manual da URL.
+- [x] Testar isolamento entre organizacoes.
+- [x] Executar testes, lint e build.
 
 ---
 
