@@ -18,8 +18,6 @@ type InventoryTarget = {
   pendingSkus: number;
 };
 
-type InventoryUser = { id: string; name: string; email: string };
-
 type Feedback = { status: "success" | "error"; message: string } | null;
 
 const numberFormatter = new Intl.NumberFormat("pt-BR");
@@ -35,16 +33,14 @@ async function readError(response: Response, fallback: string) {
 
 function PlanCard({
   plan,
-  users,
   onFeedback,
 }: {
   plan: InventoryPlanListItem;
-  users: InventoryUser[];
   onFeedback: (feedback: Feedback) => void;
 }) {
   const router = useRouter();
   const [plannedDate, setPlannedDate] = useState(plan.plannedDate ?? "");
-  const [responsibleId, setResponsibleId] = useState(plan.responsible?.id ?? "");
+  const [responsibleName, setResponsibleName] = useState(plan.responsibleName ?? "");
   const [status, setStatus] = useState<InventoryPlanStatus>(plan.status);
   const [isPending, setIsPending] = useState(false);
 
@@ -57,7 +53,7 @@ function PlanCard({
       const response = await fetch(`/api/inventarios/planejamentos/${plan.id}`, {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plannedDate, responsibleId, status }),
+        body: JSON.stringify({ plannedDate, responsibleName, status }),
       });
       if (!response.ok) throw new Error(await readError(response, "Não foi possível atualizar o planejamento."));
       onFeedback({ status: "success", message: "Planejamento atualizado." });
@@ -92,10 +88,7 @@ function PlanCard({
         </label>
         <label>
           <span>Responsável</span>
-          <select onChange={(event) => setResponsibleId(event.target.value)} value={responsibleId}>
-            <option value="">Não definido</option>
-            {users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}
-          </select>
+          <input onChange={(event) => setResponsibleName(event.target.value)} placeholder="Nome da pessoa" type="text" value={responsibleName} />
         </label>
         <label>
           <span>Status</span>
@@ -114,16 +107,14 @@ function PlanCard({
 export function InventoryPlanner({
   initialPlans,
   targets,
-  users,
 }: {
   initialPlans: InventoryPlanListItem[];
   targets: InventoryTarget[];
-  users: InventoryUser[];
 }) {
   const router = useRouter();
   const [selectedTarget, setSelectedTarget] = useState(targets[0] ? targetKey(targets[0]) : "");
   const [plannedDate, setPlannedDate] = useState("");
-  const [responsibleId, setResponsibleId] = useState("");
+  const [responsibleName, setResponsibleName] = useState("");
   const [statusFilter, setStatusFilter] = useState<InventoryPlanStatus | "">("");
   const [isCreating, setIsCreating] = useState(false);
   const [feedback, setFeedback] = useState<Feedback>(null);
@@ -142,12 +133,12 @@ export function InventoryPlanner({
       const response = await fetch("/api/inventarios/planejamentos", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ ...target, plannedDate, responsibleId }),
+        body: JSON.stringify({ ...target, plannedDate, responsibleName }),
       });
       if (!response.ok) throw new Error(await readError(response, "Não foi possível criar o planejamento."));
       setFeedback({ status: "success", message: "Planejamento criado como pendente." });
       setPlannedDate("");
-      setResponsibleId("");
+      setResponsibleName("");
       router.refresh();
     } catch (error: unknown) {
       setFeedback({ status: "error", message: error instanceof Error ? error.message : "Não foi possível criar o planejamento." });
@@ -180,7 +171,7 @@ export function InventoryPlanner({
             </select>
           </label>
           <label><span>Data prevista</span><input onChange={(event) => setPlannedDate(event.target.value)} type="date" value={plannedDate} /></label>
-          <label><span>Responsável</span><select onChange={(event) => setResponsibleId(event.target.value)} value={responsibleId}><option value="">Não definido</option>{users.map((user) => <option key={user.id} value={user.id}>{user.name}</option>)}</select></label>
+          <label><span>Responsável</span><input onChange={(event) => setResponsibleName(event.target.value)} placeholder="Nome da pessoa" type="text" value={responsibleName} /></label>
           <button disabled={isCreating || targets.length === 0} type="submit">{isCreating ? "Criando..." : "Criar planejamento"}</button>
         </form>
         {feedback ? <p className={`action-feedback ${feedback.status}`} role={feedback.status === "error" ? "alert" : "status"}>{feedback.message}</p> : null}
@@ -198,10 +189,9 @@ export function InventoryPlanner({
           <div className="inventory-plan-cards">
             {visiblePlans.map((plan) => (
               <PlanCard
-                key={`${plan.id}:${plan.status}:${plan.plannedDate ?? ""}:${plan.responsible?.id ?? ""}`}
+                key={`${plan.id}:${plan.status}:${plan.plannedDate ?? ""}:${plan.responsibleName ?? ""}`}
                 onFeedback={setFeedback}
                 plan={plan}
-                users={users}
               />
             ))}
           </div>

@@ -19,7 +19,7 @@ export type InventoryPlanListItem = {
   totalSkus: number;
   pendingSkus: number;
   plannedDate: string | null;
-  responsible: { id: string; name: string } | null;
+  responsibleName: string | null;
   status: InventoryPlanStatus;
   createdAt: string;
 };
@@ -50,16 +50,6 @@ async function getTargetSnapshot(
   return row;
 }
 
-async function validateResponsible(organizationId: string, responsibleId: string | null) {
-  if (!responsibleId) return null;
-  const responsible = await prisma.user.findFirst({
-    where: { id: responsibleId, organizationId, isActive: true },
-    select: { id: true },
-  });
-  if (!responsible) throw new Error("INVALID_RESPONSIBLE");
-  return responsible.id;
-}
-
 export async function listInventoryPlans(
   organizationId: string,
   status?: InventoryPlanStatus,
@@ -67,7 +57,6 @@ export async function listInventoryPlans(
   const plans = await prisma.inventoryPlan.findMany({
     where: { organizationId, ...(status ? { status } : {}) },
     orderBy: [{ plannedDate: "asc" }, { createdAt: "desc" }],
-    include: { responsible: { select: { id: true, name: true } } },
   });
 
   return plans.map((plan) => ({
@@ -80,7 +69,7 @@ export async function listInventoryPlans(
     totalSkus: plan.totalSkus,
     pendingSkus: plan.pendingSkus,
     plannedDate: plan.plannedDate?.toISOString().slice(0, 10) ?? null,
-    responsible: plan.responsible,
+    responsibleName: plan.responsibleName,
     status: plan.status,
     createdAt: plan.createdAt.toISOString(),
   }));
@@ -90,15 +79,14 @@ export async function createInventoryPlan({
   organizationId,
   target,
   plannedDate,
-  responsibleId,
+  responsibleName,
 }: {
   organizationId: string;
   target: InventoryPlanTarget;
   plannedDate?: string | null;
-  responsibleId?: string | null;
+  responsibleName?: string | null;
 }) {
   const snapshot = await getTargetSnapshot(organizationId, target);
-  const responsible = await validateResponsible(organizationId, responsibleId ?? null);
   return prisma.inventoryPlan.create({
     data: {
       organizationId,
@@ -110,7 +98,7 @@ export async function createInventoryPlan({
       totalSkus: snapshot.totalSkus,
       pendingSkus: snapshot.pendingSkus,
       plannedDate: parsePlannedDate(plannedDate),
-      responsibleId: responsible,
+      responsibleName: responsibleName?.trim() || null,
     },
   });
 }
@@ -119,13 +107,13 @@ export async function updateInventoryPlan({
   organizationId,
   planId,
   plannedDate,
-  responsibleId,
+  responsibleName,
   status,
 }: {
   organizationId: string;
   planId: string;
   plannedDate?: string | null;
-  responsibleId?: string | null;
+  responsibleName?: string | null;
   status: InventoryPlanStatus;
 }) {
   const plan = await prisma.inventoryPlan.findFirst({
@@ -137,12 +125,11 @@ export async function updateInventoryPlan({
     throw new Error("INVALID_TRANSITION");
   }
 
-  const responsible = await validateResponsible(organizationId, responsibleId ?? null);
   return prisma.inventoryPlan.update({
     where: { id: planId },
     data: {
       plannedDate: parsePlannedDate(plannedDate),
-      responsibleId: responsible,
+      responsibleName: responsibleName?.trim() || null,
       status,
     },
   });

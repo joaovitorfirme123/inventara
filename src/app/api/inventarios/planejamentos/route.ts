@@ -11,7 +11,6 @@ function text(value: unknown) {
 function errorResponse(error: unknown) {
   const messages: Record<string, string> = {
     INVALID_DATE: "Informe uma data prevista válida.",
-    INVALID_RESPONSIBLE: "O responsável selecionado não está disponível nesta organização.",
     INVALID_TARGET: "Selecione um grupo e subgrupo existentes no ranking de inventários.",
   };
   const message = error instanceof Error ? messages[error.message] : undefined;
@@ -42,7 +41,7 @@ export async function POST(request: Request) {
       organizationId: session.user.organizationId,
       target,
       plannedDate: text(body.plannedDate) || null,
-      responsibleId: text(body.responsibleId) || null,
+      responsibleName: text(body.responsibleName) || null,
     });
 
     return Response.json({ id: plan.id }, { status: 201 });

@@ -11,7 +11,6 @@ function text(value: unknown) {
 function errorResponse(error: unknown) {
   const messages: Record<string, string> = {
     INVALID_DATE: "Informe uma data prevista válida.",
-    INVALID_RESPONSIBLE: "O responsável selecionado não está disponível nesta organização.",
     INVALID_TRANSITION: "Essa transição de status não é permitida.",
     PLAN_NOT_FOUND: "Planejamento não encontrado nesta organização.",
   };
@@ -46,7 +45,7 @@ export async function PATCH(
       organizationId: session.user.organizationId,
       planId,
       plannedDate: text(body.plannedDate) || null,
-      responsibleId: text(body.responsibleId) || null,
+      responsibleName: text(body.responsibleName) || null,
       status,
     });
 

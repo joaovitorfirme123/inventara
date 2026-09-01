@@ -54,7 +54,6 @@ model User {
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   sessions       Session[]
   accounts       Account[]
-  inventoryPlans InventoryPlan[]
 
   @@index([organizationId])
   @@map("users")
@@ -198,12 +197,11 @@ model InventoryPlan {
   totalSkus      Int                 @map("total_skus")
   pendingSkus    Int                 @map("pending_skus")
   plannedDate    DateTime?           @map("planned_date") @db.Date
-  responsibleId  String?             @map("responsible_id") @db.Uuid
+  responsibleName String?            @map("responsible_name")
   status         InventoryPlanStatus @default(PENDING)
   createdAt      DateTime            @default(now()) @map("created_at")
   updatedAt      DateTime            @updatedAt @map("updated_at")
   organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
-  responsible    User?               @relation(fields: [responsibleId], references: [id], onDelete: SetNull)
 
   @@index([organizationId, status, plannedDate])
   @@index([organizationId, section, group, subgroup])

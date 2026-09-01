@@ -27,12 +27,6 @@ async function clean() {
 
 async function testInventoryPlans() {
   await clean();
-  const responsible = await prisma.user.findFirst({
-    where: { organizationId: organizationAId, isActive: true },
-    select: { id: true },
-  });
-  assert(responsible, "No active responsible user is available for the test.");
-
   await prisma.product.create({
     data: {
       organizationId: organizationAId,
@@ -50,21 +44,21 @@ async function testInventoryPlans() {
       organizationId: organizationAId,
       target: { section, group, subgroup },
       plannedDate: "2026-09-15",
-      responsibleId: responsible.id,
+      responsibleName: "Pessoa externa",
     });
     assert(plan.status === "PENDING", "New inventory plan should start as pending.");
 
     const plans = await listInventoryPlans(organizationAId, "PENDING");
-    assert(plans.some((item) => item.id === plan.id && item.pendingSkus === 1), "Plan was not listed with its target snapshot.");
+    assert(plans.some((item) => item.id === plan.id && item.pendingSkus === 1 && item.responsibleName === "Pessoa externa"), "Plan was not listed with its target snapshot.");
     assert(!(await listInventoryPlans(organizationBId)).some((item) => item.id === plan.id), "Plan leaked between organizations.");
 
-    await updateInventoryPlan({ organizationId: organizationAId, planId: plan.id, plannedDate: "2026-09-16", responsibleId: responsible.id, status: "SCHEDULED" });
-    await updateInventoryPlan({ organizationId: organizationAId, planId: plan.id, plannedDate: "2026-09-16", responsibleId: responsible.id, status: "IN_PROGRESS" });
-    await updateInventoryPlan({ organizationId: organizationAId, planId: plan.id, plannedDate: "2026-09-16", responsibleId: responsible.id, status: "COMPLETED" });
+    await updateInventoryPlan({ organizationId: organizationAId, planId: plan.id, plannedDate: "2026-09-16", responsibleName: "Outra pessoa", status: "SCHEDULED" });
+    await updateInventoryPlan({ organizationId: organizationAId, planId: plan.id, plannedDate: "2026-09-16", responsibleName: "Outra pessoa", status: "IN_PROGRESS" });
+    await updateInventoryPlan({ organizationId: organizationAId, planId: plan.id, plannedDate: "2026-09-16", responsibleName: "Outra pessoa", status: "COMPLETED" });
 
     let invalidTransition = false;
     try {
-      await updateInventoryPlan({ organizationId: organizationAId, planId: plan.id, plannedDate: "2026-09-16", responsibleId: responsible.id, status: "PENDING" });
+      await updateInventoryPlan({ organizationId: organizationAId, planId: plan.id, plannedDate: "2026-09-16", responsibleName: "Outra pessoa", status: "PENDING" });
     } catch (error: unknown) {
       invalidTransition = error instanceof Error && error.message === "INVALID_TRANSITION";
     }

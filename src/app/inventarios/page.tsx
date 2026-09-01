@@ -2,14 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import type { ReactNode } from "react";
 import { PageHeader } from "@/components/page-header";
-import { InventoryPlanner } from "@/components/inventory-planner";
 import {
   filterInventoryRows,
   getInventoryRows,
 } from "@/data/inventories";
-import { listInventoryPlans } from "@/data/inventory-plans";
 import type { InventoryRow, InventorySort } from "@/data/inventories";
-import { listActiveUsersByOrganization } from "@/data/users";
 import { getCurrentOrganizationId } from "@/lib/current-organization";
 import { PRIORITIES } from "@/lib/inventory-priority";
 import type { InventoryPriority } from "@/lib/inventory-priority";
@@ -99,11 +96,7 @@ export default async function InventariosPage({
   const urgentOnly = getParam(params.urgent) === "1";
   const year = new Date().getFullYear();
   const organizationId = await getCurrentOrganizationId();
-  const [allRows, plans, users] = await Promise.all([
-    getInventoryRows(organizationId, year, new Date(), sort),
-    listInventoryPlans(organizationId),
-    listActiveUsersByOrganization(organizationId),
-  ]);
+  const allRows = await getInventoryRows(organizationId, year, new Date(), sort);
   const rows = filterInventoryRows(allRows, {
     section,
     priority,
@@ -124,19 +117,6 @@ export default async function InventariosPage({
         eyebrow={`Ciclo ${year}`}
         title="Inventários"
         description="Priorize contagens por seção, grupo e subgrupo com base em cobertura, volume e antiguidade."
-      />
-
-      <InventoryPlanner
-        initialPlans={plans}
-        targets={allRows.map((row) => ({
-          section: row.section,
-          group: row.group,
-          subgroup: row.subgroup,
-          priority: row.priority,
-          totalSkus: row.totalSkus,
-          pendingSkus: row.pendingSkus,
-        }))}
-        users={users}
       />
 
       <section className="inventory-summary" aria-label="Resumo dos inventários">

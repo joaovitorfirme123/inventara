@@ -14,11 +14,3 @@ export function listUsersByOrganization(organizationId: string) {
     },
   });
 }
-
-export function listActiveUsersByOrganization(organizationId: string) {
-  return prisma.user.findMany({
-    where: { organizationId, isActive: true },
-    orderBy: { name: "asc" },
-    select: { id: true, name: true, email: true },
-  });
-}

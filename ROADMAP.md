@@ -1803,6 +1803,10 @@ Transformar a prioridade calculada em um plano operacional de contagem.
 - [x] Permitir visualizar e filtrar planejamentos.
 - [x] Relacionar o planejamento aos grupos e subgrupos priorizados.
 
+Observacao: o planejamento possui uma pagina propria em `/planejamento` e o
+responsavel e informado como texto livre; nao e necessario criar um usuario no
+sistema para atribuir uma contagem.
+
 #### Conceitos que devo aprender
 
 - modelagem de workflow;
