@@ -1,4 +1,4 @@
-import { updateInventoryPlan } from "@/data/inventory-plans";
+import { deleteInventoryPlan, updateInventoryPlan } from "@/data/inventory-plans";
 import { isInventoryPlanStatus } from "@/lib/inventory-plan";
 import { getSessionContext } from "@/lib/session";
 
@@ -8,17 +8,15 @@ function text(value: unknown) {
   return typeof value === "string" ? value.trim() : "";
 }
 
-function errorResponse(error: unknown) {
+function errorResponse(error: unknown, fallback: string) {
   const messages: Record<string, string> = {
     INVALID_DATE: "Informe uma data prevista válida.",
     INVALID_TRANSITION: "Essa transição de status não é permitida.",
     PLAN_NOT_FOUND: "Planejamento não encontrado nesta organização.",
   };
   const message = error instanceof Error ? messages[error.message] : undefined;
-  return Response.json(
-    { error: message ?? "Não foi possível atualizar o planejamento." },
-    { status: message === "Planejamento não encontrado nesta organização." ? 404 : message ? 400 : 500 },
-  );
+  const status = error instanceof Error && error.message === "PLAN_NOT_FOUND" ? 404 : message ? 400 : 500;
+  return Response.json({ error: message ?? fallback }, { status });
 }
 
 export async function PATCH(
@@ -52,6 +50,29 @@ export async function PATCH(
     return Response.json({ ok: true });
   } catch (error: unknown) {
     console.error("Failed to update inventory plan", error);
-    return errorResponse(error);
+    return errorResponse(error, "Não foi possível atualizar o planejamento.");
+  }
+}
+
+export async function DELETE(
+  request: Request,
+  { params }: { params: Promise<{ planId: string }> },
+) {
+  try {
+    const session = await getSessionContext(request.headers);
+    if (!session?.user.organizationId) {
+      return Response.json({ error: "Autenticação necessária." }, { status: 401 });
+    }
+
+    const { planId } = await params;
+    if (!uuidPattern.test(planId)) {
+      return Response.json({ error: "Planejamento não encontrado." }, { status: 404 });
+    }
+
+    await deleteInventoryPlan(session.user.organizationId, planId);
+    return Response.json({ ok: true });
+  } catch (error: unknown) {
+    console.error("Failed to delete inventory plan", error);
+    return errorResponse(error, "Não foi possível apagar o planejamento.");
   }
 }

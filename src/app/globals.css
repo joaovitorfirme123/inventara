@@ -1697,7 +1697,7 @@ input {
 .inventory-plan-create-form,
 .inventory-plan-form {
   display: grid;
-  grid-template-columns: minmax(240px, 1.7fr) minmax(150px, 0.8fr) minmax(180px, 1fr) auto;
+  grid-template-columns: repeat(3, minmax(150px, 1fr)) minmax(150px, 0.8fr) minmax(180px, 1fr) auto;
   align-items: end;
   gap: 14px;
   padding: 0 28px 24px;
@@ -1746,6 +1746,21 @@ input {
   font-size: 0.68rem;
   font-weight: 800;
   white-space: nowrap;
+}
+
+.inventory-plan-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.inventory-plan-actions .delete-plan-button {
+  color: #813c2b;
+  background: transparent;
+  border: 1px solid #e1b8aa;
+}
+
+.inventory-plan-actions .delete-plan-button:hover {
+  background: #f7e9e3;
 }
 
 .inventory-plan-create-form button:disabled,
@@ -3878,6 +3893,11 @@ input {
 
   .inventory-plan-form button {
     width: 100%;
+  }
+
+  .inventory-plan-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
   }
 
   .inventory-filters {

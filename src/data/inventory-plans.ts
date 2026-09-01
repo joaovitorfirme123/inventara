@@ -134,3 +134,10 @@ export async function updateInventoryPlan({
     },
   });
 }
+
+export async function deleteInventoryPlan(organizationId: string, planId: string) {
+  const result = await prisma.inventoryPlan.deleteMany({
+    where: { id: planId, organizationId },
+  });
+  if (result.count === 0) throw new Error("PLAN_NOT_FOUND");
+}

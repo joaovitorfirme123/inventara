@@ -2,6 +2,7 @@ import "dotenv/config";
 
 import {
   createInventoryPlan,
+  deleteInventoryPlan,
   listInventoryPlans,
   updateInventoryPlan,
 } from "../src/data/inventory-plans";
@@ -63,6 +64,15 @@ async function testInventoryPlans() {
       invalidTransition = error instanceof Error && error.message === "INVALID_TRANSITION";
     }
     assert(invalidTransition, "Completed plans accepted an invalid transition.");
+    let crossOrganizationDelete = false;
+    try {
+      await deleteInventoryPlan(organizationBId, plan.id);
+    } catch (error: unknown) {
+      crossOrganizationDelete = error instanceof Error && error.message === "PLAN_NOT_FOUND";
+    }
+    assert(crossOrganizationDelete, "A plan could be deleted through another organization.");
+    await deleteInventoryPlan(organizationAId, plan.id);
+    assert(!(await listInventoryPlans(organizationAId)).some((item) => item.id === plan.id), "Plan was not deleted.");
   } finally {
     await clean();
   }

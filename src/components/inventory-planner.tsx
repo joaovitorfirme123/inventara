@@ -22,8 +22,8 @@ type Feedback = { status: "success" | "error"; message: string } | null;
 
 const numberFormatter = new Intl.NumberFormat("pt-BR");
 
-function targetKey(target: Pick<InventoryTarget, "section" | "group" | "subgroup">) {
-  return JSON.stringify([target.section, target.group, target.subgroup]);
+function uniqueValues(values: string[]) {
+  return [...new Set(values)];
 }
 
 async function readError(response: Response, fallback: string) {
@@ -43,6 +43,7 @@ function PlanCard({
   const [responsibleName, setResponsibleName] = useState(plan.responsibleName ?? "");
   const [status, setStatus] = useState<InventoryPlanStatus>(plan.status);
   const [isPending, setIsPending] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -62,6 +63,22 @@ function PlanCard({
       onFeedback({ status: "error", message: error instanceof Error ? error.message : "Não foi possível atualizar o planejamento." });
     } finally {
       setIsPending(false);
+    }
+  }
+
+  async function remove() {
+    if (!window.confirm(`Apagar o planejamento de ${plan.group} / ${plan.subgroup}?`)) return;
+    setIsDeleting(true);
+    onFeedback(null);
+
+    try {
+      const response = await fetch(`/api/inventarios/planejamentos/${plan.id}`, { method: "DELETE" });
+      if (!response.ok) throw new Error(await readError(response, "Não foi possível apagar o planejamento."));
+      onFeedback({ status: "success", message: "Planejamento apagado." });
+      router.refresh();
+    } catch (error: unknown) {
+      setIsDeleting(false);
+      onFeedback({ status: "error", message: error instanceof Error ? error.message : "Não foi possível apagar o planejamento." });
     }
   }
 
@@ -98,7 +115,10 @@ function PlanCard({
             ))}
           </select>
         </label>
-        <button disabled={isPending} type="submit">{isPending ? "Salvando..." : "Salvar alterações"}</button>
+        <div className="inventory-plan-actions">
+          <button disabled={isPending || isDeleting} type="submit">{isPending ? "Salvando..." : "Salvar alterações"}</button>
+          <button className="delete-plan-button" disabled={isPending || isDeleting} onClick={remove} type="button">{isDeleting ? "Apagando..." : "Apagar"}</button>
+        </div>
       </form>
     </article>
   );
@@ -112,7 +132,9 @@ export function InventoryPlanner({
   targets: InventoryTarget[];
 }) {
   const router = useRouter();
-  const [selectedTarget, setSelectedTarget] = useState(targets[0] ? targetKey(targets[0]) : "");
+  const [selectedSection, setSelectedSection] = useState(targets[0]?.section ?? "");
+  const [selectedGroup, setSelectedGroup] = useState(targets[0]?.group ?? "");
+  const [selectedSubgroup, setSelectedSubgroup] = useState(targets[0]?.subgroup ?? "");
   const [plannedDate, setPlannedDate] = useState("");
   const [responsibleName, setResponsibleName] = useState("");
   const [statusFilter, setStatusFilter] = useState<InventoryPlanStatus | "">("");
@@ -121,7 +143,12 @@ export function InventoryPlanner({
 
   async function createPlan(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const target = targets.find((item) => targetKey(item) === selectedTarget);
+    const target = targets.find(
+      (item) =>
+        item.section === selectedSection &&
+        item.group === selectedGroup &&
+        item.subgroup === selectedSubgroup,
+    );
     if (!target) {
       setFeedback({ status: "error", message: "Selecione um grupo e subgrupo." });
       return;
@@ -150,6 +177,43 @@ export function InventoryPlanner({
   const visiblePlans = statusFilter
     ? initialPlans.filter((plan) => plan.status === statusFilter)
     : initialPlans;
+  const sectionOptions = uniqueValues(targets.map((target) => target.section));
+  const groupOptions = uniqueValues(
+    targets
+      .filter((target) => target.section === selectedSection)
+      .map((target) => target.group),
+  );
+  const subgroupOptions = uniqueValues(
+    targets
+      .filter((target) => target.section === selectedSection && target.group === selectedGroup)
+      .map((target) => target.subgroup),
+  );
+
+  function changeSection(section: string) {
+    const nextGroup = uniqueValues(
+      targets
+        .filter((target) => target.section === section)
+        .map((target) => target.group),
+    )[0] ?? "";
+    const nextSubgroup = uniqueValues(
+      targets
+        .filter((target) => target.section === section && target.group === nextGroup)
+        .map((target) => target.subgroup),
+    )[0] ?? "";
+    setSelectedSection(section);
+    setSelectedGroup(nextGroup);
+    setSelectedSubgroup(nextSubgroup);
+  }
+
+  function changeGroup(group: string) {
+    const nextSubgroup = uniqueValues(
+      targets
+        .filter((target) => target.section === selectedSection && target.group === group)
+        .map((target) => target.subgroup),
+    )[0] ?? "";
+    setSelectedGroup(group);
+    setSelectedSubgroup(nextSubgroup);
+  }
 
   return (
     <section className="inventory-planner">
@@ -160,16 +224,9 @@ export function InventoryPlanner({
         </div>
         <p className="panel-intro">Transforme um grupo priorizado em uma tarefa de contagem acompanhável.</p>
         <form className="inventory-plan-create-form" onSubmit={createPlan}>
-          <label className="plan-target-field">
-            <span>Grupo e subgrupo priorizados</span>
-            <select disabled={targets.length === 0} onChange={(event) => setSelectedTarget(event.target.value)} value={selectedTarget}>
-              {targets.length === 0 ? <option value="">Nenhum recorte disponível</option> : targets.map((target) => (
-                <option key={targetKey(target)} value={targetKey(target)}>
-                  {target.section} / {target.group} / {target.subgroup} · {target.priority}
-                </option>
-              ))}
-            </select>
-          </label>
+          <label className="plan-target-field"><span>Seção</span><select disabled={targets.length === 0} onChange={(event) => changeSection(event.target.value)} value={selectedSection}>{sectionOptions.map((option) => <option key={option}>{option}</option>)}</select></label>
+          <label><span>Grupo</span><select disabled={groupOptions.length === 0} onChange={(event) => changeGroup(event.target.value)} value={selectedGroup}>{groupOptions.map((option) => <option key={option}>{option}</option>)}</select></label>
+          <label><span>Subgrupo</span><select disabled={subgroupOptions.length === 0} onChange={(event) => setSelectedSubgroup(event.target.value)} value={selectedSubgroup}>{subgroupOptions.map((option) => <option key={option}>{option}</option>)}</select></label>
           <label><span>Data prevista</span><input onChange={(event) => setPlannedDate(event.target.value)} type="date" value={plannedDate} /></label>
           <label><span>Responsável</span><input onChange={(event) => setResponsibleName(event.target.value)} placeholder="Nome da pessoa" type="text" value={responsibleName} /></label>
           <button disabled={isCreating || targets.length === 0} type="submit">{isCreating ? "Criando..." : "Criar planejamento"}</button>
