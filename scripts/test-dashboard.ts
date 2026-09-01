@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { getDashboardData } from "../src/data/dashboard";
+import { getDashboardData, selectDashboardRecommendations } from "../src/data/dashboard";
 import { prisma } from "../src/lib/prisma";
 
 const organizationAId = "11111111-1111-4111-8111-111111111111";
@@ -33,6 +33,25 @@ async function testDashboard() {
       dashboardA.summary.totalSubgroups,
     "Priority distribution is inconsistent.",
   );
+  const recommendationFixture = [
+    ["A", "A-1"], ["A", "A-2"], ["B", "B-1"], ["C", "C-1"], ["D", "D-1"], ["E", "E-1"], ["F", "F-1"],
+  ].map(([groupKey, id], index) => ({
+    id,
+    plu: id,
+    description: id,
+    section: "Seção",
+    group: groupKey,
+    subgroup: id,
+    currentStock: "0",
+    lastInventory: null,
+    priority: "Alta" as const,
+    priorityScore: 100 - index,
+    groupKey,
+    lastInventoryTime: null,
+  }));
+  const recommendations = selectDashboardRecommendations(recommendationFixture);
+  assert(recommendations.length === 6, "Dashboard did not select six recommendations.");
+  assert(new Set(recommendations.map((item) => item.groupKey)).size === 6, "Dashboard repeated a group unnecessarily.");
   assert(
     dashboardA.sections.every(
       (section) => section.countedPercentage >= 0 && section.countedPercentage <= 100,

@@ -20,6 +20,14 @@ const priorityColors: Record<InventoryPriority, string> = {
   Atualizado: "#73a146",
 };
 
+const priorityClasses: Record<InventoryPriority, string> = {
+  Urgente: "urgent",
+  Alta: "high",
+  Média: "medium",
+  Baixa: "low",
+  Atualizado: "updated",
+};
+
 function DashboardSkeleton() {
   return (
     <div className="dashboard-skeleton" aria-label="Carregando indicadores">
@@ -38,7 +46,7 @@ async function DashboardContent({
   organizationId: string;
   year: number;
 }) {
-  const { summary, sections, priorities } = await getDashboardData(
+  const { summary, sections, priorities, recommendations } = await getDashboardData(
     organizationId,
     year,
   );
@@ -161,6 +169,35 @@ async function DashboardContent({
           </div>
         </section>
       </div>
+
+      <section className="dashboard-recommendations panel">
+        <div className="panel-heading">
+          <div><span className="section-kicker">Próxima contagem</span><h2>Produtos recomendados</h2></div>
+          <span className="status-pill">{recommendations.length} de 6</span>
+        </div>
+        {recommendations.length > 0 ? (
+          <div className="recommendation-grid">
+            {recommendations.map((product, index) => (
+              <article className="recommendation-card" key={product.id}>
+                <span className="recommendation-rank">0{index + 1}</span>
+                <div className="recommendation-card-heading">
+                  <div>
+                    <strong><Link className="product-detail-link" href={`/produtos/${encodeURIComponent(product.plu)}`}>{product.description}</Link></strong>
+                    <small>PLU {product.plu}</small>
+                  </div>
+                  <span className={`dashboard-priority ${priorityClasses[product.priority]}`}>{product.priority}</span>
+                </div>
+                <dl>
+                  <div><dt>Grupo</dt><dd>{product.group ?? "Sem grupo"}</dd></div>
+                  <div><dt>Pontuação</dt><dd>{numberFormatter.format(product.priorityScore)} pts · {product.lastInventory ? "contagem antiga" : "sem contagem"}</dd></div>
+                </dl>
+              </article>
+            ))}
+          </div>
+        ) : (
+          <div className="dashboard-recommendation-empty"><p>Não há produtos pendentes para recomendar neste ciclo.</p></div>
+        )}
+      </section>
 
       <section className="section-dashboard panel">
         <div className="panel-heading">

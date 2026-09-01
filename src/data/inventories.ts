@@ -30,7 +30,6 @@ export type InventoryRow = {
   noDateSkus: number;
   oldestDate: Date | null;
   newestDate: Date | null;
-  oldestPendingDate: Date | null;
   score: number;
   priority: InventoryPriority;
   rank: number;
@@ -128,7 +127,6 @@ export async function getInventoryRows(
       noDateSkus: group.no_date_skus,
       oldestDate: group.oldest_date,
       newestDate: group.newest_date,
-      oldestPendingDate: group.oldest_pending_date,
       score,
       priority: getPriority(score, group.pending_skus),
       rank: 0,
