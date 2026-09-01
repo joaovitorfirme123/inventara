@@ -3,6 +3,7 @@ import {
   filterInventoryRows,
   getInventoryRows,
 } from "../src/data/inventories";
+import { listProducts } from "../src/data/products";
 import { calculatePriorityScore } from "../src/lib/inventory-priority";
 import { prisma } from "../src/lib/prisma";
 
@@ -91,6 +92,15 @@ async function testInventories() {
         },
         {
           organizationId: organizationAId,
+          plu: "INV-A-5",
+          description: "Classificação vazia",
+          section: testSections[0],
+          group: "",
+          subgroup: "",
+          lastInventory: null,
+        },
+        {
+          organizationId: organizationAId,
           plu: "INV-B-1",
           description: "Outra seção",
           section: testSections[1],
@@ -120,7 +130,7 @@ async function testInventories() {
       (row) => row.subgroup === "Subgrupo antigo",
     );
 
-    assert(testRows.length === 3, "Tenant data leaked into inventory groups.");
+    assert(testRows.length === 4, "Tenant data leaked into inventory groups.");
     assert(mixed?.totalSkus === 3, "Total SKU aggregation is incorrect.");
     assert(mixed.countedSkus === 1, "Current-year count is incorrect.");
     assert(mixed.pendingSkus === 2, "Pending count is incorrect.");
@@ -135,8 +145,86 @@ async function testInventories() {
       "Newest date is incorrect.",
     );
     assert(updated?.priority === "Atualizado", "Updated subgroup priority is incorrect.");
-    assert(mixed.rank === 1 && updated.rank === 2, "Ranking within section is incorrect.");
+    assert(
+      mixed.rank > 0 && updated.rank > mixed.rank &&
+        new Set(
+          testRows
+            .filter((row) => row.section === testSections[0])
+            .map((row) => row.rank),
+        ).size === 3,
+      "Ranking within section is incorrect.",
+    );
     assert(otherSection?.rank === 1, "Ranking did not restart in a new section.");
+
+    const emptyClassification = testRows.find((row) => row.group === "Sem grupo");
+    assert(
+      emptyClassification?.subgroup === "Sem subgrupo" && emptyClassification.totalSkus === 1,
+      "Empty classifications were not normalized consistently.",
+    );
+
+    const [mixedTotal, mixedCounted, mixedPending, mixedNoDate, emptyNoDate] =
+      await Promise.all([
+        listProducts({
+          organizationId: organizationAId,
+          page: 1,
+          section: testSections[0],
+          group: "Grupo A",
+          subgroup: "Subgrupo misto",
+          year: 2026,
+        }),
+        listProducts({
+          organizationId: organizationAId,
+          page: 1,
+          section: testSections[0],
+          group: "Grupo A",
+          subgroup: "Subgrupo misto",
+          status: "contado",
+          year: 2026,
+        }),
+        listProducts({
+          organizationId: organizationAId,
+          page: 1,
+          section: testSections[0],
+          group: "Grupo A",
+          subgroup: "Subgrupo misto",
+          status: "pendente",
+          year: 2026,
+        }),
+        listProducts({
+          organizationId: organizationAId,
+          page: 1,
+          section: testSections[0],
+          group: "Grupo A",
+          subgroup: "Subgrupo misto",
+          status: "sem-data",
+          year: 2026,
+        }),
+        listProducts({
+          organizationId: organizationAId,
+          page: 1,
+          section: testSections[0],
+          group: "Sem grupo",
+          subgroup: "Sem subgrupo",
+          status: "sem-data",
+          year: 2026,
+        }),
+      ]);
+    assert(mixedTotal.total === mixed?.totalSkus, "Total drill-down does not match ranking.");
+    assert(mixedCounted.total === mixed?.countedSkus, "Counted drill-down does not match ranking.");
+    assert(mixedPending.total === mixed?.pendingSkus, "Pending drill-down does not match ranking.");
+    assert(mixedNoDate.total === mixed?.noDateSkus, "No-date drill-down does not match ranking.");
+    assert(emptyNoDate.total === emptyClassification?.noDateSkus, "Empty classification drill-down failed.");
+
+    const crossTenantRows = await listProducts({
+      organizationId: organizationAId,
+      page: 1,
+      section: testSections[0],
+      group: "Grupo secreto",
+      subgroup: "Subgrupo secreto",
+      status: "pendente",
+      year: 2026,
+    });
+    assert(crossTenantRows.total === 0, "Inventory drill-down crossed organization boundaries.");
 
     const pendingRows = filterInventoryRows(testRows, { pendingOnly: true });
     const priorityRows = filterInventoryRows(testRows, {
@@ -149,7 +237,7 @@ async function testInventories() {
     const noMatchRows = filterInventoryRows(testRows, { query: "inexistente" });
     const urgentRows = filterInventoryRows(testRows, { urgentOnly: true });
 
-    assert(pendingRows.length === 2, "Pending-only filter is incorrect.");
+    assert(pendingRows.length === 3, "Pending-only filter is incorrect.");
     assert(priorityRows.includes(mixed), "Priority filter is incorrect.");
     assert(sectionRows.length === 1, "Section filter is incorrect.");
     assert(queryRows.length === 1 && queryRows[0].subgroup === "Subgrupo misto", "Search filter is incorrect.");

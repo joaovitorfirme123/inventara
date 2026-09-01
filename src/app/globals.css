@@ -1838,6 +1838,23 @@ input {
   font-size: 0.72rem;
 }
 
+.inventory-drilldown-link {
+  color: var(--forest);
+  font-weight: 750;
+  text-decoration: underline;
+  text-decoration-color: #a9bf6d;
+  text-underline-offset: 3px;
+}
+
+.inventory-drilldown-link:hover {
+  color: var(--rust);
+}
+
+.inventory-drilldown-link:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 3px;
+}
+
 .dashboard-metrics {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));

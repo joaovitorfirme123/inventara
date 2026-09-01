@@ -65,6 +65,22 @@ async function testAdminHttp() {
       throw new Error("Dashboard product drill-down links are incomplete.");
     }
 
+    const inventoryPage = await fetch(`${baseUrl}/inventarios`, {
+      headers: { cookie: ownerCookie },
+    });
+    const inventoryHtml = await inventoryPage.text();
+    const drilldownPrefix =
+      'href="/produtos?section=Mercearia&amp;group=Alimentos&amp;subgroup=Secos';
+    if (
+      inventoryPage.status !== 200 ||
+      !inventoryHtml.includes(drilldownPrefix) ||
+      !inventoryHtml.includes(`${drilldownPrefix}&amp;status=pendente`) ||
+      !inventoryHtml.includes(`${drilldownPrefix}&amp;status=contado`) ||
+      !inventoryHtml.includes(`${drilldownPrefix}&amp;status=sem-data`)
+    ) {
+      throw new Error("Inventory ranking product drill-down links are incomplete.");
+    }
+
     const filteredProductsPage = await fetch(
       `${baseUrl}/produtos?status=pendente&q=Arroz`,
       { headers: { cookie: ownerCookie } },

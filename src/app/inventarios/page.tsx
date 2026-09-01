@@ -1,14 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import type { ReactNode } from "react";
 import { PageHeader } from "@/components/page-header";
 import {
   filterInventoryRows,
   getInventoryRows,
 } from "@/data/inventories";
-import type { InventorySort } from "@/data/inventories";
+import type { InventoryRow, InventorySort } from "@/data/inventories";
 import { getCurrentOrganizationId } from "@/lib/current-organization";
 import { PRIORITIES } from "@/lib/inventory-priority";
 import type { InventoryPriority } from "@/lib/inventory-priority";
+import type { ProductInventoryStatus } from "@/lib/inventory-status";
 
 export const metadata: Metadata = { title: "Inventários" };
 
@@ -47,6 +49,35 @@ function isPriority(value: string): value is InventoryPriority {
 
 function isSort(value: string): value is InventorySort {
   return sortOptions.some((option) => option.value === value);
+}
+
+function createProductDrilldownHref(
+  row: Pick<InventoryRow, "section" | "group" | "subgroup">,
+  status?: ProductInventoryStatus,
+) {
+  const params = new URLSearchParams({
+    section: row.section,
+    group: row.group,
+    subgroup: row.subgroup,
+  });
+  if (status) params.set("status", status);
+  return `/produtos?${params.toString()}`;
+}
+
+function ProductDrilldownLink({
+  href,
+  label,
+  children,
+}: {
+  href: string;
+  label: string;
+  children: ReactNode;
+}) {
+  return (
+    <Link className="inventory-drilldown-link" href={href} aria-label={label}>
+      {children}
+    </Link>
+  );
 }
 
 export default async function InventariosPage({
@@ -213,16 +244,52 @@ export default async function InventariosPage({
                               <tr key={`${row.section}-${row.group}-${row.subgroup}`}>
                                 <td data-label="Rank"><span className="rank">#{row.rank}</span></td>
                                 <td data-label="Subgrupo"><strong>{row.subgroup}</strong></td>
-                                <td data-label="SKUs">{numberFormatter.format(row.totalSkus)}</td>
-                                <td data-label="Contados">{numberFormatter.format(row.countedSkus)}</td>
-                                <td data-label="Pendentes">{numberFormatter.format(row.pendingSkus)}</td>
+                                <td data-label="SKUs">
+                                  {row.totalSkus > 0 ? (
+                                    <ProductDrilldownLink
+                                      href={createProductDrilldownHref(row)}
+                                      label={`Abrir ${row.totalSkus} produtos de ${row.section}, ${row.group}, ${row.subgroup}`}
+                                    >
+                                      {numberFormatter.format(row.totalSkus)}
+                                    </ProductDrilldownLink>
+                                  ) : numberFormatter.format(row.totalSkus)}
+                                </td>
+                                <td data-label="Contados">
+                                  {row.countedSkus > 0 ? (
+                                    <ProductDrilldownLink
+                                      href={createProductDrilldownHref(row, "contado")}
+                                      label={`Abrir ${row.countedSkus} produtos contados em ${year} de ${row.section}, ${row.group}, ${row.subgroup}`}
+                                    >
+                                      {numberFormatter.format(row.countedSkus)}
+                                    </ProductDrilldownLink>
+                                  ) : numberFormatter.format(row.countedSkus)}
+                                </td>
+                                <td data-label="Pendentes">
+                                  {row.pendingSkus > 0 ? (
+                                    <ProductDrilldownLink
+                                      href={createProductDrilldownHref(row, "pendente")}
+                                      label={`Abrir ${row.pendingSkus} produtos pendentes de ${row.section}, ${row.group}, ${row.subgroup}`}
+                                    >
+                                      {numberFormatter.format(row.pendingSkus)}
+                                    </ProductDrilldownLink>
+                                  ) : numberFormatter.format(row.pendingSkus)}
+                                </td>
                                 <td data-label="Cobertura">
                                   <div className="coverage-cell">
                                     <span>{row.countedPercentage.toFixed(1)}%</span>
                                     <div><i style={{ width: `${row.countedPercentage}%` }} /></div>
                                   </div>
                                 </td>
-                                <td data-label="Sem data">{numberFormatter.format(row.noDateSkus)}</td>
+                                <td data-label="Sem data">
+                                  {row.noDateSkus > 0 ? (
+                                    <ProductDrilldownLink
+                                      href={createProductDrilldownHref(row, "sem-data")}
+                                      label={`Abrir ${row.noDateSkus} produtos sem data de ${row.section}, ${row.group}, ${row.subgroup}`}
+                                    >
+                                      {numberFormatter.format(row.noDateSkus)}
+                                    </ProductDrilldownLink>
+                                  ) : numberFormatter.format(row.noDateSkus)}
+                                </td>
                                 <td data-label="Período">
                                   <span className="date-range">
                                     {row.oldestDate ? dateFormatter.format(row.oldestDate) : "Sem data"}

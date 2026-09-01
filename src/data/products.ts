@@ -7,6 +7,14 @@ import {
 
 export const PRODUCT_PAGE_SIZE = 10;
 
+type ProductClassificationField = "section" | "group" | "subgroup";
+
+const emptyClassificationLabels: Record<ProductClassificationField, string> = {
+  section: "Sem seção",
+  group: "Sem grupo",
+  subgroup: "Sem subgrupo",
+};
+
 export type ProductQuery = {
   organizationId: string;
   page: number;
@@ -17,6 +25,25 @@ export type ProductQuery = {
   status?: ProductInventoryStatus;
   year?: number;
 };
+
+function createClassificationWhere(
+  field: ProductClassificationField,
+  value?: string,
+): Prisma.ProductWhereInput {
+  if (!value) return {};
+  if (value === emptyClassificationLabels[field]) {
+    return { OR: [{ [field]: null }, { [field]: "" }] };
+  }
+  return { [field]: value };
+}
+
+function createClassificationConditions(
+  filters: Pick<ProductQuery, "section" | "group" | "subgroup">,
+) {
+  return (["section", "group", "subgroup"] as const)
+    .map((field) => createClassificationWhere(field, filters[field]))
+    .filter((condition) => Object.keys(condition).length > 0);
+}
 
 function createProductWhere(filters: ProductQuery): Prisma.ProductWhereInput {
   const { start, end } = getInventoryYearBounds(filters.year);
@@ -44,13 +71,11 @@ function createProductWhere(filters: ProductQuery): Prisma.ProductWhereInput {
       ],
     });
   }
+  conditions.push(...createClassificationConditions(filters));
 
   return {
     organizationId: filters.organizationId,
     ...(conditions.length > 0 && { AND: conditions }),
-    ...(filters.section && { section: filters.section }),
-    ...(filters.group && { group: filters.group }),
-    ...(filters.subgroup && { subgroup: filters.subgroup }),
   };
 }
 
@@ -81,7 +106,7 @@ export async function getProductFilterOptions(
   const where = { organizationId };
   const [sections, groups, subgroups] = await Promise.all([
     prisma.product.findMany({
-      where: { ...where, section: { not: null } },
+      where,
       distinct: ["section"],
       select: { section: true },
       orderBy: { section: "asc" },
@@ -89,8 +114,9 @@ export async function getProductFilterOptions(
     prisma.product.findMany({
       where: {
         ...where,
-        group: { not: null },
-        ...(filters.section && { section: filters.section }),
+        ...(createClassificationConditions(filters).length > 0 && {
+          AND: createClassificationConditions(filters),
+        }),
       },
       distinct: ["group"],
       select: { group: true },
@@ -99,9 +125,9 @@ export async function getProductFilterOptions(
     prisma.product.findMany({
       where: {
         ...where,
-        subgroup: { not: null },
-        ...(filters.section && { section: filters.section }),
-        ...(filters.group && { group: filters.group }),
+        ...(createClassificationConditions(filters).length > 0 && {
+          AND: createClassificationConditions(filters),
+        }),
       },
       distinct: ["subgroup"],
       select: { subgroup: true },
@@ -110,10 +136,14 @@ export async function getProductFilterOptions(
   ]);
 
   return {
-    sections: sections.flatMap(({ section }) => (section ? [section] : [])),
-    groups: groups.flatMap(({ group }) => (group ? [group] : [])),
-    subgroups: subgroups.flatMap(({ subgroup }) =>
-      subgroup ? [subgroup] : [],
+    sections: Array.from(
+      new Set(sections.map(({ section }) => section?.trim() || emptyClassificationLabels.section)),
+    ),
+    groups: Array.from(
+      new Set(groups.map(({ group }) => group?.trim() || emptyClassificationLabels.group)),
+    ),
+    subgroups: Array.from(
+      new Set(subgroups.map(({ subgroup }) => subgroup?.trim() || emptyClassificationLabels.subgroup)),
     ),
   };
 }
