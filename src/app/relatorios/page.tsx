@@ -67,8 +67,9 @@ export default async function ReportsPage({ searchParams }: { searchParams: Sear
       </form>
 
       <section className="report-actions panel">
-        <div><span className="section-kicker">Dados filtrados</span><h2>Exportar relatório</h2><p>Os arquivos incluem os filtros e metadados deste recorte.</p></div>
+        <div><span className="section-kicker">Saída de dados</span><h2>Exportar cadastro e relatórios</h2><p>Os arquivos incluem os filtros e metadados deste recorte.</p></div>
         <div className="report-action-links">
+          <Link className="secondary-action" href={reportUrl("/api/produtos/export", exportQuery)}>Baixar CSV</Link>
           <Link className="primary-action" href={reportUrl("/api/relatorios/export.xlsx", exportQuery)}>Baixar Excel</Link>
           <Link className="secondary-action" href={reportUrl("/api/relatorios/export.pdf", exportQuery)}>Baixar PDF</Link>
         </div>

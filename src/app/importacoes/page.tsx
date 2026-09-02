@@ -26,14 +26,6 @@ export default async function ImportacoesPage() {
         title="Importações"
         description="Valide a exportação do ERP e acompanhe os resultados processados."
       />
-      <section className="csv-export-bar panel">
-        <div>
-          <span className="section-kicker">Saída de dados</span>
-          <h2>Baixar cadastro atual</h2>
-          <p>Exporte os produtos atuais da sua organização no mesmo formato aceito pelo importador.</p>
-        </div>
-        <a className="export-button" download href="/api/produtos/export">Baixar CSV atual</a>
-      </section>
       <CsvImporter />
 
       <section className="import-history panel">
