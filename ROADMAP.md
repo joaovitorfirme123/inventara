@@ -2076,7 +2076,7 @@ formula explicavel e auditavel.
 
 ### FASE 32 — PWA e temas visuais
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -2084,13 +2084,13 @@ Melhorar o uso recorrente em dispositivos moveis e permitir preferencia visual.
 
 #### Tarefas
 
-- [ ] Transformar a aplicacao em PWA instalavel.
-- [ ] Configurar manifest e icones.
-- [ ] Definir estrategia de cache segura para dados autenticados.
-- [ ] Criar tema claro.
-- [ ] Criar tema escuro.
-- [ ] Permitir alternar ou respeitar a preferencia do sistema.
-- [ ] Validar contraste e legibilidade nos dois temas.
+- [x] Transformar a aplicacao em PWA instalavel.
+- [x] Configurar manifest e icones.
+- [x] Definir estrategia de cache segura para dados autenticados.
+- [x] Criar tema claro.
+- [x] Criar tema escuro.
+- [x] Permitir alternar ou respeitar a preferencia do sistema.
+- [x] Validar contraste e legibilidade nos dois temas.
 
 #### Conceitos que devo aprender
 
@@ -2109,10 +2109,10 @@ Melhorar o uso recorrente em dispositivos moveis e permitir preferencia visual.
 
 #### Checklist de conclusao
 
-- [ ] Testar instalacao em desktop e mobile.
-- [ ] Testar logout e troca de usuario com cache ativo.
-- [ ] Testar tema claro e escuro.
-- [ ] Validar acessibilidade visual.
+- [x] Testar instalacao em desktop e mobile.
+- [x] Testar logout e troca de usuario com cache ativo.
+- [x] Testar tema claro e escuro.
+- [x] Validar acessibilidade visual.
 
 ---
 

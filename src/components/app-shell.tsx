@@ -2,8 +2,9 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { authClient } from "@/lib/auth-client";
+import { ThemeToggle } from "@/components/theme-toggle";
 
 const navigation = [
   { href: "/", label: "Dashboard", code: "01" },
@@ -32,6 +33,16 @@ type AppShellProps = {
 export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const [isSigningOut, setIsSigningOut] = useState(false);
+
+  useEffect(() => {
+    if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
+    void navigator.serviceWorker.register("/sw.js", {
+      scope: "/",
+      updateViaCache: "none",
+    }).catch(() => {
+      // PWA support is optional and must not block the application shell.
+    });
+  }, []);
 
   if (pathname === "/login" || pathname.startsWith("/convites/")) {
     return <main className="auth-page">{children}</main>;
@@ -119,6 +130,7 @@ export function AppShell({ children, user }: AppShellProps) {
             <strong>{user?.organizationName ?? "Plataforma"}</strong>
               <small>{user?.name ?? "Sessão local"}</small>
             </div>
+            <ThemeToggle />
             <button disabled={isSigningOut} onClick={signOut} type="button">
               {isSigningOut ? "Saindo..." : "Sair"}
             </button>

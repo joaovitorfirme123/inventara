@@ -9,6 +9,18 @@
   --rust: #cf633f;
 }
 
+html[data-theme="dark"] {
+  color-scheme: dark;
+  --ink: #e8eee9;
+  --muted: #a6b5ac;
+  --canvas: #101a16;
+  --paper: #17241e;
+  --line: #30433a;
+  --forest: #0d2a20;
+  --lime: #b5e65c;
+  --rust: #e27a55;
+}
+
 * {
   box-sizing: border-box;
   margin: 0;
@@ -241,6 +253,28 @@ input {
 .organization-chip button:disabled {
   cursor: wait;
   opacity: 0.6;
+}
+
+.theme-toggle {
+  min-height: 34px;
+  padding: 0 11px;
+  color: var(--muted);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.61rem;
+  font-weight: 750;
+}
+
+.theme-toggle:hover {
+  color: var(--paper);
+  background: var(--forest);
+}
+
+.theme-toggle:disabled {
+  cursor: wait;
+  opacity: 0.65;
 }
 
 .content {
@@ -5438,4 +5472,89 @@ input {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
   }
+}
+
+html[data-theme="dark"] body {
+  background:
+    linear-gradient(rgba(232, 238, 233, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(232, 238, 233, 0.035) 1px, transparent 1px),
+    var(--canvas);
+}
+
+html[data-theme="dark"] .topbar {
+  background: rgba(16, 26, 22, 0.9);
+}
+
+html[data-theme="dark"] .sidebar {
+  border-right-color: #315448;
+}
+
+html[data-theme="dark"] .status-pill,
+html[data-theme="dark"] .phase-badge,
+html[data-theme="dark"] .csv-meta span,
+html[data-theme="dark"] .preview-table th,
+html[data-theme="dark"] .history-table th,
+html[data-theme="dark"] .inventory-table th,
+html[data-theme="dark"] .template-item,
+html[data-theme="dark"] .secondary-button {
+  color: #b7c6bd;
+  background: #22342b;
+  border-color: var(--line);
+}
+
+html[data-theme="dark"] .organization-card,
+html[data-theme="dark"] .selected-file,
+html[data-theme="dark"] .preview-table,
+html[data-theme="dark"] .history-table,
+html[data-theme="dark"] .inventory-table,
+html[data-theme="dark"] .template-mappings {
+  background: #1d2d25;
+}
+
+html[data-theme="dark"] .organization-card,
+html[data-theme="dark"] .selected-file,
+html[data-theme="dark"] .preview-table,
+html[data-theme="dark"] .history-table,
+html[data-theme="dark"] .inventory-table,
+html[data-theme="dark"] .template-mappings {
+  border-color: var(--line);
+}
+
+html[data-theme="dark"] input:not([type="checkbox"]),
+html[data-theme="dark"] select,
+html[data-theme="dark"] textarea {
+  color: var(--ink);
+  background: #102019;
+  border-color: var(--line);
+}
+
+html[data-theme="dark"] input::placeholder,
+html[data-theme="dark"] textarea::placeholder {
+  color: #7f9589;
+}
+
+html[data-theme="dark"] .preview-errors,
+html[data-theme="dark"] .import-error,
+html[data-theme="dark"] .result-errors,
+html[data-theme="dark"] .action-feedback.error,
+html[data-theme="dark"] .alert-card {
+  color: #f1b5a4;
+  background: #3b2925;
+}
+
+html[data-theme="dark"] .empty-visual span,
+html[data-theme="dark"] .dashboard-skeleton div {
+  background: #26362e;
+  border-color: #3b4d43;
+}
+
+html[data-theme="dark"] .nav-link.active,
+html[data-theme="dark"] .brand-mark,
+html[data-theme="dark"] .template-item.selected {
+  color: #102019;
+}
+
+html[data-theme="dark"] .theme-toggle:hover,
+html[data-theme="dark"] .organization-chip button:hover {
+  color: var(--ink);
 }
