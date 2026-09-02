@@ -107,9 +107,9 @@ export async function listProducts(filters: ProductQuery) {
   };
 }
 
-export function listProductsForExport(organizationId: string) {
+export function listProductsForExport(filters: Omit<ProductQuery, "page">) {
   return prisma.product.findMany({
-    where: { organizationId },
+    where: createProductWhere({ page: 1, ...filters }),
     orderBy: [{ plu: "asc" }, { id: "asc" }],
     select: {
       plu: true,

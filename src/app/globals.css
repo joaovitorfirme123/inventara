@@ -465,7 +465,7 @@ input {
 }
 
 .admin-form > button,
-.secondary-action {
+.report-action-links .secondary-action {
   display: inline-flex;
   min-height: 42px;
   align-items: center;
@@ -632,6 +632,166 @@ input {
   margin-top: 8px;
   color: var(--muted);
   font-size: 0.76rem;
+}
+
+.report-filters {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  align-items: end;
+  gap: 14px;
+  margin-bottom: 14px;
+  padding: 22px;
+}
+
+.report-filters label {
+  display: grid;
+  gap: 7px;
+}
+
+.report-filters label > span {
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.59rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.report-filters input,
+.report-filters select {
+  width: 100%;
+  height: 42px;
+  padding: 0 11px;
+  color: var(--ink);
+  background: #f7f6f0;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.report-filters button,
+.report-action-links a {
+  display: inline-flex;
+  height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.report-filters button,
+.primary-action {
+  color: var(--forest);
+  background: var(--lime);
+  border: 0;
+}
+
+.report-actions,
+.report-comparison {
+  margin-bottom: 14px;
+}
+
+.report-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.report-actions h2 {
+  margin-top: 5px;
+  font-size: 1.1rem;
+}
+
+.report-actions p {
+  margin-top: 8px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
+.report-action-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.secondary-action {
+  color: var(--forest);
+  background: transparent;
+  border: 1px solid var(--line);
+}
+
+.report-comparison {
+  padding: 0;
+  overflow: hidden;
+}
+
+.report-comparison > .panel-heading {
+  padding: 28px 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.report-comparison-summary {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1px;
+  background: var(--line);
+}
+
+.report-comparison-summary article {
+  display: grid;
+  gap: 7px;
+  padding: 22px 24px;
+  background: var(--paper);
+}
+
+.report-comparison-summary span,
+.report-comparison-summary small {
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.6rem;
+  text-transform: uppercase;
+}
+
+.report-comparison-summary strong {
+  font-family: var(--font-geist), monospace;
+  font-size: 1.45rem;
+  font-weight: 550;
+}
+
+.report-comparison-table {
+  overflow-x: auto;
+}
+
+.report-comparison table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.report-comparison th,
+.report-comparison td {
+  padding: 13px 20px;
+  border-bottom: 1px solid #e5e3da;
+  font-family: var(--font-geist), monospace;
+  font-size: 0.65rem;
+}
+
+.report-comparison th {
+  color: var(--muted);
+  background: #f0efe8;
+  font-size: 0.56rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.report-empty {
+  padding: 28px 30px;
+  color: var(--muted);
+  font-size: 0.72rem;
 }
 
 .inventory-goals {
@@ -3901,6 +4061,41 @@ input {
 
   .page-header p {
     padding-left: 16px;
+  }
+
+  .report-filters {
+    grid-template-columns: 1fr;
+    padding: 18px;
+  }
+
+  .report-actions {
+    display: grid;
+    padding: 22px 18px;
+  }
+
+  .report-action-links {
+    display: grid;
+  }
+
+  .report-action-links a {
+    width: 100%;
+  }
+
+  .report-comparison > .panel-heading {
+    padding: 22px 18px;
+  }
+
+  .report-comparison-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .report-comparison-summary article {
+    padding: 18px;
+  }
+
+  .report-comparison th,
+  .report-comparison td {
+    padding: 12px 14px;
   }
 
   .dashboard-period {

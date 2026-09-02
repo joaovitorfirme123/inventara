@@ -1872,7 +1872,7 @@ meses.
 
 ### FASE 27 — Relatorios e exportacoes
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1881,11 +1881,11 @@ comparaveis entre periodos.
 
 #### Tarefas
 
-- [ ] Exportar dados para Excel.
-- [ ] Exportar relatorios para PDF.
-- [ ] Comparar cobertura e inventarios entre periodos.
-- [ ] Definir quais filtros e metadados entram em cada exportacao.
-- [ ] Garantir que exportacoes respeitem a organizacao e as permissoes.
+- [x] Exportar dados para Excel.
+- [x] Exportar relatorios para PDF.
+- [x] Comparar cobertura e inventarios entre periodos.
+- [x] Definir quais filtros e metadados entram em cada exportacao.
+- [x] Garantir que exportacoes respeitem a organizacao e as permissoes.
 
 #### Conceitos que devo aprender
 
@@ -1903,10 +1903,10 @@ comparaveis entre periodos.
 
 #### Checklist de conclusao
 
-- [ ] Testar exportacao Excel.
-- [ ] Testar exportacao PDF.
-- [ ] Testar comparacao com periodos com e sem dados.
-- [ ] Testar filtros, permissao e isolamento.
+- [x] Testar exportacao Excel.
+- [x] Testar exportacao PDF.
+- [x] Testar comparacao com periodos com e sem dados.
+- [x] Testar filtros, permissao e isolamento.
 
 ---
 

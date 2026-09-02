@@ -1,5 +1,6 @@
 import { listProductsForExport } from "@/data/products";
 import { serializeProductsToCsv } from "@/lib/csv";
+import { getProductExportFilters } from "@/lib/report-filters";
 import { getSessionContext } from "@/lib/session";
 
 function formatDate(value: Date | null) {
@@ -21,7 +22,9 @@ export async function GET(request: Request) {
       return Response.json({ error: "Autenticação necessária." }, { status: 401 });
     }
 
-    const products = await listProductsForExport(session.user.organizationId);
+    const products = await listProductsForExport(
+      getProductExportFilters(new URL(request.url), session.user.organizationId),
+    );
     const csv = serializeProductsToCsv(products.map((product) => ({
       ...product,
       lastInventory: formatDate(product.lastInventory),
