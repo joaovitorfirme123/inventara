@@ -7,8 +7,10 @@ Usuario -> Vercel -> Next.js -> Neon PostgreSQL
 ```
 
 O projeto usa o runtime Node.js do Next.js. O `vercel.json` executa
-`npm run db:deploy` antes de `npm run build`, aplicando somente migrations ainda
-pendentes no banco configurado para o ambiente.
+`npm run db:deploy:retry` antes de `npm run build`, aplicando somente migrations
+ainda pendentes no banco configurado para o ambiente. O comando repete somente
+falhas `P1002` de advisory lock, que podem ocorrer quando dois deploys começam
+ao mesmo tempo.
 
 ## Pré-requisitos
 
@@ -65,7 +67,7 @@ banco de produção em previews.
 1. Importe o repositório na Vercel.
 2. Cadastre as variáveis de produção.
 3. Faça o deploy pela branch `main`.
-4. Confirme nos logs que `npm run db:deploy` terminou antes do build.
+4. Confirme nos logs que `npm run db:deploy:retry` terminou antes do build.
 5. Acesse a URL pública e confirme que `/login` responde.
 6. Crie ou provisione uma conta de teste fora do banco de produção real.
 7. Execute o bootstrap do `PLATFORM_ADMIN` se a administração da plataforma for necessária.

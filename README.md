@@ -269,7 +269,7 @@ O projeto está preparado para Vercel e Neon. O `vercel.json` aplica migrations
 pendentes antes do build:
 
 ```text
-npm run db:deploy && npm run build
+npm run db:deploy:retry && npm run build
 ```
 
 Siga [docs/deployment.md](docs/deployment.md) para configurar o banco,
