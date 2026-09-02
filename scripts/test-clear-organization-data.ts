@@ -31,6 +31,9 @@ async function removeOrganizations() {
   await prisma.inventoryGoal.deleteMany({
     where: { organizationId: { in: [organizationAId, organizationBId] } },
   });
+  await prisma.notification.deleteMany({
+    where: { organizationId: { in: [organizationAId, organizationBId] } },
+  });
   await prisma.stockHistory.deleteMany({
     where: { organizationId: { in: [organizationAId, organizationBId] } },
   });

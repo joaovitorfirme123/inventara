@@ -38,6 +38,7 @@ model Organization {
   inventoryPlans InventoryPlan[]
   inventoryGoals InventoryGoal[]
   inventoryCoverage InventoryCoverage[]
+  notifications Notification[]
 
   @@map("organizations")
 }
@@ -56,6 +57,7 @@ model User {
   organization   Organization? @relation(fields: [organizationId], references: [id], onDelete: Restrict)
   sessions       Session[]
   accounts       Account[]
+  notificationReads NotificationRead[]
 
   @@index([organizationId])
   @@map("users")
@@ -240,4 +242,35 @@ model InventoryCoverage {
   @@unique([organizationId, year, month, section])
   @@index([organizationId, year, month])
   @@map("inventory_coverage")
+}
+
+model Notification {
+  id             String             @id @default(uuid()) @db.Uuid
+  organizationId String             @map("organization_id") @db.Uuid
+  dedupeKey      String             @map("dedupe_key")
+  type           String
+  severity       String
+  title          String
+  message        String
+  generatedAt    DateTime           @default(now()) @map("generated_at")
+  resolvedAt     DateTime?          @map("resolved_at")
+  organization   Organization       @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  reads          NotificationRead[]
+
+  @@unique([organizationId, dedupeKey])
+  @@index([organizationId, resolvedAt, generatedAt(sort: Desc)])
+  @@map("notifications")
+}
+
+model NotificationRead {
+  id             String       @id @default(uuid()) @db.Uuid
+  notificationId String       @map("notification_id") @db.Uuid
+  userId         String       @map("user_id") @db.Uuid
+  readAt         DateTime     @default(now()) @map("read_at")
+  notification   Notification @relation(fields: [notificationId], references: [id], onDelete: Cascade)
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([notificationId, userId])
+  @@index([userId, readAt])
+  @@map("notification_reads")
 }

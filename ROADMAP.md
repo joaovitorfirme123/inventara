@@ -1912,7 +1912,7 @@ comparaveis entre periodos.
 
 ### FASE 28 — Alertas e notificacoes
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1921,11 +1921,11 @@ Dashboard.
 
 #### Tarefas
 
-- [ ] Criar alertas para prioridades e metas fora do esperado.
-- [ ] Criar notificacoes dentro da aplicacao.
-- [ ] Permitir marcar notificacoes como lidas.
-- [ ] Definir regras para evitar alertas duplicados.
-- [ ] Registrar quando um alerta foi gerado e lido.
+- [x] Criar alertas para prioridades e metas fora do esperado.
+- [x] Criar notificacoes dentro da aplicacao.
+- [x] Permitir marcar notificacoes como lidas.
+- [x] Definir regras para evitar alertas duplicados.
+- [x] Registrar quando um alerta foi gerado e lido.
 
 #### Conceitos que devo aprender
 
@@ -1943,10 +1943,10 @@ Dashboard.
 
 #### Checklist de conclusao
 
-- [ ] Testar geracao de alertas.
-- [ ] Testar deduplicacao.
-- [ ] Testar leitura e persistencia de notificacoes.
-- [ ] Testar isolamento entre organizacoes.
+- [x] Testar geracao de alertas.
+- [x] Testar deduplicacao.
+- [x] Testar leitura e persistencia de notificacoes.
+- [x] Testar isolamento entre organizacoes.
 
 ---
 

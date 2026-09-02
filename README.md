@@ -56,6 +56,7 @@ sendo a origem dos dados, e o Inventara organiza a decisão operacional.
 - Produtos com busca, filtros, paginação e detalhe individual.
 - Estoque atual, estoque anterior, variação e histórico por produto.
 - Conta demonstrativa isolada com dados sintéticos.
+- Notificações para prioridades urgentes e metas de cobertura abaixo do esperado.
 - Limpeza segura do catálogo para substituir a base de uma organização.
 - Autenticação por e-mail e senha com sessões persistidas.
 - Administração de organizações e usuários com papéis `platform_admin`, `owner` e `member`.
@@ -71,6 +72,7 @@ sendo a origem dos dados, e o Inventara organiza a decisão operacional.
 | `/inventarios` | Prioridade de contagem por subgrupo |
 | `/importacoes` | Histórico dos arquivos importados |
 | `/estoque` | Posição atual e evolução do estoque |
+| `/notificacoes` | Alertas ativos e notificações da organização |
 | `/configuracoes` | Informações da organização e da sessão |
 | `/configuracoes/usuarios` | Gestão de usuários da organização pelo owner |
 | `/admin/organizacoes` | Criação de organizações pelo platform admin |
@@ -116,6 +118,7 @@ O schema contém as seguintes entidades principais:
 - `Product`: catálogo e estoque atual.
 - `ImportRecord`: execução de cada importação.
 - `StockHistory`: snapshot do estoque por produto e importação.
+- `Notification` e `NotificationRead`: alertas deduplicados e leituras por usuário.
 
 O histórico é append-only por importação. Isso permite comparar os dois últimos
 snapshots sem substituir a evidência de uma importação anterior.

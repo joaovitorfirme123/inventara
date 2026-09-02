@@ -12,8 +12,9 @@ const navigation = [
   { href: "/planejamento", label: "Planejamento", code: "04" },
   { href: "/importacoes", label: "Importações", code: "05" },
   { href: "/estoque", label: "Estoque", code: "06" },
-  { href: "/relatorios", label: "Relatórios", code: "07" },
-  { href: "/configuracoes", label: "Configurações", code: "08" },
+  { href: "/notificacoes", label: "Notificações", code: "07" },
+  { href: "/relatorios", label: "Relatórios", code: "08" },
+  { href: "/configuracoes", label: "Configurações", code: "09" },
 ];
 
 type AppShellProps = {
@@ -94,7 +95,7 @@ export function AppShell({ children, user }: AppShellProps) {
               href="/admin/organizacoes"
               aria-current={pathname.startsWith("/admin") ? "page" : undefined}
             >
-                <span>09</span>
+                <span>10</span>
               Administração
             </Link>
           )}

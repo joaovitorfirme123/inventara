@@ -794,6 +794,132 @@ input {
   font-size: 0.72rem;
 }
 
+.notifications-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.notifications-panel > .panel-heading {
+  padding: 28px 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.notification-list {
+  display: grid;
+}
+
+.notification-card {
+  display: grid;
+  grid-template-columns: 54px minmax(0, 1fr);
+  gap: 18px;
+  padding: 22px 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.notification-card.unread {
+  background: #f6f7ec;
+}
+
+.notification-mark {
+  display: grid;
+  width: 48px;
+  height: 32px;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-geist), monospace;
+  font-size: 0.55rem;
+  font-weight: 800;
+}
+
+.notification-mark.critical {
+  color: #7f281d;
+  background: #f6d8d0;
+}
+
+.notification-mark.warning {
+  color: #8a4a13;
+  background: #f6e2c8;
+}
+
+.notification-content {
+  min-width: 0;
+}
+
+.notification-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+}
+
+.notification-heading h3 {
+  font-size: 0.8rem;
+}
+
+.notification-heading time,
+.notification-read-label {
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.58rem;
+}
+
+.notification-content > p {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 0.72rem;
+  line-height: 1.55;
+}
+
+.notification-content form {
+  margin-top: 13px;
+}
+
+.notification-content button {
+  padding: 7px 10px;
+  color: var(--forest);
+  background: transparent;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.62rem;
+  font-weight: 750;
+}
+
+.notification-content button:hover {
+  background: var(--lime);
+  border-color: #c8dca1;
+}
+
+.notification-empty {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  min-height: 240px;
+  padding: 30px;
+}
+
+.notification-empty > span {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  place-items: center;
+  color: var(--forest);
+  background: var(--lime);
+  font-family: var(--font-geist), monospace;
+  font-weight: 800;
+}
+
+.notification-empty h2 {
+  font-size: 1.15rem;
+}
+
+.notification-empty p {
+  max-width: 460px;
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 0.72rem;
+}
+
 .inventory-goals {
   padding: 0;
   overflow: hidden;
@@ -4057,6 +4183,26 @@ input {
   .report-comparison th,
   .report-comparison td {
     padding: 12px 14px;
+  }
+
+  .notifications-panel > .panel-heading {
+    padding: 22px 18px;
+  }
+
+  .notification-card {
+    grid-template-columns: 1fr;
+    gap: 12px;
+    padding: 20px 18px;
+  }
+
+  .notification-heading {
+    display: grid;
+    gap: 5px;
+  }
+
+  .notification-empty {
+    display: grid;
+    padding: 24px 18px;
   }
 
   .dashboard-period {
