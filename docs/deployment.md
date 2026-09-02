@@ -31,8 +31,9 @@ valores em arquivos versionados:
 
 O `DATABASE_URL` é usado pela aplicação e pode apontar para o endpoint pooled
 (`-pooler`). O `DIRECT_URL` é usado pelo Prisma durante o build para aplicar
-migrations e deve apontar para o endpoint direct. Se `DIRECT_URL` não existir,
-o Prisma usa `DATABASE_URL` como fallback.
+migrations e deve apontar para o endpoint direct, sem `-pooler`; isso evita
+timeouts ao adquirir o advisory lock de migrations. Se `DIRECT_URL` não existir
+ou estiver vazio, o Prisma usa `DATABASE_URL` como fallback.
 
 `SEED_USER_PASSWORD` é usada apenas para provisionar contas locais com
 `npm run db:seed`. Não configure essa variável na produção e não execute o seed
