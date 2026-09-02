@@ -1583,7 +1583,7 @@ sendo determinada pela sessao autenticada no servidor.
 
 ### FASE 23 — Drill-down das importacoes
 
-**Status: EM ANDAMENTO**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1832,7 +1832,7 @@ sistema para atribuir uma contagem.
 
 ### FASE 26 — Metas e cobertura historica
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1841,11 +1841,11 @@ meses.
 
 #### Tarefas
 
-- [ ] Criar metas por secao.
-- [ ] Registrar cobertura mensal.
-- [ ] Comparar cobertura planejada e realizada.
-- [ ] Exibir evolucao por periodo no Dashboard.
-- [ ] Permitir consultar periodos anteriores.
+- [x] Criar metas por secao.
+- [x] Registrar cobertura mensal.
+- [x] Comparar cobertura planejada e realizada.
+- [x] Exibir evolucao por periodo no Dashboard.
+- [x] Permitir consultar periodos anteriores.
 
 #### Conceitos que devo aprender
 
@@ -1863,10 +1863,10 @@ meses.
 
 #### Checklist de conclusao
 
-- [ ] Testar metas por secao.
-- [ ] Testar fechamento de meses.
-- [ ] Testar comparacao entre meta e cobertura.
-- [ ] Testar periodos sem dados.
+- [x] Testar metas por secao.
+- [x] Testar fechamento de meses.
+- [x] Testar comparacao entre meta e cobertura.
+- [x] Testar periodos sem dados.
 
 ---
 

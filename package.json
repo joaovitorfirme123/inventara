@@ -23,6 +23,7 @@
     "test:inventories": "tsx scripts/test-inventories.ts",
     "test:inventory-plans": "tsx scripts/test-inventory-plans.ts",
     "test:dashboard": "tsx scripts/test-dashboard.ts",
+    "test:inventory-goals": "tsx scripts/test-inventory-goals.ts",
     "test:stock": "tsx scripts/test-stock-history.ts",
     "test:product-details": "tsx scripts/test-product-details.ts",
     "test:authentication": "tsx scripts/test-authentication.ts",

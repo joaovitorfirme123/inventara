@@ -24,6 +24,14 @@ export default async function ConfiguracoesPage() {
         </div>
         <Link className="secondary-action" href="/configuracoes/usuarios">Gerenciar usuários</Link>
       </section>
+      <section className="settings-links panel">
+        <div>
+          <span className="section-kicker">Indicadores</span>
+          <h2>Metas de inventário</h2>
+          <p>Defina a cobertura anual desejada para cada seção.</p>
+        </div>
+        <Link className="secondary-action" href="/configuracoes/metas">Gerenciar metas</Link>
+      </section>
       <ClearOrganizationData />
     </>
   );

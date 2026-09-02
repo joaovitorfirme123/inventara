@@ -10,6 +10,8 @@ import type { InventoryPriority } from "@/lib/inventory-priority";
 
 export const metadata: Metadata = { title: "Dashboard" };
 
+type SearchParams = Promise<Record<string, string | string[] | undefined>>;
+
 const numberFormatter = new Intl.NumberFormat("pt-BR");
 
 const priorityColors: Record<InventoryPriority, string> = {
@@ -46,7 +48,7 @@ async function DashboardContent({
   organizationId: string;
   year: number;
 }) {
-  const { summary, sections, priorities, recommendations } = await getDashboardData(
+  const { summary, sections, priorities, recommendations, coverageHistory } = await getDashboardData(
     organizationId,
     year,
   );
@@ -170,6 +172,30 @@ async function DashboardContent({
         </section>
       </div>
 
+      <section className="coverage-history panel">
+        <div className="panel-heading">
+          <div><span className="section-kicker">Evolução</span><h2>Cobertura mensal</h2></div>
+          <span className="status-pill">Ciclo {year}</span>
+        </div>
+        {coverageHistory.length > 0 ? (
+          <div className="coverage-history-chart">
+            {coverageHistory.map((point) => (
+              <div className="coverage-history-row" key={point.month}>
+                <span>{point.label}</span>
+                <div className="coverage-history-bar">
+                  <i style={{ width: `${point.coveragePercentage}%` }} />
+                  {point.goalPercentage !== null && <b style={{ left: `${point.goalPercentage}%` }} />}
+                </div>
+                <strong>{point.coveragePercentage.toFixed(1)}%</strong>
+                <small>{point.goalPercentage === null ? "Sem meta" : `Meta ${point.goalPercentage.toFixed(1)}%`}</small>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <div className="dashboard-recommendation-empty"><p>A cobertura mensal aparecerá após a primeira importação de cada período.</p></div>
+        )}
+      </section>
+
       <section className="dashboard-recommendations panel">
         <div className="panel-heading">
           <div><span className="section-kicker">Próxima contagem</span><h2>Subgrupos recomendados</h2></div>
@@ -227,9 +253,14 @@ async function DashboardContent({
   );
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({ searchParams }: { searchParams: SearchParams }) {
   await connection();
-  const year = new Date().getFullYear();
+  const currentYear = new Date().getFullYear();
+  const params = await searchParams;
+  const requestedYear = typeof params.year === "string" ? Number.parseInt(params.year, 10) : currentYear;
+  const year = Number.isInteger(requestedYear) && requestedYear >= 2000 && requestedYear <= currentYear
+    ? requestedYear
+    : currentYear;
   const organizationId = await getCurrentOrganizationId();
 
   return (
@@ -239,6 +270,17 @@ export default async function DashboardPage() {
         title="Dashboard"
         description="Acompanhe a cobertura dos inventários e os pontos que precisam de atenção."
       />
+      <form className="dashboard-period" method="get">
+        <label>
+          <span>Período consultado</span>
+          <select defaultValue={year} name="year">
+            {Array.from({ length: Math.min(currentYear - 2019, 6) }, (_, index) => currentYear - index).map((option) => (
+              <option key={option} value={option}>{option}</option>
+            ))}
+          </select>
+        </label>
+        <button type="submit">Consultar período</button>
+      </form>
       <Suspense fallback={<DashboardSkeleton />}>
         <DashboardContent organizationId={organizationId} year={year} />
       </Suspense>

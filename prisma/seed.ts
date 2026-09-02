@@ -460,6 +460,44 @@ async function seed() {
     });
   }
 
+  const demoCoverageBySection = new Map<string, { totalSkus: number; countedSkus: number }>();
+  for (const demoProduct of demoProducts) {
+    const coverage = demoCoverageBySection.get(demoProduct.section) ?? { totalSkus: 0, countedSkus: 0 };
+    coverage.totalSkus += 1;
+    if (demoProduct.lastInventory) coverage.countedSkus += 1;
+    demoCoverageBySection.set(demoProduct.section, coverage);
+  }
+  for (const demoImport of demoImports) {
+    for (const [section, coverage] of demoCoverageBySection) {
+      await prisma.inventoryCoverage.upsert({
+        where: {
+          organizationId_year_month_section: {
+            organizationId: demoOrganization.id,
+            year: demoImport.importedAt.getUTCFullYear(),
+            month: demoImport.importedAt.getUTCMonth() + 1,
+            section,
+          },
+        },
+        update: {
+          totalSkus: coverage.totalSkus,
+          countedSkus: coverage.countedSkus,
+          coveragePercentage: (coverage.countedSkus / coverage.totalSkus) * 100,
+          recordedAt: demoImport.importedAt,
+        },
+        create: {
+          organizationId: demoOrganization.id,
+          year: demoImport.importedAt.getUTCFullYear(),
+          month: demoImport.importedAt.getUTCMonth() + 1,
+          section,
+          totalSkus: coverage.totalSkus,
+          countedSkus: coverage.countedSkus,
+          coveragePercentage: (coverage.countedSkus / coverage.totalSkus) * 100,
+          recordedAt: demoImport.importedAt,
+        },
+      });
+    }
+  }
+
   console.log("Test and demo organizations, users, products, and stock created.");
 }
 

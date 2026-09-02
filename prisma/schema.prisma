@@ -36,6 +36,8 @@ model Organization {
   imports      ImportRecord[]
   stockHistory StockHistory[]
   inventoryPlans InventoryPlan[]
+  inventoryGoals InventoryGoal[]
+  inventoryCoverage InventoryCoverage[]
 
   @@map("organizations")
 }
@@ -206,4 +208,36 @@ model InventoryPlan {
   @@index([organizationId, status, plannedDate])
   @@index([organizationId, section, group, subgroup])
   @@map("inventory_plans")
+}
+
+model InventoryGoal {
+  id                String       @id @default(uuid()) @db.Uuid
+  organizationId    String       @map("organization_id") @db.Uuid
+  year              Int
+  section           String
+  targetPercentage  Float        @map("target_percentage")
+  createdAt         DateTime     @default(now()) @map("created_at")
+  updatedAt         DateTime     @updatedAt @map("updated_at")
+  organization      Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+
+  @@unique([organizationId, year, section])
+  @@index([organizationId, year])
+  @@map("inventory_goals")
+}
+
+model InventoryCoverage {
+  id                 String       @id @default(uuid()) @db.Uuid
+  organizationId     String       @map("organization_id") @db.Uuid
+  year               Int
+  month              Int
+  section            String
+  totalSkus          Int          @map("total_skus")
+  countedSkus        Int          @map("counted_skus")
+  coveragePercentage Float        @map("coverage_percentage")
+  recordedAt         DateTime     @map("recorded_at")
+  organization       Organization @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+
+  @@unique([organizationId, year, month, section])
+  @@index([organizationId, year, month])
+  @@map("inventory_coverage")
 }

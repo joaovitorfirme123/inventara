@@ -1,5 +1,6 @@
 import { getInventoryRows } from "@/data/inventories";
 import type { InventoryRow } from "@/data/inventories";
+import { getInventoryCoverageHistory } from "@/data/inventory-coverage";
 import { PRIORITIES } from "@/lib/inventory-priority";
 import type { InventoryPriority } from "@/lib/inventory-priority";
 
@@ -30,6 +31,7 @@ export type DashboardData = {
     total: number;
   }>;
   recommendations: DashboardRecommendation[];
+  coverageHistory: Awaited<ReturnType<typeof getInventoryCoverageHistory>>;
 };
 
 export type DashboardRecommendation = Pick<
@@ -111,6 +113,7 @@ export function buildDashboardData(rows: InventoryRow[]): DashboardData {
       total: priorityTotals[priority],
     })),
     recommendations: [],
+    coverageHistory: [],
   };
 }
 
@@ -186,5 +189,6 @@ export async function getDashboardData(
   return {
     ...buildDashboardData(rows),
     recommendations: getDashboardRecommendations(rows),
+    coverageHistory: await getInventoryCoverageHistory(organizationId, year),
   };
 }

@@ -25,6 +25,12 @@ function row(plu: string): CsvProduct {
 }
 
 async function removeOrganizations() {
+  await prisma.inventoryCoverage.deleteMany({
+    where: { organizationId: { in: [organizationAId, organizationBId] } },
+  });
+  await prisma.inventoryGoal.deleteMany({
+    where: { organizationId: { in: [organizationAId, organizationBId] } },
+  });
   await prisma.stockHistory.deleteMany({
     where: { organizationId: { in: [organizationAId, organizationBId] } },
   });

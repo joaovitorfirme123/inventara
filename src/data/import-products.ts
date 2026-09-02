@@ -159,6 +159,50 @@ export async function importProducts(
       data: { insertedRows, updatedRows },
     });
 
+    const coverageRows = await transaction.$queryRaw<Array<{
+      section: string;
+      total_skus: number;
+      counted_skus: number;
+    }>>(Prisma.sql`
+      SELECT
+        COALESCE(NULLIF(BTRIM("section"), ''), 'Sem seção') AS "section",
+        COUNT(*)::int AS "total_skus",
+        COUNT(*) FILTER (
+          WHERE "last_inventory" >= DATE_TRUNC('year', ${importRecord.importedAt}::timestamptz)::date
+            AND "last_inventory" < (DATE_TRUNC('year', ${importRecord.importedAt}::timestamptz) + INTERVAL '1 year')::date
+        )::int AS "counted_skus"
+      FROM "products"
+      WHERE "organization_id" = ${input.organizationId}::uuid
+      GROUP BY 1
+    `);
+    const importedYear = importRecord.importedAt.getUTCFullYear();
+    const importedMonth = importRecord.importedAt.getUTCMonth() + 1;
+    if (coverageRows.length > 0) {
+      const coverageValues = coverageRows.map((row) => Prisma.sql`(
+        ${randomUUID()}::uuid,
+        ${input.organizationId}::uuid,
+        ${importedYear},
+        ${importedMonth},
+        ${row.section},
+        ${row.total_skus},
+        ${row.counted_skus},
+        ${(row.counted_skus / row.total_skus) * 100},
+        ${importRecord.importedAt}
+      )`);
+      await transaction.$executeRaw(Prisma.sql`
+        INSERT INTO "inventory_coverage" (
+          "id", "organization_id", "year", "month", "section",
+          "total_skus", "counted_skus", "coverage_percentage", "recorded_at"
+        )
+        VALUES ${Prisma.join(coverageValues)}
+        ON CONFLICT ("organization_id", "year", "month", "section") DO UPDATE SET
+          "total_skus" = EXCLUDED."total_skus",
+          "counted_skus" = EXCLUDED."counted_skus",
+          "coverage_percentage" = EXCLUDED."coverage_percentage",
+          "recorded_at" = EXCLUDED."recorded_at"
+      `);
+    }
+
     return {
       importId: importRecord.id,
       processedRows: input.rows.length + errorRows,
