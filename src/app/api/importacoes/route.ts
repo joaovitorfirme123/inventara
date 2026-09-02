@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { importProducts } from "@/data/import-products";
+import { getImportTemplateRevision } from "@/data/import-templates";
 import { parseCsvBuffer } from "@/lib/csv";
 import {
   DUPLICATE_IMPORT_WINDOW_MS,
@@ -49,7 +50,20 @@ export async function POST(request: Request) {
 
     const buffer = await file.arrayBuffer();
     const fileHash = createHash("sha256").update(new Uint8Array(buffer)).digest("hex");
-    const parsed = parseCsvBuffer(buffer);
+    const organizationId = session.user.organizationId;
+    const templateRevisionIdValue = formData.get("templateRevisionId");
+    const templateRevisionId = typeof templateRevisionIdValue === "string" && templateRevisionIdValue
+      ? templateRevisionIdValue
+      : undefined;
+    const templateRevision = templateRevisionId
+      ? await getImportTemplateRevision(organizationId, templateRevisionId)
+      : null;
+
+    if (templateRevisionId && !templateRevision) {
+      return Response.json({ error: "Template de importação não encontrado." }, { status: 404 });
+    }
+
+    const parsed = parseCsvBuffer(buffer, templateRevision?.configuration);
 
     if (parsed.fatalErrors.length > 0) {
       return Response.json(
@@ -71,7 +85,6 @@ export async function POST(request: Request) {
       );
     }
 
-    const organizationId = session.user.organizationId;
     const duplicate = await prisma.importRecord.findFirst({
       where: {
         organizationId,
@@ -105,6 +118,7 @@ export async function POST(request: Request) {
       rows: parsed.rows,
       errorRows: parsed.errors.length,
       errors: parsed.errors,
+      templateRevisionId: templateRevision?.id,
     });
 
     return Response.json({

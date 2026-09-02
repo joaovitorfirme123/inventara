@@ -1,11 +1,12 @@
 import "dotenv/config";
 import { importProducts } from "../src/data/import-products";
 import { parseCsvBuffer } from "../src/lib/csv";
+import type { CsvImportConfig } from "../src/lib/csv";
 import { prisma } from "../src/lib/prisma";
 
 const organizationAId = "11111111-1111-4111-8111-111111111111";
 const organizationBId = "22222222-2222-4222-8222-222222222222";
-const importFilenames = ["csv-a-first.csv", "csv-a-second.csv", "csv-b.csv"];
+const importFilenames = ["csv-a-first.csv", "csv-a-second.csv", "csv-b.csv", "csv-custom.csv"];
 const headers =
   "Código PLU;Código de barras;Descrição;Seção;Grupo;Subgrupo;Último Inventário;Estoque Atual";
 
@@ -74,15 +75,39 @@ ARROZ TIPO 1 5KG;00010001;7891000000011;MERCEARIA;ARROZ E FEIJAO;ARROZ;25/08/202
   assert(report.rows.length === 1, "Report row after preamble was not parsed.");
   assert(report.rows[0].plu === "00010001", "Report columns were not mapped.");
 
+  const customConfig: CsvImportConfig = {
+    delimiter: ",",
+    columns: { plu: "SKU", description: "Nome", currentStock: "Qtd" },
+    requiredFields: ["plu", "description", "currentStock"],
+  };
+  const custom = parseCsvBuffer(
+    toBuffer('SKU,Nome,Qtd\n990005,Produto customizado,"7,5"'),
+    customConfig,
+  );
+  assert(custom.fatalErrors.length === 0, "Custom template headers were rejected.");
+  assert(custom.rows[0].plu === "990005" && custom.rows[0].currentStock === "7.5", "Custom template mapping failed.");
+  assert(custom.rows[0].barcode === null, "Optional custom field should be empty.");
+
   await prisma.stockHistory.deleteMany({
     where: { importRecord: { filename: { in: importFilenames } } },
   });
   await prisma.importRecord.deleteMany({
     where: { filename: { in: importFilenames } },
   });
-  await prisma.product.deleteMany({ where: { plu: { in: ["990001", "990002"] } } });
+  await prisma.importTemplate.deleteMany({ where: { name: "Template CSV de teste" } });
+  await prisma.product.deleteMany({ where: { plu: { in: ["990001", "990002", "990005"] } } });
 
   try {
+    const template = await prisma.importTemplate.create({
+      data: {
+        organizationId: organizationAId,
+        name: "Template CSV de teste",
+        revisions: {
+          create: { version: 1, configuration: customConfig },
+        },
+      },
+      include: { revisions: true },
+    });
     const first = await importProducts({
       organizationId: organizationAId,
       filename: importFilenames[0],
@@ -111,6 +136,21 @@ ARROZ TIPO 1 5KG;00010001;7891000000011;MERCEARIA;ARROZ E FEIJAO;ARROZ;25/08/202
     assert(first.insertedRows === 1 && first.errorRows === 1, "Insert summary is incorrect.");
     assert(second.updatedRows === 1, "Update summary is incorrect.");
 
+    const customImport = await importProducts({
+      organizationId: organizationAId,
+      filename: importFilenames[3],
+      fileHash: "csv-test-hash-custom",
+      rows: custom.rows,
+      errorRows: custom.errors.length,
+      errors: custom.errors,
+      templateRevisionId: template.revisions[0].id,
+    });
+    const customRecord = await prisma.importRecord.findUnique({
+      where: { id: customImport.importId },
+      include: { templateRevision: { include: { template: true } } },
+    });
+    assert(customRecord?.templateRevision?.template.name === "Template CSV de teste", "Template revision was not recorded.");
+
     const firstRows = await prisma.importRow.findMany({
       where: { importId: first.importId },
       orderBy: { rowNumber: "asc" },
@@ -137,7 +177,8 @@ ARROZ TIPO 1 5KG;00010001;7891000000011;MERCEARIA;ARROZ E FEIJAO;ARROZ;25/08/202
     await prisma.importRecord.deleteMany({
       where: { filename: { in: importFilenames } },
     });
-    await prisma.product.deleteMany({ where: { plu: { in: ["990001", "990002"] } } });
+    await prisma.importTemplate.deleteMany({ where: { name: "Template CSV de teste" } });
+    await prisma.product.deleteMany({ where: { plu: { in: ["990001", "990002", "990005"] } } });
   }
 
   console.log("CSV parsing, validation, upsert, summary, and isolation passed.");

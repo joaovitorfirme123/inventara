@@ -12,6 +12,25 @@ export type CsvProduct = {
   currentStock: string;
 };
 
+export type CsvField = Exclude<keyof CsvProduct, "row">;
+
+export const CSV_FIELD_LABELS: Record<CsvField, string> = {
+  plu: "Código PLU",
+  barcode: "Código de barras",
+  description: "Descrição",
+  section: "Seção",
+  group: "Grupo",
+  subgroup: "Subgrupo",
+  lastInventory: "Último inventário",
+  currentStock: "Estoque atual",
+};
+
+export type CsvImportConfig = {
+  delimiter?: ";" | "," | "\t";
+  columns: Partial<Record<CsvField, string>>;
+  requiredFields: CsvField[];
+};
+
 export type CsvRowError = {
   row: number;
   plu: string | null;
@@ -74,6 +93,13 @@ const headerAliases = {
   ],
   currentStock: ["estoque atual", "current stock"],
 } satisfies Record<Exclude<keyof CsvProduct, "row">, string[]>;
+
+export const DEFAULT_CSV_IMPORT_CONFIG: CsvImportConfig = {
+  columns: Object.fromEntries(
+    Object.entries(headerAliases).map(([field, aliases]) => [field, aliases[0]]),
+  ) as Partial<Record<CsvField, string>>,
+  requiredFields: Object.keys(headerAliases) as CsvField[],
+};
 
 function normalizeHeader(value: string) {
   return value
@@ -148,21 +174,27 @@ function parseStock(value: string) {
   return normalized;
 }
 
-export function parseCsvBuffer(buffer: ArrayBuffer): CsvParseResult {
+export function parseCsvBuffer(buffer: ArrayBuffer, config?: CsvImportConfig): CsvParseResult {
   const { text, encoding } = decodeCsv(buffer);
   const lines = text.replace(/^\uFEFF/, "").split(/\r?\n/);
+  const delimiterPattern = config?.delimiter ?? /[;,\t]/;
   const headerLineIndex = lines.findIndex((line) => {
-    const fields = line.split(/[;,\t]/).map(normalizeHeader);
+    const fields = line.split(delimiterPattern).map(normalizeHeader);
 
-    return Object.values(headerAliases).every((aliases) =>
-      aliases.some((alias) => fields.includes(alias)),
-    );
+    return config
+      ? config.requiredFields
+          .map((field) => config.columns[field])
+          .filter((value): value is string => Boolean(value))
+          .every((candidate) => fields.includes(normalizeHeader(candidate)))
+      : Object.values(headerAliases).every((aliases) =>
+          aliases.some((alias) => fields.includes(alias)),
+        );
   });
   const csvText = lines.slice(Math.max(headerLineIndex, 0)).join("\n");
   const lineOffset = Math.max(headerLineIndex, 0);
   const parsed = Papa.parse<Record<string, string>>(csvText, {
     header: true,
-    delimiter: "",
+    delimiter: config?.delimiter ?? "",
     skipEmptyLines: "greedy",
     transformHeader: (header) => header.trim(),
   });
@@ -171,14 +203,19 @@ export function parseCsvBuffer(buffer: ArrayBuffer): CsvParseResult {
     fields.map((field) => [normalizeHeader(field), field]),
   );
   const columns = Object.fromEntries(
-    Object.entries(headerAliases).map(([key, aliases]) => [
-      key,
-      aliases.map((alias) => normalizedFields.get(alias)).find(Boolean),
-    ]),
-  ) as Record<keyof CsvProduct, string | undefined>;
+    Object.entries(headerAliases).map(([key, aliases]) => {
+      const configuredColumn = config?.columns[key as CsvField];
+      const candidates = config ? (configuredColumn ? [configuredColumn] : []) : aliases;
+      return [
+        key,
+        candidates.map((candidate) => normalizedFields.get(normalizeHeader(candidate))).find(Boolean),
+      ];
+    }),
+  ) as Record<CsvField, string | undefined>;
+  const requiredFields = config?.requiredFields ?? (Object.keys(headerAliases) as CsvField[]);
   const missingHeaders = Object.entries(columns)
-    .filter(([, value]) => !value)
-    .map(([key]) => key);
+    .filter(([key, value]) => requiredFields.includes(key as CsvField) && !value)
+    .map(([key]) => CSV_FIELD_LABELS[key as CsvField]);
 
   if (missingHeaders.length > 0) {
     return {
@@ -218,8 +255,8 @@ export function parseCsvBuffer(buffer: ArrayBuffer): CsvParseResult {
       return;
     }
 
-    const getValue = (column: keyof CsvProduct) =>
-      data[columns[column] as string]?.trim() ?? "";
+    const getValue = (column: CsvField) =>
+      columns[column] ? data[columns[column] as string]?.trim() ?? "" : "";
     const plu = getValue("plu");
     const description = getValue("description");
 

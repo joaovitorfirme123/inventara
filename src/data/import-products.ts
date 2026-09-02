@@ -21,6 +21,7 @@ export async function importProducts(
     rows: CsvProduct[];
     errorRows: number;
     errors?: CsvRowError[];
+    templateRevisionId?: string;
   },
 ): Promise<ImportResult> {
   return prisma.$transaction(async (transaction) => {
@@ -38,6 +39,7 @@ export async function importProducts(
         insertedRows: 0,
         updatedRows: 0,
         errorRows,
+        templateRevisionId: input.templateRevisionId,
       },
     });
 

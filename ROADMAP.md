@@ -1992,49 +1992,9 @@ a base de papeis criada na Fase 19.
 
 ---
 
-### FASE 30 — Multiplas lojas por organizacao
+### FASE 30 — Importacao configuravel
 
-**Status: NÃO INICIADA**
-
-#### Objetivo
-
-Separar dados operacionais de diferentes lojas pertencentes a uma mesma
-organizacao.
-
-#### Tarefas
-
-- [ ] Criar entidade de loja.
-- [ ] Relacionar produtos, estoques, importacoes e inventarios a uma loja.
-- [ ] Permitir selecionar uma ou mais lojas na consulta.
-- [ ] Criar visao consolidada da organizacao.
-- [ ] Atualizar isolamento e permissoes por loja.
-
-#### Conceitos que devo aprender
-
-- tenancy hierarquica;
-- agregacao multi-unidade;
-- escopo de autorizacao;
-- migrations de dados existentes.
-
-#### Criterios para considerar a fase concluida
-
-- Uma organizacao pode possuir mais de uma loja.
-- Dados de uma loja nao aparecem em outra sem permissao.
-- Relatorios podem ser vistos por loja e de forma consolidada.
-- Dados existentes possuem uma estrategia de migracao segura.
-
-#### Checklist de conclusao
-
-- [ ] Definir regra de pertencimento dos dados.
-- [ ] Migrar dados existentes para uma loja padrao.
-- [ ] Testar consultas por loja e consolidadas.
-- [ ] Testar autorizacao entre lojas.
-
----
-
-### FASE 31 — Importacao configuravel
-
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -2043,12 +2003,12 @@ do parser.
 
 #### Tarefas
 
-- [ ] Criar configuracao personalizada do CSV.
-- [ ] Criar mapeamento de colunas por ERP.
-- [ ] Permitir salvar mais de um modelo por organizacao.
-- [ ] Validar campos obrigatorios conforme o modelo.
-- [ ] Mostrar a configuracao aplicada antes da importacao.
-- [ ] Manter compatibilidade com o modelo atual.
+- [x] Criar configuracao personalizada do CSV.
+- [x] Criar mapeamento de colunas por ERP.
+- [x] Permitir salvar mais de um modelo por organizacao.
+- [x] Validar campos obrigatorios conforme o modelo.
+- [x] Mostrar a configuracao aplicada antes da importacao.
+- [x] Manter compatibilidade com o modelo atual.
 
 #### Conceitos que devo aprender
 
@@ -2066,14 +2026,14 @@ do parser.
 
 #### Checklist de conclusao
 
-- [ ] Testar mapeamento de dois ERPs.
-- [ ] Testar campos obrigatorios e opcionais.
-- [ ] Testar alteracao de uma configuracao versionada.
-- [ ] Testar compatibilidade com o CSV atual.
+- [x] Testar mapeamento de dois ERPs.
+- [x] Testar campos obrigatorios e opcionais.
+- [x] Testar alteracao de uma configuracao versionada.
+- [x] Testar compatibilidade com o CSV atual.
 
 ---
 
-### FASE 32 — Regras de prioridade configuraveis
+### FASE 31 — Regras de prioridade configuraveis
 
 **Status: NÃO INICIADA**
 
@@ -2114,7 +2074,7 @@ formula explicavel e auditavel.
 
 ---
 
-### FASE 33 — PWA e temas visuais
+### FASE 32 — PWA e temas visuais
 
 **Status: NÃO INICIADA**
 

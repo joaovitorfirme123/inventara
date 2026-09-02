@@ -2,9 +2,11 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { CsvImporter } from "@/components/csv-importer";
+import { ImportTemplateManager } from "@/components/import-template-manager";
 import { PageHeader } from "@/components/page-header";
 import { listImportsByOrganization } from "@/data/imports";
-import { getCurrentOrganizationId } from "@/lib/current-organization";
+import { listImportTemplates } from "@/data/import-templates";
+import { requireOrganizationSessionContext } from "@/lib/session";
 
 export const metadata: Metadata = { title: "Importações" };
 
@@ -17,7 +19,12 @@ const numberFormatter = new Intl.NumberFormat("pt-BR");
 
 export default async function ImportacoesPage() {
   await connection();
-  const imports = await listImportsByOrganization(await getCurrentOrganizationId());
+  const session = await requireOrganizationSessionContext();
+  const organizationId = session.user.organizationId;
+  const [imports, templates] = await Promise.all([
+    listImportsByOrganization(organizationId),
+    listImportTemplates(organizationId),
+  ]);
 
   return (
     <>
@@ -26,7 +33,8 @@ export default async function ImportacoesPage() {
         title="Importações"
         description="Valide a exportação do ERP e acompanhe os resultados processados."
       />
-      <CsvImporter />
+      <ImportTemplateManager templates={templates} canManage={session.user.role === "OWNER"} />
+      <CsvImporter templates={templates} />
 
       <section className="import-history panel">
         <div className="history-heading">
@@ -44,6 +52,7 @@ export default async function ImportacoesPage() {
                 <tr>
                   <th>Data</th>
                   <th>Arquivo</th>
+                  <th>Layout</th>
                   <th>Processados</th>
                   <th>Inseridos</th>
                   <th>Atualizados</th>
@@ -58,6 +67,11 @@ export default async function ImportacoesPage() {
                       <Link className="history-file-link" href={`/importacoes/${item.id}`}>
                         <strong>{item.filename}</strong>
                       </Link>
+                    </td>
+                    <td data-label="Layout">
+                      {item.templateRevision
+                        ? `${item.templateRevision.template.name} · v${item.templateRevision.version}`
+                        : "Padrão"}
                     </td>
                     <td data-label="Processados">{numberFormatter.format(item.totalRows)}</td>
                     <td data-label="Inseridos">{numberFormatter.format(item.insertedRows)}</td>

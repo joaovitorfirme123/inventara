@@ -20,6 +20,11 @@ export function listImportsByOrganization(organizationId: string) {
     where: { organizationId },
     orderBy: [{ importedAt: "desc" }, { id: "desc" }],
     take: 50,
+    include: {
+      templateRevision: {
+        select: { version: true, template: { select: { name: true } } },
+      },
+    },
   });
 }
 
@@ -31,6 +36,9 @@ export function getImportDetails(organizationId: string, importId: string) {
   return prisma.importRecord.findFirst({
     where: { id: importId, organizationId },
     include: {
+      templateRevision: {
+        select: { version: true, template: { select: { name: true } } },
+      },
       rows: {
         orderBy: { rowNumber: "asc" },
         select: {

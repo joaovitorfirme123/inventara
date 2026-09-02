@@ -42,6 +42,12 @@ export default async function ImportDetailsPage({ params }: ImportDetailsPagePro
         description={`Importação concluída em ${dateFormatter.format(item.importedAt)}.`}
       />
 
+      <p className="import-template-note">
+        Layout aplicado: {item.templateRevision
+          ? `${item.templateRevision.template.name}, revisão ${item.templateRevision.version}`
+          : "formato padrão"}.
+      </p>
+
       <section className="import-detail-summary panel">
         <article><span>Processados</span><strong>{numberFormatter.format(item.totalRows)}</strong></article>
         <article><span>Inseridos</span><strong>{numberFormatter.format(item.insertedRows)}</strong></article>

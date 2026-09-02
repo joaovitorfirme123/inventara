@@ -5,7 +5,7 @@ import type { ChangeEvent, DragEvent } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { parseCsvBuffer } from "@/lib/csv";
-import type { CsvParseResult, CsvRowError } from "@/lib/csv";
+import type { CsvImportConfig, CsvParseResult, CsvRowError } from "@/lib/csv";
 import {
   hasAllowedImportExtension,
   MAX_IMPORT_FILE_BYTES,
@@ -23,6 +23,14 @@ type ImportSummary = {
 
 type ImportState = "idle" | "reading" | "ready" | "processing" | "complete" | "error";
 
+type ImportTemplateOption = {
+  id: string;
+  name: string;
+  revisionId: string;
+  version: number;
+  configuration: CsvImportConfig;
+};
+
 const numberFormatter = new Intl.NumberFormat("pt-BR");
 
 function delimiterName(delimiter: string) {
@@ -32,7 +40,7 @@ function delimiterName(delimiter: string) {
   return delimiter;
 }
 
-export function CsvImporter() {
+export function CsvImporter({ templates }: { templates: ImportTemplateOption[] }) {
   const router = useRouter();
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<CsvParseResult | null>(null);
@@ -40,8 +48,11 @@ export function CsvImporter() {
   const [state, setState] = useState<ImportState>("idle");
   const [message, setMessage] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [templateRevisionId, setTemplateRevisionId] = useState("");
 
-  async function handleSelectedFile(selectedFile: File | null) {
+  const selectedTemplate = templates.find((template) => template.revisionId === templateRevisionId);
+
+  async function handleSelectedFile(selectedFile: File | null, revisionId = templateRevisionId) {
     setFile(selectedFile);
     setPreview(null);
     setSummary(null);
@@ -73,7 +84,8 @@ export function CsvImporter() {
     setState("reading");
 
     try {
-      const result = parseCsvBuffer(await selectedFile.arrayBuffer());
+      const template = templates.find((item) => item.revisionId === revisionId);
+      const result = parseCsvBuffer(await selectedFile.arrayBuffer(), template?.configuration);
 
       if (result.totalRows > MAX_IMPORT_ROWS) {
         setState("error");
@@ -94,6 +106,11 @@ export function CsvImporter() {
       setState("error");
       setMessage("Não foi possível ler o arquivo selecionado.");
     }
+  }
+
+  function handleTemplateChange(revisionId: string) {
+    setTemplateRevisionId(revisionId);
+    if (file) void handleSelectedFile(file, revisionId);
   }
 
   function handleInput(event: ChangeEvent<HTMLInputElement>) {
@@ -125,6 +142,7 @@ export function CsvImporter() {
     setMessage("");
     const formData = new FormData();
     formData.set("file", file);
+    if (templateRevisionId) formData.set("templateRevisionId", templateRevisionId);
 
     try {
       const response = await fetch("/api/importacoes", {
@@ -161,11 +179,22 @@ export function CsvImporter() {
           <span className="section-kicker">Selecionar arquivo</span>
           <h2>Carregue a exportação do ERP</h2>
           <p>
-            O arquivo deve conter PLU, código de barras, descrição, classificação,
-            último inventário e estoque atual. Limites: {numberFormatter.format(MAX_IMPORT_FILE_BYTES / 1024 / 1024)} MB e {numberFormatter.format(MAX_IMPORT_ROWS)} registros.
+            {selectedTemplate
+              ? `Usando o template ${selectedTemplate.name}, revisão ${selectedTemplate.version}. `
+              : "Use o formato padrão com PLU, código de barras, descrição, classificação, último inventário e estoque atual. "}
+            Limites: {numberFormatter.format(MAX_IMPORT_FILE_BYTES / 1024 / 1024)} MB e {numberFormatter.format(MAX_IMPORT_ROWS)} registros.
           </p>
         </div>
         <div className="file-actions">
+          <label>
+            Layout do arquivo
+            <select onChange={(event) => handleTemplateChange(event.target.value)} value={templateRevisionId}>
+              <option value="">Formato padrão</option>
+              {templates.map((template) => (
+                <option key={template.revisionId} value={template.revisionId}>{template.name} · revisão {template.version}</option>
+              ))}
+            </select>
+          </label>
           <label className="file-button">
             Escolher CSV
             <input accept=".csv,text/csv" onChange={handleInput} type="file" />
@@ -198,6 +227,7 @@ export function CsvImporter() {
               <h2>Validação do arquivo</h2>
             </div>
             <div className="csv-meta">
+              <span>Layout: {selectedTemplate ? `${selectedTemplate.name} · v${selectedTemplate.version}` : "Padrão"}</span>
               <span>{preview.encoding}</span>
               <span>Separador: {delimiterName(preview.delimiter)}</span>
               <span>{numberFormatter.format(preview.totalRows)} linhas</span>
