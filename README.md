@@ -57,6 +57,7 @@ sendo a origem dos dados, e o Inventara organiza a decisão operacional.
 - Estoque atual, estoque anterior, variação e histórico por produto.
 - Conta demonstrativa isolada com dados sintéticos.
 - Notificações para prioridades urgentes e metas de cobertura abaixo do esperado.
+- Convites de equipe, matriz RBAC e auditoria de alterações de acesso.
 - Limpeza segura do catálogo para substituir a base de uma organização.
 - Autenticação por e-mail e senha com sessões persistidas.
 - Administração de organizações e usuários com papéis `platform_admin`, `owner` e `member`.
@@ -75,6 +76,9 @@ sendo a origem dos dados, e o Inventara organiza a decisão operacional.
 | `/notificacoes` | Alertas ativos e notificações da organização |
 | `/configuracoes` | Informações da organização e da sessão |
 | `/configuracoes/usuarios` | Gestão de usuários da organização pelo owner |
+| `/configuracoes/permissoes` | Matriz de permissões por perfil |
+| `/configuracoes/auditoria` | Auditoria de acessos e convites |
+| `/convites/[token]` | Aceite de convite de equipe |
 | `/admin/organizacoes` | Criação de organizações pelo platform admin |
 | `/login` | Autenticação |
 | `/api/importacoes` | Upload protegido de CSV |

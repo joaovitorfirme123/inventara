@@ -33,7 +33,7 @@ export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const [isSigningOut, setIsSigningOut] = useState(false);
 
-  if (pathname === "/login") {
+  if (pathname === "/login" || pathname.startsWith("/convites/")) {
     return <main className="auth-page">{children}</main>;
   }
 

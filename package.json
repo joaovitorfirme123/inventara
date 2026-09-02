@@ -26,6 +26,7 @@
     "test:inventory-goals": "tsx scripts/test-inventory-goals.ts",
     "test:reports": "tsx scripts/test-reports.ts",
     "test:notifications": "tsx scripts/test-notifications.ts",
+    "test:permissions": "tsx scripts/test-permissions-invites.ts",
     "test:stock": "tsx scripts/test-stock-history.ts",
     "test:product-details": "tsx scripts/test-product-details.ts",
     "test:authentication": "tsx scripts/test-authentication.ts",

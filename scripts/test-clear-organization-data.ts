@@ -34,6 +34,12 @@ async function removeOrganizations() {
   await prisma.notification.deleteMany({
     where: { organizationId: { in: [organizationAId, organizationBId] } },
   });
+  await prisma.organizationInvite.deleteMany({
+    where: { organizationId: { in: [organizationAId, organizationBId] } },
+  });
+  await prisma.auditLog.deleteMany({
+    where: { organizationId: { in: [organizationAId, organizationBId] } },
+  });
   await prisma.stockHistory.deleteMany({
     where: { organizationId: { in: [organizationAId, organizationBId] } },
   });

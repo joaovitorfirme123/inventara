@@ -26,6 +26,9 @@ export async function POST(request: Request) {
     if (!session?.user.organizationId) {
       return Response.json({ error: "Autenticação necessária." }, { status: 401 });
     }
+    if (session.user.role !== "OWNER") {
+      return Response.json({ error: "Permissão insuficiente." }, { status: 403 });
+    }
 
     const body = (await request.json()) as Record<string, unknown>;
     const target: InventoryPlanTarget = {

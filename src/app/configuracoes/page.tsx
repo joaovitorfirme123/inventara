@@ -26,6 +26,22 @@ export default async function ConfiguracoesPage() {
       </section>
       <section className="settings-links panel">
         <div>
+          <span className="section-kicker">Rastreabilidade</span>
+          <h2>Auditoria de acessos</h2>
+          <p>Consulte alterações recentes de usuários e convites.</p>
+        </div>
+        <Link className="secondary-action" href="/configuracoes/auditoria">Consultar auditoria</Link>
+      </section>
+      <section className="settings-links panel">
+        <div>
+          <span className="section-kicker">Controle</span>
+          <h2>Matriz de permissões</h2>
+          <p>Consulte o acesso disponível para cada perfil da organização.</p>
+        </div>
+        <Link className="secondary-action" href="/configuracoes/permissoes">Consultar matriz</Link>
+      </section>
+      <section className="settings-links panel">
+        <div>
           <span className="section-kicker">Indicadores</span>
           <h2>Metas de inventário</h2>
           <p>Defina a cobertura anual desejada para cada seção.</p>

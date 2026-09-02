@@ -31,6 +31,8 @@ async function cleanup() {
 
   await prisma.session.deleteMany({ where: { userId: { in: userIds } } });
   await prisma.account.deleteMany({ where: { userId: { in: userIds } } });
+  await prisma.organizationInvite.deleteMany({ where: { organizationId: { in: organizationIds } } });
+  await prisma.auditLog.deleteMany({ where: { organizationId: { in: organizationIds } } });
   await prisma.inventoryPlan.deleteMany({ where: { organizationId: { in: organizationIds } } });
   await prisma.stockHistory.deleteMany({ where: { organizationId: { in: organizationIds } } });
   await prisma.importRecord.deleteMany({ where: { organizationId: { in: organizationIds } } });

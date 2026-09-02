@@ -920,6 +920,257 @@ input {
   font-size: 0.72rem;
 }
 
+.permissions-panel,
+.audit-panel,
+.invitation-panel {
+  padding: 0;
+  overflow: hidden;
+}
+
+.permissions-panel > .panel-heading,
+.audit-panel > .panel-heading,
+.invitation-panel > .panel-heading {
+  padding: 28px 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.permissions-table,
+.audit-table {
+  overflow-x: auto;
+}
+
+.permissions-table table,
+.audit-table table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+
+.permissions-table th,
+.permissions-table td,
+.audit-table th,
+.audit-table td {
+  padding: 14px 20px;
+  border-bottom: 1px solid #e5e3da;
+  font-family: var(--font-geist), monospace;
+  font-size: 0.64rem;
+}
+
+.permissions-table th,
+.audit-table th {
+  color: var(--muted);
+  background: #f0efe8;
+  font-size: 0.55rem;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.permission-yes {
+  color: var(--forest);
+  font-weight: 750;
+}
+
+.permission-no {
+  color: var(--muted);
+}
+
+.invitation-panel {
+  margin-top: 14px;
+}
+
+.invitation-form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: end;
+  gap: 12px;
+  padding: 22px 30px;
+}
+
+.invitation-form label,
+.invite-accept .admin-form label {
+  display: grid;
+  gap: 7px;
+}
+
+.invitation-form label > span,
+.invite-accept .admin-form label > span {
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.59rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.invitation-form input,
+.invite-accept .admin-form input {
+  min-height: 42px;
+  padding: 0 12px;
+  color: var(--ink);
+  background: #f7f6f0;
+  border: 1px solid var(--line);
+  border-radius: 2px;
+}
+
+.invitation-form button,
+.invite-accept .admin-form button {
+  min-height: 42px;
+  padding: 0 16px;
+  color: var(--forest);
+  background: var(--lime);
+  border: 0;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.68rem;
+  font-weight: 800;
+}
+
+.invitation-form button:disabled,
+.invite-accept .admin-form button:disabled {
+  cursor: wait;
+  opacity: 0.6;
+}
+
+.invitation-panel > .action-feedback {
+  margin: 0 30px 18px;
+}
+
+.invitation-created {
+  display: grid;
+  gap: 7px;
+  margin: 0 30px 22px;
+  padding: 16px;
+  background: #f0f5de;
+  border-left: 3px solid var(--lime);
+}
+
+.invitation-created span,
+.invitation-created small {
+  color: var(--muted);
+  font-size: 0.64rem;
+}
+
+.invitation-created code {
+  overflow-wrap: anywhere;
+  color: var(--forest);
+  font-size: 0.7rem;
+}
+
+.invitation-list {
+  border-top: 1px solid var(--line);
+}
+
+.invitation-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 18px 30px;
+  border-bottom: 1px solid var(--line);
+}
+
+.invitation-row strong,
+.invitation-row small {
+  display: block;
+}
+
+.invitation-row strong {
+  font-size: 0.75rem;
+}
+
+.invitation-row small {
+  margin-top: 5px;
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.58rem;
+}
+
+.invitation-row-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.invite-status {
+  padding: 6px 8px;
+  font-family: var(--font-geist), monospace;
+  font-size: 0.56rem;
+  font-weight: 750;
+}
+
+.invite-status.pending {
+  color: #3f6c58;
+  background: #e1eee5;
+}
+
+.invite-status.accepted {
+  color: var(--forest);
+  background: var(--lime);
+}
+
+.invite-status.expired,
+.invite-status.revoked {
+  color: var(--muted);
+  background: #e8e6de;
+}
+
+.invitation-row-actions button {
+  padding: 7px 9px;
+  color: #813c2b;
+  background: transparent;
+  border: 1px solid #e2c8bd;
+  border-radius: 2px;
+  cursor: pointer;
+  font-size: 0.6rem;
+  font-weight: 750;
+}
+
+.invite-accept {
+  max-width: 560px;
+  margin: 0 auto;
+  padding: 0;
+  overflow: hidden;
+}
+
+.invite-accept > p {
+  padding: 0 30px;
+  color: var(--muted);
+  font-size: 0.75rem;
+  line-height: 1.6;
+}
+
+.invite-accept .admin-form {
+  padding: 24px 30px 30px;
+}
+
+.invite-accept-mark {
+  display: grid;
+  width: 58px;
+  height: 58px;
+  margin: 30px 30px 0;
+  place-items: center;
+  color: var(--forest);
+  background: var(--lime);
+  font-family: var(--font-geist), monospace;
+  font-weight: 800;
+}
+
+.invite-accept > h2,
+.invite-accept > p,
+.invite-accept > a {
+  margin-left: 30px;
+}
+
+.invite-accept > h2 {
+  margin-top: 18px;
+  font-size: 1.25rem;
+}
+
+.invite-accept > a {
+  margin-top: 22px;
+  margin-bottom: 30px;
+}
+
 .inventory-goals {
   padding: 0;
   overflow: hidden;
@@ -4183,6 +4434,58 @@ input {
   .report-comparison th,
   .report-comparison td {
     padding: 12px 14px;
+  }
+
+  .permissions-panel > .panel-heading,
+  .audit-panel > .panel-heading,
+  .invitation-panel > .panel-heading {
+    padding: 22px 18px;
+  }
+
+  .invitation-form {
+    grid-template-columns: 1fr;
+    padding: 20px 18px;
+  }
+
+  .invitation-form button {
+    width: 100%;
+  }
+
+  .invitation-panel > .action-feedback {
+    margin-right: 18px;
+    margin-left: 18px;
+  }
+
+  .invitation-created {
+    margin-right: 18px;
+    margin-left: 18px;
+  }
+
+  .invitation-row {
+    display: grid;
+    align-items: start;
+    padding: 18px;
+  }
+
+  .invitation-row-actions {
+    justify-content: space-between;
+  }
+
+  .invite-accept > p {
+    padding: 0 18px;
+  }
+
+  .invite-accept .admin-form {
+    padding: 22px 18px 24px;
+  }
+
+  .invite-accept-mark {
+    margin-left: 18px;
+  }
+
+  .invite-accept > h2,
+  .invite-accept > a {
+    margin-left: 18px;
   }
 
   .notifications-panel > .panel-heading {

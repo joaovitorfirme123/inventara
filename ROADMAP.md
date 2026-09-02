@@ -1952,7 +1952,7 @@ Dashboard.
 
 ### FASE 29 — Perfis, permissoes e convites
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -1961,13 +1961,13 @@ a base de papeis criada na Fase 19.
 
 #### Tarefas
 
-- [ ] Expandir perfis e permissoes por operacao.
-- [ ] Criar matriz de permissao da organizacao.
-- [ ] Permitir convite de funcionarios.
-- [ ] Restringir telas e operacoes conforme a permissao.
-- [ ] Permitir revogar convite e acesso.
-- [ ] Registrar alteracoes de permissao.
-- [ ] Criar auditoria de alteracoes relevantes.
+- [x] Expandir perfis e permissoes por operacao.
+- [x] Criar matriz de permissao da organizacao.
+- [x] Permitir convite de funcionarios.
+- [x] Restringir telas e operacoes conforme a permissao.
+- [x] Permitir revogar convite e acesso.
+- [x] Registrar alteracoes de permissao.
+- [x] Criar auditoria de alteracoes relevantes.
 
 #### Conceitos que devo aprender
 
@@ -1985,10 +1985,10 @@ a base de papeis criada na Fase 19.
 
 #### Checklist de conclusao
 
-- [ ] Definir matriz de permissoes.
-- [ ] Testar convite aceito, expirado e revogado.
-- [ ] Testar cada permissao em pagina e API.
-- [ ] Testar tentativa de escalada de privilegio.
+- [x] Definir matriz de permissoes.
+- [x] Testar convite aceito, expirado e revogado.
+- [x] Testar cada permissao em pagina e API.
+- [x] Testar tentativa de escalada de privilegio.
 
 ---
 

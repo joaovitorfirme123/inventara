@@ -14,6 +14,12 @@ export async function clearOrganizationData(organizationId: string) {
     const notifications = await transaction.notification.deleteMany({
       where: { organizationId },
     });
+    const invitations = await transaction.organizationInvite.deleteMany({
+      where: { organizationId },
+    });
+    const auditLogs = await transaction.auditLog.deleteMany({
+      where: { organizationId },
+    });
     const stockHistory = await transaction.stockHistory.deleteMany({
       where: { organizationId },
     });
@@ -32,6 +38,8 @@ export async function clearOrganizationData(organizationId: string) {
       inventoryCoverage: inventoryCoverage.count,
       inventoryGoals: inventoryGoals.count,
       notifications: notifications.count,
+      invitations: invitations.count,
+      auditLogs: auditLogs.count,
     };
   });
 }

@@ -15,6 +15,7 @@ export type CreateUserInput = {
   name: string;
   email: string;
   password: string;
+  actorId?: string;
 };
 
 export async function listOrganizations() {
@@ -110,7 +111,6 @@ export async function createOrganizationWithOwner(input: CreateOrganizationInput
         password,
       },
     });
-
     return {
       organizationId: organization.id,
       organizationName: organization.name,
@@ -151,6 +151,16 @@ export async function createOrganizationUser(input: CreateUserInput) {
         password,
       },
     });
+    await transaction.auditLog.create({
+      data: {
+        organizationId: input.organizationId,
+        actorId: input.actorId ?? null,
+        action: "USER_CREATED",
+        entityType: "USER",
+        entityId: user.id,
+        metadata: { email: user.email, role: user.role },
+      },
+    });
 
     return { id: user.id, name: user.name, email: user.email };
   }, transactionOptions);
@@ -178,6 +188,12 @@ export async function deleteOrganization({
     });
     const userIds = users.map(({ id }) => id);
     await transaction.inventoryPlan.deleteMany({
+      where: { organizationId: organization.id },
+    });
+    await transaction.organizationInvite.deleteMany({
+      where: { organizationId: organization.id },
+    });
+    await transaction.auditLog.deleteMany({
       where: { organizationId: organization.id },
     });
     const stockHistory = await transaction.stockHistory.deleteMany({
@@ -232,6 +248,15 @@ export async function deactivateOrganizationUser({
     await transaction.user.update({
       where: { id: user.id },
       data: { isActive: false },
+    });
+    await transaction.auditLog.create({
+      data: {
+        organizationId,
+        actorId,
+        action: "USER_DEACTIVATED",
+        entityType: "USER",
+        entityId: user.id,
+      },
     });
     await transaction.session.deleteMany({ where: { userId: user.id } });
 

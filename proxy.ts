@@ -6,6 +6,7 @@ export async function proxy(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
   if (pathname.startsWith("/api/auth")) return NextResponse.next();
+  if (pathname.startsWith("/convites/")) return NextResponse.next();
 
   const session = await getSessionContext(request.headers);
 

@@ -6,6 +6,7 @@ import {
   deactivateOrganizationUserAction,
 } from "@/app/configuracoes/usuarios/actions";
 import type { UserAdminState } from "@/app/configuracoes/usuarios/types";
+import { OrganizationInvitations } from "@/components/organization-invitations";
 
 type UserSummary = {
   id: string;
@@ -18,12 +19,13 @@ type UserSummary = {
 
 const initialState: UserAdminState = { status: "idle", message: "" };
 
-export function OrganizationUsers({ users }: { users: UserSummary[] }) {
+export function OrganizationUsers({ users, invitations }: { users: UserSummary[]; invitations: React.ComponentProps<typeof OrganizationInvitations>["invitations"] }) {
   const [createState, createAction, isCreating] = useActionState(createOrganizationUserAction, initialState);
   const [deactivateState, deactivateAction, isDeactivating] = useActionState(deactivateOrganizationUserAction, initialState);
   const feedback = deactivateState.message ? deactivateState : createState;
 
   return (
+    <>
     <div className="admin-grid">
       <section className="admin-form-panel panel">
         <div className="panel-heading">
@@ -69,5 +71,7 @@ export function OrganizationUsers({ users }: { users: UserSummary[] }) {
         </div>
       </section>
     </div>
+    <OrganizationInvitations invitations={invitations} />
+    </>
   );
 }

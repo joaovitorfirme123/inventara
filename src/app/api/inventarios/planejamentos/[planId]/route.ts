@@ -28,6 +28,9 @@ export async function PATCH(
     if (!session?.user.organizationId) {
       return Response.json({ error: "Autenticação necessária." }, { status: 401 });
     }
+    if (session.user.role !== "OWNER") {
+      return Response.json({ error: "Permissão insuficiente." }, { status: 403 });
+    }
 
     const { planId } = await params;
     if (!uuidPattern.test(planId)) {
@@ -62,6 +65,9 @@ export async function DELETE(
     const session = await getSessionContext(request.headers);
     if (!session?.user.organizationId) {
       return Response.json({ error: "Autenticação necessária." }, { status: 401 });
+    }
+    if (session.user.role !== "OWNER") {
+      return Response.json({ error: "Permissão insuficiente." }, { status: 403 });
     }
 
     const { planId } = await params;

@@ -31,6 +31,7 @@ export async function createOrganizationUserAction(
       name,
       email,
       password,
+      actorId: session.user.id,
     });
     revalidatePath("/configuracoes/usuarios");
     return { status: "success", message: `Usuário ${email} criado como member.` };

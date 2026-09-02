@@ -5,6 +5,7 @@ import { redirect } from "next/navigation";
 import type { UserRole } from "@/generated/prisma/client";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
+import { hasPermission, type Permission } from "@/lib/permissions";
 
 export type SessionContext = {
   sessionId: string;
@@ -87,6 +88,12 @@ export const requireOrganizationOwnerContext = cache(async (): Promise<Organizat
     redirect("/");
   }
 
+  return session;
+});
+
+export const requireOrganizationPermission = cache(async (permission: Permission): Promise<OrganizationSessionContext> => {
+  const session = await requireOrganizationSessionContext();
+  if (!hasPermission(session.user.role, permission)) redirect("/");
   return session;
 });
 
