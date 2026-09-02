@@ -48,6 +48,14 @@ export default async function ConfiguracoesPage() {
         </div>
         <Link className="secondary-action" href="/configuracoes/metas">Gerenciar metas</Link>
       </section>
+      <section className="settings-links panel">
+        <div>
+          <span className="section-kicker">Priorização</span>
+          <h2>Regras de prioridade</h2>
+          <p>Ajuste pesos e faixas da pontuação dos inventários.</p>
+        </div>
+        <Link className="secondary-action" href="/configuracoes/prioridades">Gerenciar regras</Link>
+      </section>
       <ClearOrganizationData />
     </>
   );

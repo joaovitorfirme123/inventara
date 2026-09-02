@@ -2035,7 +2035,7 @@ do parser.
 
 ### FASE 31 — Regras de prioridade configuraveis
 
-**Status: NÃO INICIADA**
+**Status: CONCLUÍDA**
 
 #### Objetivo
 
@@ -2044,12 +2044,12 @@ formula explicavel e auditavel.
 
 #### Tarefas
 
-- [ ] Criar regras de prioridade configuraveis.
-- [ ] Permitir ajustar pesos e faixas por organizacao.
-- [ ] Validar que os pesos formam uma configuracao consistente.
-- [ ] Versionar alteracoes nas regras.
-- [ ] Mostrar a regra aplicada junto da pontuacao.
-- [ ] Preservar a formula padrao como fallback.
+- [x] Criar regras de prioridade configuraveis.
+- [x] Permitir ajustar pesos e faixas por organizacao.
+- [x] Validar que os pesos formam uma configuracao consistente.
+- [x] Versionar alteracoes nas regras.
+- [x] Mostrar a regra aplicada junto da pontuacao.
+- [x] Preservar a formula padrao como fallback.
 
 #### Conceitos que devo aprender
 
@@ -2067,10 +2067,10 @@ formula explicavel e auditavel.
 
 #### Checklist de conclusao
 
-- [ ] Testar pesos validos e invalidos.
-- [ ] Testar versionamento e vigencia.
-- [ ] Testar pontuacao com a regra padrao e personalizada.
-- [ ] Testar isolamento entre organizacoes.
+- [x] Testar pesos validos e invalidos.
+- [x] Testar versionamento e vigencia.
+- [x] Testar pontuacao com a regra padrao e personalizada.
+- [x] Testar isolamento entre organizacoes.
 
 ---
 

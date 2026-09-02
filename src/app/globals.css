@@ -634,6 +634,108 @@ input {
   font-size: 0.76rem;
 }
 
+.priority-rule-manager {
+  display: grid;
+  gap: 22px;
+  padding: 30px;
+}
+
+.priority-rule-name {
+  display: grid;
+  max-width: 460px;
+  gap: 7px;
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.59rem;
+  text-transform: uppercase;
+}
+
+.priority-rule-name input,
+.priority-rule-grid input {
+  min-height: 38px;
+  padding: 0 10px;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
+  font: inherit;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.priority-rule-section {
+  display: grid;
+  gap: 12px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+}
+
+.priority-rule-section-heading {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.priority-rule-section-heading h3 {
+  font-size: 0.85rem;
+}
+
+.priority-rule-section-heading span {
+  color: var(--muted);
+  font-family: var(--font-geist), monospace;
+  font-size: 0.58rem;
+}
+
+.priority-rule-grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.priority-rule-grid.three-columns {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+}
+
+.priority-rule-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.priority-rule-grid label > span {
+  display: grid;
+  gap: 3px;
+  font-size: 0.68rem;
+  font-weight: 750;
+}
+
+.priority-rule-grid label small {
+  color: var(--muted);
+  font-size: 0.6rem;
+  font-weight: 500;
+  line-height: 1.35;
+}
+
+.priority-rule-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.priority-rule-actions button {
+  min-height: 42px;
+  padding: 0 18px;
+  color: var(--paper);
+  background: var(--forest);
+  border: 0;
+  cursor: pointer;
+  font-size: 0.7rem;
+  font-weight: 750;
+}
+
+.status-pill.invalid {
+  color: #9c382b;
+  background: #f7e9e3;
+}
+
 .report-filters {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -4741,6 +4843,20 @@ input {
 
   .settings-links .secondary-action {
     width: 100%;
+  }
+
+  .priority-rule-manager {
+    padding: 22px 18px;
+  }
+
+  .priority-rule-grid,
+  .priority-rule-grid.three-columns {
+    grid-template-columns: 1fr;
+  }
+
+  .priority-rule-section-heading {
+    display: grid;
+    gap: 5px;
   }
 
   .organization-card {

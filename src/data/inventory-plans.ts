@@ -16,6 +16,10 @@ export type InventoryPlanListItem = {
   subgroup: string;
   priority: string;
   priorityScore: number;
+  priorityRule: {
+    name: string;
+    version: number;
+  } | null;
   totalSkus: number;
   pendingSkus: number;
   plannedDate: string | null;
@@ -57,6 +61,11 @@ export async function listInventoryPlans(
   const plans = await prisma.inventoryPlan.findMany({
     where: { organizationId, ...(status ? { status } : {}) },
     orderBy: [{ plannedDate: "asc" }, { createdAt: "desc" }],
+    include: {
+      priorityRuleRevision: {
+        select: { version: true, rule: { select: { name: true } } },
+      },
+    },
   });
 
   return plans.map((plan) => ({
@@ -66,6 +75,9 @@ export async function listInventoryPlans(
     subgroup: plan.subgroup,
     priority: plan.priority,
     priorityScore: plan.priorityScore,
+    priorityRule: plan.priorityRuleRevision
+      ? { name: plan.priorityRuleRevision.rule.name, version: plan.priorityRuleRevision.version }
+      : null,
     totalSkus: plan.totalSkus,
     pendingSkus: plan.pendingSkus,
     plannedDate: plan.plannedDate?.toISOString().slice(0, 10) ?? null,
@@ -95,6 +107,7 @@ export async function createInventoryPlan({
       subgroup: snapshot.subgroup,
       priority: snapshot.priority,
       priorityScore: snapshot.score,
+      priorityRuleRevisionId: snapshot.priorityRule.revisionId,
       totalSkus: snapshot.totalSkus,
       pendingSkus: snapshot.pendingSkus,
       plannedDate: parsePlannedDate(plannedDate),

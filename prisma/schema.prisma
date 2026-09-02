@@ -42,6 +42,7 @@ model Organization {
   invitations OrganizationInvite[]
   auditLogs AuditLog[]
   importTemplates ImportTemplate[]
+  priorityRule PriorityRule?
 
   @@map("organizations")
 }
@@ -212,7 +213,9 @@ model InventoryPlan {
   status         InventoryPlanStatus @default(PENDING)
   createdAt      DateTime            @default(now()) @map("created_at")
   updatedAt      DateTime            @updatedAt @map("updated_at")
+  priorityRuleRevisionId String?       @map("priority_rule_revision_id") @db.Uuid
   organization   Organization        @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  priorityRuleRevision PriorityRuleRevision? @relation(fields: [priorityRuleRevisionId], references: [id], onDelete: SetNull)
 
   @@index([organizationId, status, plannedDate])
   @@index([organizationId, section, group, subgroup])
@@ -343,4 +346,30 @@ model ImportTemplateRevision {
   @@unique([templateId, version])
   @@index([templateId, version(sort: Desc)])
   @@map("import_template_revisions")
+}
+
+model PriorityRule {
+  id             String                 @id @default(uuid()) @db.Uuid
+  organizationId String                 @unique @map("organization_id") @db.Uuid
+  name           String
+  createdAt      DateTime               @default(now()) @map("created_at")
+  updatedAt      DateTime               @updatedAt @map("updated_at")
+  organization   Organization           @relation(fields: [organizationId], references: [id], onDelete: Restrict)
+  revisions      PriorityRuleRevision[]
+
+  @@map("priority_rules")
+}
+
+model PriorityRuleRevision {
+  id             String         @id @default(uuid()) @db.Uuid
+  ruleId         String         @map("rule_id") @db.Uuid
+  version        Int
+  configuration  Json
+  createdAt      DateTime       @default(now()) @map("created_at")
+  rule           PriorityRule   @relation(fields: [ruleId], references: [id], onDelete: Cascade)
+  inventoryPlans InventoryPlan[]
+
+  @@unique([ruleId, version])
+  @@index([ruleId, version(sort: Desc)])
+  @@map("priority_rule_revisions")
 }

@@ -3,6 +3,7 @@ import {
   getPriority,
 } from "@/lib/inventory-priority";
 import type { InventoryPriority } from "@/lib/inventory-priority";
+import { getActivePriorityRule } from "@/data/priority-rules";
 import { prisma } from "@/lib/prisma";
 import { getInventoryYearBounds } from "@/lib/inventory-status";
 
@@ -32,6 +33,11 @@ export type InventoryRow = {
   newestDate: Date | null;
   score: number;
   priority: InventoryPriority;
+  priorityRule: {
+    name: string;
+    version: number | null;
+    revisionId: string | null;
+  };
   rank: number;
 };
 
@@ -72,7 +78,8 @@ export async function getInventoryRows(
   sort: InventorySort = "priority",
 ) {
   const { start, end } = getInventoryYearBounds(year);
-  const groups = await prisma.$queryRaw<RawInventoryGroup[]>`
+  const [groups, rule] = await Promise.all([
+    prisma.$queryRaw<RawInventoryGroup[]>`
     SELECT
       COALESCE(NULLIF(BTRIM("section"), ''), 'Sem seção') AS "section",
       COALESCE(NULLIF(BTRIM("group"), ''), 'Sem grupo') AS "group_name",
@@ -100,7 +107,9 @@ export async function getInventoryRows(
     FROM "products"
     WHERE "organization_id" = ${organizationId}::uuid
     GROUP BY 1, 2, 3
-  `;
+  `,
+    getActivePriorityRule(organizationId),
+  ]);
 
   const rows = groups.map((group) => {
     const score = calculatePriorityScore(
@@ -111,6 +120,7 @@ export async function getInventoryRows(
         oldestPendingDate: group.oldest_pending_date,
       },
       now,
+      rule.configuration,
     );
 
     return {
@@ -128,7 +138,8 @@ export async function getInventoryRows(
       oldestDate: group.oldest_date,
       newestDate: group.newest_date,
       score,
-      priority: getPriority(score, group.pending_skus),
+      priority: getPriority(score, group.pending_skus, rule.configuration.thresholds),
+      priorityRule: { name: rule.name, version: rule.version, revisionId: rule.revisionId },
       rank: 0,
     } satisfies InventoryRow;
   });

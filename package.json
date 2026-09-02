@@ -23,6 +23,7 @@
     "test:history": "tsx scripts/test-import-history.ts",
     "test:inventories": "tsx scripts/test-inventories.ts",
     "test:inventory-plans": "tsx scripts/test-inventory-plans.ts",
+    "test:priority-rules": "tsx scripts/test-priority-rules.ts",
     "test:dashboard": "tsx scripts/test-dashboard.ts",
     "test:inventory-goals": "tsx scripts/test-inventory-goals.ts",
     "test:reports": "tsx scripts/test-reports.ts",

@@ -302,7 +302,7 @@ export default async function InventariosPage({
                                 <td data-label="Prioridade">
                                   <span className={`priority-badge ${priorityClasses[row.priority]}`}>
                                     {row.priority}
-                                    <small>{row.score.toFixed(1)} pts</small>
+                                    <small>{row.score.toFixed(1)} pts · {row.priorityRule.name}{row.priorityRule.version ? ` v${row.priorityRule.version}` : ""}</small>
                                   </span>
                                 </td>
                               </tr>

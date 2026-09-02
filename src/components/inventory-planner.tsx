@@ -95,6 +95,7 @@ function PlanCard({
       </div>
       <div className="inventory-plan-metrics">
         <span><strong>{plan.priority}</strong> prioridade</span>
+        <span><strong>{plan.priorityRule ? `${plan.priorityRule.name} v${plan.priorityRule.version}` : "Padrão Inventara"}</strong> regra aplicada</span>
         <span><strong>{numberFormatter.format(plan.pendingSkus)}</strong> pendentes</span>
         <span><strong>{numberFormatter.format(plan.totalSkus)}</strong> SKUs</span>
       </div>
