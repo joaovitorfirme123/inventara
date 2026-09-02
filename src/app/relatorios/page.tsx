@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { getProductFilterOptions } from "@/data/products";
 import { getCurrentOrganizationId } from "@/lib/current-organization";
 import { getCoverageComparison } from "@/data/reporting";
 
@@ -36,6 +37,13 @@ export default async function ReportsPage({ searchParams }: { searchParams: Sear
     year: String(year),
   };
   const organizationId = await getCurrentOrganizationId();
+  const allFilterOptions = await getProductFilterOptions(organizationId);
+  const groupOptions = filters.section
+    ? (await getProductFilterOptions(organizationId, { section: filters.section })).groups
+    : allFilterOptions.groups;
+  const subgroupOptions = filters.section || filters.group
+    ? (await getProductFilterOptions(organizationId, { section: filters.section, group: filters.group })).subgroups
+    : allFilterOptions.subgroups;
   const comparison = await getCoverageComparison(organizationId, year, compareYear);
   const exportQuery = Object.fromEntries(Object.entries(filters).filter(([, value]) => value));
 
@@ -49,9 +57,9 @@ export default async function ReportsPage({ searchParams }: { searchParams: Sear
 
       <form className="report-filters panel" method="get">
         <label><span>Busca</span><input defaultValue={filters.q} name="q" placeholder="PLU, descrição ou código" /></label>
-        <label><span>Seção</span><input defaultValue={filters.section} name="section" placeholder="Todas" /></label>
-        <label><span>Grupo</span><input defaultValue={filters.group} name="group" placeholder="Todos" /></label>
-        <label><span>Subgrupo</span><input defaultValue={filters.subgroup} name="subgroup" placeholder="Todos" /></label>
+        <label><span>Seção</span><select defaultValue={filters.section} name="section"><option value="">Todas</option>{allFilterOptions.sections.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
+        <label><span>Grupo</span><select defaultValue={filters.group} name="group"><option value="">Todos</option>{groupOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
+        <label><span>Subgrupo</span><select defaultValue={filters.subgroup} name="subgroup"><option value="">Todos</option>{subgroupOptions.map((option) => <option key={option} value={option}>{option}</option>)}</select></label>
         <label><span>Status</span><select defaultValue={filters.status} name="status"><option value="">Todos</option><option value="contado">Contados</option><option value="pendente">Pendentes</option><option value="sem-data">Sem data</option></select></label>
         <label><span>Período</span><input defaultValue={year} max="2100" min="2000" name="year" type="number" /></label>
         <label><span>Comparar com</span><input defaultValue={compareYear} max="2100" min="2000" name="compare" type="number" /></label>
