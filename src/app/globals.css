@@ -855,9 +855,30 @@ input {
 }
 
 .secondary-action {
+  display: inline-flex;
+  min-height: 42px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
   color: var(--forest);
   background: transparent;
   border: 1px solid var(--line);
+  border-radius: 2px;
+  font-size: 0.68rem;
+  font-weight: 750;
+  transition: 160ms ease;
+}
+
+.secondary-action:hover {
+  color: var(--forest);
+  background: var(--lime);
+  border-color: var(--lime);
+  transform: translateY(-1px);
+}
+
+.secondary-action:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 2px;
 }
 
 .report-comparison {
@@ -5557,6 +5578,17 @@ html[data-theme="dark"] .template-item.selected {
 html[data-theme="dark"] .theme-toggle:hover,
 html[data-theme="dark"] .organization-chip button:hover {
   color: var(--ink);
+}
+
+html[data-theme="dark"] .secondary-action {
+  color: var(--lime);
+  border-color: #526579;
+}
+
+html[data-theme="dark"] .secondary-action:hover {
+  color: #0b1723;
+  background: var(--lime);
+  border-color: var(--lime);
 }
 
 html[data-theme="dark"] .notification-card.unread,
