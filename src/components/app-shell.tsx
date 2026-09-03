@@ -33,6 +33,7 @@ type AppShellProps = {
 export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const [isSigningOut, setIsSigningOut] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
@@ -43,6 +44,26 @@ export function AppShell({ children, user }: AppShellProps) {
       // PWA support is optional and must not block the application shell.
     });
   }, []);
+
+  useEffect(() => {
+    // pathname change must close drawer; intentional sync reset.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setIsMobileMenuOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!isMobileMenuOpen) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    function handleKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setIsMobileMenuOpen(false);
+    }
+    document.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      document.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isMobileMenuOpen]);
 
   if (pathname === "/login" || pathname.startsWith("/convites/")) {
     return <main className="auth-page">{children}</main>;
@@ -72,14 +93,22 @@ export function AppShell({ children, user }: AppShellProps) {
 
   return (
     <div className="app-shell">
-      <aside className="sidebar">
-        <Link className="brand" href="/" aria-label="Inventara - Dashboard">
+      <aside className={`sidebar ${isMobileMenuOpen ? "open" : ""}`} aria-hidden={!isMobileMenuOpen && typeof window !== "undefined" && window.innerWidth <= 900 ? undefined : undefined}>
+        <Link className="brand" href="/" aria-label="Inventara - Dashboard" onClick={() => setIsMobileMenuOpen(false)}>
           <span className="brand-mark">I</span>
           <span>
             <strong>INVENTARA</strong>
             <small>Inventory intelligence</small>
           </span>
         </Link>
+        <button
+          aria-label="Fechar menu"
+          className="sidebar-close"
+          onClick={() => setIsMobileMenuOpen(false)}
+          type="button"
+        >
+          ×
+        </button>
 
         <nav className="main-nav" aria-label="Navegação principal">
           {navigation.map((item) => {
@@ -94,6 +123,7 @@ export function AppShell({ children, user }: AppShellProps) {
                 href={item.href}
                 key={item.href}
                 aria-current={isActive ? "page" : undefined}
+                onClick={() => setIsMobileMenuOpen(false)}
               >
                 <span>{item.code}</span>
                 {item.label}
@@ -105,6 +135,7 @@ export function AppShell({ children, user }: AppShellProps) {
               className={pathname.startsWith("/admin") ? "nav-link active" : "nav-link"}
               href="/admin/organizacoes"
               aria-current={pathname.startsWith("/admin") ? "page" : undefined}
+              onClick={() => setIsMobileMenuOpen(false)}
             >
                 <span>10</span>
               Administração
@@ -118,16 +149,36 @@ export function AppShell({ children, user }: AppShellProps) {
         </div>
       </aside>
 
+      {isMobileMenuOpen && (
+        <button
+          aria-label="Fechar menu"
+          className="sidebar-overlay"
+          onClick={() => setIsMobileMenuOpen(false)}
+          type="button"
+        />
+      )}
+
       <div className="workspace">
         <header className="topbar">
-          <div>
-            <span className="signal-dot" />
-            Sistema operacional
+          <div className="topbar-left">
+            <button
+              aria-expanded={isMobileMenuOpen}
+              aria-label={isMobileMenuOpen ? "Fechar navegação" : "Abrir navegação"}
+              className="mobile-menu-button"
+              onClick={() => setIsMobileMenuOpen((open) => !open)}
+              type="button"
+            >
+              <span />
+              <span />
+              <span />
+            </button>
+            <span className="signal-dot" aria-hidden />
+            <span className="topbar-label">Sistema operacional</span>
           </div>
           <div className="organization-chip">
-            <span>{initials}</span>
-            <div>
-            <strong>{user?.organizationName ?? "Plataforma"}</strong>
+            <span aria-hidden>{initials}</span>
+            <div className="organization-chip-text">
+              <strong>{user?.organizationName ?? "Plataforma"}</strong>
               <small>{user?.name ?? "Sessão local"}</small>
             </div>
             <ThemeToggle />
