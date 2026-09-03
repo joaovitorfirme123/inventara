@@ -60,6 +60,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body>
+        <a href="#main-content" className="skip-link">
+          Pular para conteúdo
+        </a>
         <AppShell user={session?.user ?? null}>{children}</AppShell>
       </body>
     </html>

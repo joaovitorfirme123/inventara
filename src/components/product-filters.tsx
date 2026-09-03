@@ -126,7 +126,7 @@ export function ProductFilters({
 
       <div className="filter-actions">
         <button type="submit">Aplicar</button>
-        <Link href={clearHref ?? "/produtos"}>Limpar</Link>
+        <Link className="secondary-action" href={clearHref ?? "/produtos"}>Limpar</Link>
       </div>
     </form>
   );

@@ -1,25 +1,4 @@
-:root {
-  --ink: #16231e;
-  --muted: #69746f;
-  --canvas: #f3f1e9;
-  --paper: #fbfaf5;
-  --line: #d9d8ce;
-  --forest: #173e32;
-  --lime: #c9f263;
-  --rust: #cf633f;
-}
-
-html[data-theme="dark"] {
-  color-scheme: dark;
-  --ink: #edf2f7;
-  --muted: #9eacbb;
-  --canvas: #0d141c;
-  --paper: #151e29;
-  --line: #334355;
-  --forest: #0b1723;
-  --lime: #7dd3c7;
-  --rust: #f0a27b;
-}
+@import "./styles/tokens.css";
 
 * {
   box-sizing: border-box;
@@ -30,7 +9,23 @@ html[data-theme="dark"] {
 html {
   background: var(--canvas);
   overflow-x: hidden;
-  scrollbar-gutter: stable;
+  scrollbar-gutter: stable both-edges;
+}
+
+.skip-link {
+  position: absolute;
+  left: -9999px;
+  top: 8px;
+  z-index: 100;
+  padding: 12px 16px;
+  color: var(--paper);
+  background: var(--forest);
+  border: 2px solid var(--lime);
+  font-weight: 750;
+}
+
+.skip-link:focus {
+  left: 12px;
 }
 
 body {
@@ -169,6 +164,43 @@ input {
   font-size: 0.76rem;
 }
 
+.drawer-org-card {
+  display: none;
+  align-items: center;
+  gap: 12px;
+  margin-top: 18px;
+  padding: 14px 12px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.drawer-org-card > span {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  color: var(--paper);
+  background: var(--rust);
+  border-radius: 50%;
+  font-size: 0.65rem;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.drawer-org-card strong,
+.drawer-org-card small {
+  display: block;
+}
+
+.drawer-org-card strong {
+  font-size: 0.78rem;
+}
+
+.drawer-org-card small {
+  color: #a9b9b1;
+  font-size: 0.65rem;
+}
+
 .workspace {
   min-width: 0;
 }
@@ -195,6 +227,11 @@ input {
   background: var(--ink);
   border-radius: 2px;
   transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.mobile-menu-button:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 2px;
 }
 
 .mobile-menu-button[aria-expanded="true"] span:nth-child(1) {
@@ -364,10 +401,10 @@ input {
 }
 
 .page-header h1 {
-  font-size: clamp(2.4rem, 6vw, 5.2rem);
+  font-size: clamp(1.9rem, 4vw, 3.2rem);
   font-weight: 650;
   letter-spacing: -0.065em;
-  line-height: 0.94;
+  line-height: 0.97;
 }
 
 .page-header p {
@@ -391,6 +428,15 @@ input {
   background: var(--paper);
   border: 1px solid var(--line);
   box-shadow: 0 8px 30px rgba(29, 42, 36, 0.04);
+}
+
+html[data-theme="dark"] .product-list tbody tr:hover {
+  background: #1e2e3d;
+}
+
+html[data-theme="dark"] .metric-card,
+html[data-theme="dark"] .panel {
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.25);
 }
 
 .metric-card {
@@ -847,7 +893,7 @@ input {
 .report-filters label > span {
   color: var(--muted);
   font-family: var(--font-geist), monospace;
-  font-size: 0.59rem;
+  font-size: 0.70rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -1691,7 +1737,7 @@ input {
 .product-filters label > span {
   color: var(--muted);
   font-family: var(--font-geist), monospace;
-  font-size: 0.62rem;
+  font-size: 0.70rem;
   font-weight: 700;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -1736,7 +1782,13 @@ input {
 }
 
 .filter-actions a {
-  color: var(--muted);
+  color: var(--forest);
+  border: 1px solid var(--line);
+  padding: 0 12px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
   font-size: 0.76rem;
   font-weight: 700;
 }
@@ -2319,9 +2371,15 @@ input {
 }
 
 .preview-table {
+  position: relative;
   margin-top: 26px;
   overflow-x: auto;
   border: 1px solid var(--line);
+  background: linear-gradient(90deg, var(--paper) 30%, transparent), linear-gradient(270deg, var(--paper) 30%, transparent), repeating-linear-gradient(90deg, rgba(0,0,0,0.04) 0 1px, transparent 1px 100%);
+  background-size: auto, auto, 12px 100%;
+  background-repeat: no-repeat;
+  background-position: left center, right center, center;
+  background-attachment: local, local, scroll;
 }
 
 .preview-table table {
@@ -2852,7 +2910,7 @@ input {
 .inventory-filters label > span {
   color: var(--muted);
   font-family: var(--font-geist), monospace;
-  font-size: 0.59rem;
+  font-size: 0.70rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   text-transform: uppercase;
@@ -2909,7 +2967,13 @@ input {
 }
 
 .inventory-filter-actions a {
-  color: var(--muted);
+  color: var(--forest);
+  border: 1px solid var(--line);
+  padding: 0 12px;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  background: transparent;
   font-size: 0.68rem;
   font-weight: 700;
 }
@@ -3130,7 +3194,7 @@ input {
 
 .inventory-empty {
   display: flex;
-  min-height: 220px;
+  min-height: 260px;
   align-items: center;
   justify-content: center;
   gap: 18px;
@@ -3386,8 +3450,8 @@ input {
 
 .priority-ring {
   display: grid;
-  width: 176px;
-  height: 176px;
+  width: min(176px, 44vw);
+  height: min(176px, 44vw);
   place-content: center;
   justify-self: center;
   background: var(--priority-gradient);
@@ -3706,7 +3770,7 @@ input {
 
 .dashboard-empty {
   display: flex;
-  min-height: 300px;
+  min-height: 260px;
   align-items: center;
   justify-content: center;
   gap: 22px;
@@ -3763,7 +3827,8 @@ input {
 }
 
 .quick-view-button {
-  padding: 8px 10px;
+  min-height: 44px;
+  padding: 8px 12px;
   color: var(--forest);
   background: transparent;
   border: 1px solid var(--line);
@@ -4690,6 +4755,10 @@ input {
     display: none;
   }
 
+  .drawer-org-card {
+    display: flex;
+  }
+
   .topbar {
     position: sticky;
     top: 0;
@@ -4809,6 +4878,14 @@ input {
     grid-column: 2;
   }
 
+  .inventory-plan-create-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .inventory-plan-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .product-overview {
     grid-template-columns: 1fr;
   }
@@ -4817,9 +4894,23 @@ input {
     grid-template-columns: 1fr;
   }
 
+  .auth-page {
+    background:
+      linear-gradient(120deg, rgba(23, 62, 50, 0.98) 0 50%, transparent 50%),
+      linear-gradient(rgba(22, 35, 30, 0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(22, 35, 30, 0.04) 1px, transparent 1px),
+      var(--canvas);
+  }
+
   .login-copy {
     border-right: 0;
     border-bottom: 1px solid var(--line);
+  }
+
+  input,
+  select,
+  textarea {
+    font-size: 16px;
   }
 }
 
@@ -5130,7 +5221,7 @@ input {
 
   .product-list td {
     display: grid;
-    grid-template-columns: 120px minmax(0, 1fr);
+    grid-template-columns: 92px minmax(0, 1fr);
     gap: 14px;
     padding: 9px 0;
     border-bottom: 0;
@@ -5284,7 +5375,7 @@ input {
 
   .history-table td {
     display: grid;
-    grid-template-columns: 110px minmax(0, 1fr);
+    grid-template-columns: 92px minmax(0, 1fr);
     align-items: center;
     gap: 12px;
     padding: 8px 0;
@@ -5414,7 +5505,7 @@ input {
 
   .inventory-table td {
     display: grid;
-    grid-template-columns: 110px minmax(0, 1fr);
+    grid-template-columns: 92px minmax(0, 1fr);
     align-items: center;
     gap: 12px;
     padding: 7px 0;
@@ -5531,7 +5622,7 @@ input {
 
   .section-dashboard td {
     display: grid;
-    grid-template-columns: 110px minmax(0, 1fr);
+    grid-template-columns: 92px minmax(0, 1fr);
     align-items: center;
     gap: 12px;
     padding: 7px 0;
@@ -5611,7 +5702,7 @@ input {
 
   .stock-history td {
     display: grid;
-    grid-template-columns: 100px minmax(0, 1fr);
+    grid-template-columns: 92px minmax(0, 1fr);
     align-items: center;
     gap: 12px;
     padding: 7px 0;

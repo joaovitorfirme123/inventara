@@ -1,5 +1,5 @@
-const CACHE_NAME = "inventara-static-v1";
-const STATIC_ASSETS = ["/icon.svg", "/icon-maskable.svg"];
+const CACHE_NAME = "inventara-static-v2";
+const STATIC_ASSETS = ["/icon.svg", "/icon-maskable.svg", "/offline.html"];
 
 self.addEventListener("install", (event) => {
   event.waitUntil(
@@ -29,7 +29,14 @@ self.addEventListener("fetch", (event) => {
   );
 
   // Never cache pages, API responses, or non-GET requests because they can contain session data.
-  if (request.method !== "GET" || !isStaticAsset) return;
+  if (request.method !== "GET" || !isStaticAsset) {
+    if (request.mode === "navigate") {
+      event.respondWith(
+        fetch(request).catch(() => caches.match("/offline.html")),
+      );
+    }
+    return;
+  }
 
   event.respondWith(
     caches.match(request).then((cached) => cached ?? fetch(request).then((response) => {

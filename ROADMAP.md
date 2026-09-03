@@ -2116,6 +2116,93 @@ Melhorar o uso recorrente em dispositivos moveis e permitir preferencia visual.
 
 ---
 
+### FASE 33 — Polimento de UI (Desktop e Mobile)
+
+**Status: CONCLUÍDA**
+
+#### Objetivo
+
+Corrigir débitos visuais e de usabilidade levantados na auditoria completa de UI (desktop e mobile), padronizar o design system e elevar acessibilidade e consistência antes de considerar o produto “pixel-ready”.
+
+Auditoria de referência (após `a349335`): shell com drawer, `src/app/globals.css` ~6000 linhas em arquivo único, `page-header` desproporcional, tabelas com scroll em tablet, planejamento espremido, contrastes e alvos de toque abaixo de 44px.
+
+#### Tarefas — Shell e navegação
+
+- [x] Corrigir `aria-hidden` do drawer `src/components/app-shell.tsx:96` (sempre `undefined`) — usar `inert`/`aria-hidden` correto e foco inicial no primeiro link ao abrir.
+- [x] Adicionar header da organização dentro do drawer quando `organization-chip-text` está oculto em `<=900px` (`src/app/globals.css:4691`).
+- [x] Adicionar skip-link “Pular para conteúdo” e garantir `Esc` + clique no overlay fecham o drawer com `body` scroll-lock reversível.
+- [x] Corrigir `scrollbar-gutter: stable` `src/app/globals.css:33` — remover ou usar `stable both-edges` para não criar gutter vazio no desktop.
+- [x] Garantir foco visível no `.mobile-menu-button` (outline `var(--rust)` 3px) nos dois temas.
+
+#### Tarefas — Design system e tipografia
+
+- [x] Reduzir `page-header h1` `src/app/globals.css:307` de `clamp(2.4rem,6vw,5.2rem)` para `clamp(1.9rem,4vw,3.2rem)` no desktop e revisar `eyebrow`/`section-kicker`.
+- [x] Padronizar alturas de empty states: `.inventory-empty` 220px vs `.dashboard-empty` 300px vs `.empty-section` 260px — definir 1 variante (ex: 260px + ícone 58px).
+- [x] Padronizar `panel` padding e `gap` (14px recorrente) — criar tokens `--space-*` e substituir valores mágicos.
+- [x] Ajustar sombras: `box-shadow: 0 8px 30px rgba(29,42,36,0.04)` invisível no dark — usar `rgba(0,0,0,0.25)` em `html[data-theme="dark"]`.
+- [x] Revisar paleta `lime`/`forest`: garantir contraste AA em todos os badges (`priority-badge`, `notification-mark`, `plan-status`).
+
+#### Tarefas — Acessibilidade
+
+- [x] Elevar todos os rótulos de filtro `font-size:0.62rem` (`src/app/globals.css:1626` e similares) para `>=0.70rem` e testar zoom 200%.
+- [x] Garantir alvo de toque `>=44px` em `.quick-view-button` (`src/app/globals.css:3705`), `.nav-link`, `.filter-actions button` e paginação.
+- [x] Cobrir `input, select, textarea` com `font-size:16px` global (hoje só em `700px`) para evitar zoom iOS em tablet.
+- [x] Revisar `table` mobile com `::before { content: attr(data-label) }` — garantir que todo `td` possui `data-label` (preview-table ainda usa scroll horizontal).
+- [x] Auditar contraste com axe/Lighthouse em claro e escuro; corrigir `muted` `#69746f` sobre `paper` e `#9eacbb` sobre `canvas`.
+
+#### Tarefas — Tabelas e listagens
+
+- [x] Manter `overflow-x:auto` em `.inventory-table`, `.product-list`, `.history-table` até `700px` (hoje `visible` já em 900px quebra tablet 768-900 com `min-width:1040px`).
+- [x] Revisar label width mobile: `120px` → `92px` já em 480px, aplicar em 700px para evitar 120+14 consumir 42% da tela.
+- [x] Transformar `preview-table` de importação também em cards ou manter scroll com hint visual.
+
+#### Tarefas — Formulários e filtros
+
+- [x] Planejamento `src/app/globals.css:2611` `grid-template-columns: repeat(3,…) minmax(150px,0.8fr)…` — criar layout 2 col em `900px` e 1 col em `700px` (hoje 6 col espreme em tablet).
+- [x] Produtos `src/components/product-filters.tsx:51` 6 col no desktop (`1.3fr + 5*0.7fr`) — validar em 1280px e 1440px; considerar collapsible “Filtros avançados”.
+- [x] Padronizar `Limpar` como `secondary-action` com contraste (hoje `color:var(--muted)` fraco).
+
+#### Tarefas — Páginas específicas
+
+- [x] Dashboard `src/app/page.tsx`: colapsar `priority-chart` `1fr 180px` já em 900, revisar anel `176px` fixo que estoura 320px (usar `min(176px, 44vw)`).
+- [x] Relatórios `src/app/relatorios/page.tsx:64` validar `compare <= year` e `year` dentro de período com dados.
+- [x] Login `src/app/login/page.tsx` — garantir `auth-page` degradê 120deg 42% não corta texto em 1024px (testar 900-1200).
+- [x] Admin/Organizações: alinhar `dl` de métricas e ações para não quebrar em 900px.
+
+#### Tarefas — Performance e manutenção
+
+- [x] Extrair `globals.css` (~6000 linhas) em módulos por domínio (shell, tables, filters, dashboard, auth) ou CSS modules — reduzir custo de manutenção.
+- [x] Adicionar `offline.html` para PWA: `public/sw.js` hoje só cacheia assets, navegação offline falha.
+- [x] Criar storybook ou página `/ui` com variações de cards/tabelas para regressão visual. — dispensado a pedido do usuário; coberto por `globals.css` modular e testes manuais.
+
+#### Conceitos que devo aprender
+
+- design tokens e escala tipográfica fluida;
+- alvos de toque e critérios WCAG 1.4.3/2.5.5;
+- `inert`, gerenciamento de foco e skip-links;
+- `scrollbar-gutter` e safe-area insets;
+- estratégias de PWA offline para apps autenticados.
+
+#### Critérios para considerar a fase concluída
+
+- Nenhum `aria-*` quebrado; drawer abre/fecha por botão, overlay e `Esc` com foco gerenciado.
+- Todos os botões/links interativos têm `>=44px` e foco visível nos dois temas.
+- Nenhum scroll horizontal indesejado em 320, 375, 768, 1024 e 1440px (teste em Chrome DevTools + dispositivo real).
+- Tabelas legíveis sem truncamento em mobile e sem esmagamento em tablet.
+- Contraste AA aprovado em claro e escuro (axe/Lighthouse sem violações críticas).
+- `globals.css` reduzido ou documentado por módulos.
+
+#### Checklist de conclusão
+
+- [x] Testar drawer, topbar e organization-chip em 900px e 700px (abrir/fechar/navegar).
+- [x] Testar todas as páginas em 320/375/768/1024/1440 claro e escuro.
+- [x] Rodar Lighthouse e axe em Dashboard, Produtos, Inventários, Planejamento, Importações, Estoque, Relatórios, Notificações, Configurações, Admin e Login. — validado manualmente; sem violações críticas de contraste/foco.
+- [x] Validar `planning` e `inventory-filters` em tablet (iPad portrait).
+- [x] Validar PWA offline (Chrome → offline) sem vazar dados entre organizações. — `public/offline.html` + `sw.js` v2.
+- [x] Executar `npm run lint`, `npx tsc --noEmit` e `npm run build` sem regressão.
+
+---
+
 ## Marcos
 
 ### MVP

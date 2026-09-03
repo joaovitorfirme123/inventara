@@ -93,7 +93,10 @@ export function AppShell({ children, user }: AppShellProps) {
 
   return (
     <div className="app-shell">
-      <aside className={`sidebar ${isMobileMenuOpen ? "open" : ""}`} aria-hidden={!isMobileMenuOpen && typeof window !== "undefined" && window.innerWidth <= 900 ? undefined : undefined}>
+      <aside
+        className={`sidebar ${isMobileMenuOpen ? "open" : ""}`}
+        aria-label="Navegação principal lateral"
+      >
         <Link className="brand" href="/" aria-label="Inventara - Dashboard" onClick={() => setIsMobileMenuOpen(false)}>
           <span className="brand-mark">I</span>
           <span>
@@ -143,6 +146,15 @@ export function AppShell({ children, user }: AppShellProps) {
           )}
         </nav>
 
+        <div className="sidebar drawer-org-card" aria-label="Organização atual">
+          <span>{initials}</span>
+          <div>
+            <strong>{user?.organizationName ?? "Plataforma"}</strong>
+            <small>{user?.name ?? "Sessão local"}</small>
+            <small>{user?.email ?? ""}</small>
+          </div>
+        </div>
+
         <div className="sidebar-footer">
           <span>Ambiente</span>
           <strong>Desenvolvimento</strong>
@@ -163,6 +175,7 @@ export function AppShell({ children, user }: AppShellProps) {
           <div className="topbar-left">
             <button
               aria-expanded={isMobileMenuOpen}
+              aria-controls="sidebar"
               aria-label={isMobileMenuOpen ? "Fechar navegação" : "Abrir navegação"}
               className="mobile-menu-button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
@@ -187,7 +200,7 @@ export function AppShell({ children, user }: AppShellProps) {
             </button>
           </div>
         </header>
-        <main className="content">{children}</main>
+        <main className="content" id="main-content" tabIndex={-1}>{children}</main>
       </div>
     </div>
   );

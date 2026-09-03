@@ -251,11 +251,11 @@ export function CsvImporter({ templates }: { templates: ImportTemplateOption[] }
                 <tbody>
                   {preview.rows.slice(0, 8).map((row) => (
                     <tr key={row.plu}>
-                      <td>{row.plu}</td>
-                      <td>{row.description}</td>
-                      <td>{row.section ?? "—"}</td>
-                      <td>{row.lastInventory ?? "Sem data"}</td>
-                      <td>{row.currentStock}</td>
+                      <td data-label="PLU">{row.plu}</td>
+                      <td data-label="Descrição">{row.description}</td>
+                      <td data-label="Seção">{row.section ?? "—"}</td>
+                      <td data-label="Último inventário">{row.lastInventory ?? "Sem data"}</td>
+                      <td data-label="Estoque">{row.currentStock}</td>
                     </tr>
                   ))}
                 </tbody>
