@@ -210,8 +210,8 @@ export function CsvImporter({ templates }: { templates: ImportTemplateOption[] }
       </section>
 
       {(state === "reading" || state === "processing") && (
-        <section className="import-progress panel" aria-live="polite">
-          <div className="progress-track"><span /></div>
+        <section className="import-progress panel" aria-busy="true" aria-live="polite">
+          <div className="progress-track" aria-hidden="true"><span /></div>
           <strong>
             {state === "reading" ? "Lendo e validando CSV..." : "Atualizando produtos..."}
           </strong>

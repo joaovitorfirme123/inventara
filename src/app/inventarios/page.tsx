@@ -229,15 +229,15 @@ export default async function InventariosPage({
                         <table>
                           <thead>
                             <tr>
-                              <th>Rank</th>
-                              <th>Subgrupo</th>
-                              <th>SKUs</th>
-                              <th>Contados</th>
-                              <th>Pendentes</th>
-                              <th>Cobertura</th>
-                              <th>Sem data</th>
-                              <th>Período</th>
-                              <th>Prioridade</th>
+                              <th scope="col">Rank</th>
+                              <th scope="col">Subgrupo</th>
+                              <th scope="col">SKUs</th>
+                              <th scope="col">Contados</th>
+                              <th scope="col">Pendentes</th>
+                              <th scope="col">Cobertura</th>
+                              <th scope="col">Sem data</th>
+                              <th scope="col">Período</th>
+                              <th scope="col">Prioridade</th>
                             </tr>
                           </thead>
                           <tbody>
@@ -324,6 +324,13 @@ export default async function InventariosPage({
             <div>
               <h2>Nenhum inventário neste recorte</h2>
               <p>Limpe ou altere os filtros para visualizar outros subgrupos.</p>
+              <div className="empty-actions">
+                {allRows.length === 0 ? (
+                  <Link className="primary-action" href="/importacoes">Importar CSV</Link>
+                ) : (
+                  <Link className="secondary-action" href="/inventarios">Limpar filtros</Link>
+                )}
+              </div>
             </div>
           </section>
         )}

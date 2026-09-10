@@ -172,7 +172,7 @@ export function ProductTable({ products }: { products: ProductTableItem[] }) {
       <div className="table-scroll">
         <table>
           <thead>
-            <tr><th>Produto</th><th>PLU / Código</th><th>Classificação</th><th>Último inventário</th><th className="numeric">Estoque</th><th /></tr>
+            <tr><th scope="col">Produto</th><th scope="col">PLU / Código</th><th scope="col">Classificação</th><th scope="col">Último inventário</th><th className="numeric" scope="col">Estoque</th><th scope="col" /></tr>
           </thead>
           <tbody>
             {products.map((product) => (

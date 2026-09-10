@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { authClient } from "@/lib/auth-client";
 import { ThemeToggle } from "@/components/theme-toggle";
 
@@ -34,6 +34,9 @@ export function AppShell({ children, user }: AppShellProps) {
   const pathname = usePathname();
   const [isSigningOut, setIsSigningOut] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const sidebarRef = useRef<HTMLElement>(null);
+  const workspaceRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (process.env.NODE_ENV !== "production" || !("serviceWorker" in navigator)) return;
@@ -53,16 +56,57 @@ export function AppShell({ children, user }: AppShellProps) {
 
   useEffect(() => {
     if (!isMobileMenuOpen) return;
+    const menuButton = menuButtonRef.current;
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const focusFrame = requestAnimationFrame(() => {
+      sidebarRef.current?.querySelector<HTMLAnchorElement>(".nav-link")?.focus();
+    });
     function handleKeyDown(event: KeyboardEvent) {
       if (event.key === "Escape") setIsMobileMenuOpen(false);
+      if (event.key !== "Tab" || !sidebarRef.current) return;
+
+      const focusable = Array.from(
+        sidebarRef.current.querySelectorAll<HTMLElement>(
+          "a[href], button:not([disabled]), [tabindex]:not([tabindex='-1'])",
+        ),
+      );
+      if (focusable.length === 0) return;
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
     }
     document.addEventListener("keydown", handleKeyDown);
     return () => {
       document.body.style.overflow = previousOverflow;
       document.removeEventListener("keydown", handleKeyDown);
+      cancelAnimationFrame(focusFrame);
+      menuButton?.focus();
     };
+  }, [isMobileMenuOpen]);
+
+  useEffect(() => {
+    const sidebar = sidebarRef.current;
+    const workspace = workspaceRef.current;
+    if (!sidebar || !workspace) return;
+
+    const mediaQuery = window.matchMedia("(max-width: 900px)");
+    const syncMobileIsolation = () => {
+      const isMobile = mediaQuery.matches;
+      sidebar.toggleAttribute("inert", isMobile && !isMobileMenuOpen);
+      workspace.toggleAttribute("inert", isMobile && isMobileMenuOpen);
+      sidebar.setAttribute("aria-hidden", isMobile && !isMobileMenuOpen ? "true" : "false");
+    };
+
+    syncMobileIsolation();
+    mediaQuery.addEventListener("change", syncMobileIsolation);
+    return () => mediaQuery.removeEventListener("change", syncMobileIsolation);
   }, [isMobileMenuOpen]);
 
   if (pathname === "/login" || pathname.startsWith("/convites/")) {
@@ -96,6 +140,8 @@ export function AppShell({ children, user }: AppShellProps) {
       <aside
         className={`sidebar ${isMobileMenuOpen ? "open" : ""}`}
         aria-label="Navegação principal lateral"
+        id="sidebar"
+        ref={sidebarRef}
       >
         <Link className="brand" href="/" aria-label="Inventara - Dashboard" onClick={() => setIsMobileMenuOpen(false)}>
           <span className="brand-mark">I</span>
@@ -170,7 +216,7 @@ export function AppShell({ children, user }: AppShellProps) {
         />
       )}
 
-      <div className="workspace">
+      <div className="workspace" ref={workspaceRef}>
         <header className="topbar">
           <div className="topbar-left">
             <button
@@ -179,6 +225,7 @@ export function AppShell({ children, user }: AppShellProps) {
               aria-label={isMobileMenuOpen ? "Fechar navegação" : "Abrir navegação"}
               className="mobile-menu-button"
               onClick={() => setIsMobileMenuOpen((open) => !open)}
+              ref={menuButtonRef}
               type="button"
             >
               <span />

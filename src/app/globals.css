@@ -50,6 +50,17 @@ input {
   font: inherit;
 }
 
+input,
+select,
+textarea {
+  font-size: 16px;
+}
+
+:focus-visible {
+  outline: 3px solid var(--rust);
+  outline-offset: 2px;
+}
+
 .app-shell {
   display: grid;
   min-height: 100vh;
@@ -330,7 +341,7 @@ input {
 }
 
 .organization-chip button {
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 11px;
   color: var(--muted);
   background: transparent;
@@ -353,7 +364,7 @@ input {
 }
 
 .theme-toggle {
-  min-height: 34px;
+  min-height: 44px;
   padding: 0 11px;
   color: var(--muted);
   background: transparent;
@@ -1986,6 +1997,9 @@ html[data-theme="dark"] .panel {
 
 .pagination a,
 .pagination > span {
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
   width: fit-content;
   padding: 9px 13px;
   border: 1px solid var(--line);
@@ -2036,6 +2050,25 @@ html[data-theme="dark"] .panel {
 .list-empty p {
   color: var(--muted);
   font-size: 0.74rem;
+}
+
+.empty-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.empty-actions a {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
+  padding: 0 16px;
+  border-radius: 2px;
+  font-size: 0.68rem;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .import-workflow {
@@ -3795,6 +3828,10 @@ html[data-theme="dark"] .panel {
   font-size: 0.72rem;
 }
 
+.dashboard-empty .empty-actions {
+  justify-content: flex-start;
+}
+
 .dashboard-skeleton {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -3892,8 +3929,8 @@ html[data-theme="dark"] .panel {
 
 .drawer-close {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 44px;
+  height: 44px;
   flex: 0 0 auto;
   place-items: center;
   color: var(--paper);
@@ -4716,8 +4753,8 @@ html[data-theme="dark"] .panel {
     position: absolute;
     top: 14px;
     right: 14px;
-    width: 36px;
-    height: 36px;
+    width: 44px;
+    height: 44px;
     place-items: center;
     color: #eff5ee;
     background: rgba(255, 255, 255, 0.08);
@@ -4788,7 +4825,7 @@ html[data-theme="dark"] .panel {
 
   .organization-chip button,
   .theme-toggle {
-    min-height: 36px;
+    min-height: 44px;
     padding: 0 10px;
   }
 

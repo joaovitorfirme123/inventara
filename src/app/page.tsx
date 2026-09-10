@@ -60,6 +60,9 @@ async function DashboardContent({
         <div>
           <h2>Dashboard aguardando produtos</h2>
           <p>Importe uma base CSV para gerar indicadores, gráficos e o resumo por seção.</p>
+          <div className="empty-actions">
+            <Link className="primary-action" href="/importacoes">Importar CSV</Link>
+          </div>
         </div>
       </section>
     );
@@ -232,7 +235,7 @@ async function DashboardContent({
         </div>
         <div className="section-dashboard-table">
           <table>
-            <thead><tr><th>Seção</th><th>SKUs</th><th>Contados</th><th>Pendentes</th><th>Cobertura</th><th>Urgentes</th><th>Altas</th></tr></thead>
+            <thead><tr><th scope="col">Seção</th><th scope="col">SKUs</th><th scope="col">Contados</th><th scope="col">Pendentes</th><th scope="col">Cobertura</th><th scope="col">Urgentes</th><th scope="col">Altas</th></tr></thead>
             <tbody>
               {sections.map((section) => (
                 <tr key={section.section}>

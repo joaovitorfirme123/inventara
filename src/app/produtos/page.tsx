@@ -257,6 +257,13 @@ async function ProductsContent({
             <div>
               <h3>Nenhum produto encontrado</h3>
               <p>Ajuste a busca ou limpe os filtros para tentar novamente.</p>
+              <div className="empty-actions">
+                {Object.keys(activeFilters).length > 0 ? (
+                  <Link className="secondary-action" href="/produtos">Limpar filtros</Link>
+                ) : (
+                  <Link className="primary-action" href="/importacoes">Importar CSV</Link>
+                )}
+              </div>
             </div>
           </div>
         )}
