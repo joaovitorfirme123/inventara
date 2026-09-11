@@ -2203,6 +2203,261 @@ Auditoria de referência (após `a349335`): shell com drawer, `src/app/globals.c
 
 ---
 
+### FASE 34 — Correções de UX, confiabilidade e escala
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Fechar os problemas de uso operacional identificados na auditoria completa antes
+de iniciar o fechamento comercial. Esta fase deve reduzir perda de contexto,
+ambiguidade, ações sem feedback e riscos ao trabalhar com bases grandes.
+
+As correções devem preservar a identidade visual atual e priorizar remoção,
+simplificação e reutilização antes da criação de novos componentes.
+
+#### Fluxos, navegação e contexto
+
+- [ ] Propagar o ano consultado pelo Dashboard nos links de drill-down para Produtos e Inventários.
+- [ ] Garantir que os números do Dashboard e os resultados filtrados usem o mesmo ano e a mesma regra de negócio.
+- [ ] Fazer a navegação refletir permissões efetivas; não exibir ações que o usuário não pode executar.
+- [ ] Definir o comportamento do `member` em Planejamento como somente leitura ou restringir a rota com uma mensagem explícita.
+- [ ] Criar uma entrada coerente para `platform_admin`, sem exibir módulos operacionais sem organização ativa.
+- [ ] Preservar busca, filtros, ordenação e página ao abrir o produto completo e retornar à lista.
+- [ ] Aplicar filtros de seção, grupo, subgrupo, busca e status à comparação exibida em Relatórios, ou separar claramente o recorte de exportação da comparação geral.
+- [ ] Validar a ordem dos períodos em Relatórios e impedir períodos futuros sem dados sem explicar o resultado.
+- [ ] Substituir ou remover o texto fixo `Ambiente: Desenvolvimento` em produção.
+
+#### Importação e rastreabilidade
+
+- [ ] Exibir erros de extensão, tamanho, leitura e validação mesmo quando não existir prévia.
+- [ ] Dar foco ao primeiro erro relevante e usar mensagens associadas a uma região `alert`.
+- [ ] Remover a barra de progresso falsa ou substituí-la por progresso real fornecido pelo processamento assíncrono.
+- [ ] Exibir antes da confirmação o arquivo, tamanho, linhas, cabeçalhos, layout aplicado e estimativa de novos, alterados, sem alteração e erros.
+- [ ] Diferenciar linhas realmente alteradas de linhas cujo PLU apenas já existia no catálogo.
+- [ ] Definir e documentar o significado de `inserido`, `alterado`, `sem alteração` e `erro` no resumo e no histórico.
+- [ ] Corrigir a inconsistência entre `erros`, `linhas ignoradas` e registros efetivamente processados.
+- [ ] Paginar o detalhe de uma importação e permitir filtrar linhas por status, priorizando erros.
+- [ ] Paginar ou filtrar o histórico de importações quando ultrapassar o limite inicial de registros.
+- [ ] Adicionar identificador diagnosticável para falhas de importação sem expor stack trace ao usuário.
+- [ ] Validar limites reais de request, tempo de função e tamanho de importação na plataforma de produção.
+- [ ] Avaliar leitura do CSV em Web Worker ou chunks para evitar bloqueio do thread principal.
+
+#### Inventários, score e planejamento
+
+- [ ] Exibir os fatores, pesos e contribuições que formam a pontuação de cada subgrupo.
+- [ ] Permitir investigar os indicadores agregados sem carregar e abrir todos os subgrupos simultaneamente.
+- [ ] Mover filtros, ordenação e paginação de Inventários para uma estratégia compatível com bases grandes.
+- [ ] Exigir seleção explícita de seção, grupo e subgrupo ao criar um planejamento.
+- [ ] Impedir ou alertar sobre planejamentos ativos duplicados para o mesmo recorte.
+- [ ] Registrar data real, responsável pela finalização e, quando aplicável, a importação que confirmou o resultado.
+- [ ] Definir claramente a diferença entre planejamento finalizado e cobertura confirmada no ERP.
+- [ ] Preservar ou atualizar o recorte do planejamento quando a prioridade do subgrupo mudar após nova importação.
+
+#### Notificações, conta e administração
+
+- [ ] Definir se notificações são geradas por evento ou deixar explícito que a central é atualizada sob demanda.
+- [ ] Adicionar ação contextual nas notificações para abrir o inventário, produto, meta ou recorte relacionado.
+- [ ] Adicionar feedback visível para revogar convite e demais ações administrativas.
+- [ ] Adicionar botão para copiar o link de convite e informar sua validade de forma clara.
+- [ ] Criar fluxo de recuperação e alteração de senha sem depender do desenvolvedor.
+- [ ] Documentar o onboarding controlado desde a criação da organização até a primeira prioridade útil.
+- [ ] Completar a exclusão de organização para metas, cobertura, notificações, templates, regras de prioridade e demais entidades relacionadas.
+- [ ] Testar exclusão e rollback de uma organização populada por todos os módulos.
+
+#### Acessibilidade, responsividade e manutenção
+
+- [ ] Preservar semântica de tabelas em mobile ou renderizar uma estrutura mobile com rótulos reais no DOM.
+- [ ] Adicionar `scope="col"` aos cabeçalhos de todas as tabelas.
+- [ ] Garantir foco visível no seletor de arquivos e em todas as ações administrativas.
+- [ ] Validar contraste de textos pequenos, badges e estados em tema claro e escuro.
+- [ ] Substituir fundos fixos claros por tokens ou variantes do tema escuro.
+- [ ] Respeitar `prefers-reduced-motion` também em skeletons e animações de processamento.
+- [ ] Validar filtros, tabelas, drawers, formulários e ações em 320, 375, 768, 1024 e 1440px.
+- [ ] Avaliar paginação, carregamento sob demanda e limites do histórico de produto, estoque, auditoria e exportações.
+- [ ] Evitar consultas de histórico desnecessárias para obter somente os snapshots usados na tela.
+
+#### Critérios para considerar a fase concluída
+
+- Os drill-downs preservam período, filtros e contexto de retorno.
+- Usuários entendem o que podem fazer antes de submeter uma ação.
+- A importação informa o impacto antes da confirmação e fornece diagnóstico utilizável depois do processamento.
+- A pontuação de inventários é explicável e os dados continuam utilizáveis em uma organização grande.
+- Um planejamento finalizado possui significado operacional verificável.
+- Notificações, convites e recuperação de conta possuem feedback e próximo passo claros.
+- Ações destrutivas contemplam todas as entidades e possuem rollback testado.
+- As telas permanecem operáveis por teclado, leitor de tela e nos breakpoints definidos.
+
+#### Checklist de conclusão
+
+- [ ] Executar o fluxo `Dashboard -> Pendentes -> Produtos -> Produto -> Voltar` com filtros e período histórico.
+- [ ] Testar acesso com `platform_admin`, `owner` e `member` em todas as rotas e ações visíveis.
+- [ ] Testar importação válida, inválida, duplicada, grande e com falha de processamento.
+- [ ] Comparar resumo prévio, resultado final e detalhe de uma importação.
+- [ ] Testar score explicado, drill-down e planejamento duplicado.
+- [ ] Testar finalização de planejamento com e sem confirmação por nova importação.
+- [ ] Testar geração, ação e leitura de notificações.
+- [ ] Testar convite copiado, aceito, expirado, revogado e com feedback de erro.
+- [ ] Testar recuperação de senha e onboarding em ambiente controlado.
+- [ ] Testar exclusão transacional de organização populada.
+- [ ] Validar teclado, foco, contraste, tema escuro, reduced motion e zoom de 200%.
+- [ ] Validar 20 mil produtos e histórico longo sem carregar dados desnecessários.
+- [ ] Executar testes, lint, TypeScript, build e pelo menos um fluxo E2E de navegador.
+
+---
+
+### FASE 35 — Fechamento para piloto comercial
+
+**Status: NÃO INICIADA**
+
+#### Objetivo
+
+Transformar o MVP funcional em um produto seguro para operar com os primeiros
+clientes, sem adicionar funcionalidades de baixo valor antes de corrigir os
+fluxos de dados, conta, operação e suporte.
+
+Esta fase deve ser executada antes de vender o Inventara como serviço recorrente.
+O objetivo nao e preparar a aplicacao para escala indefinida, mas garantir que
+ela funcione de forma previsivel com os primeiros estabelecimentos.
+
+#### Regra de prioridade
+
+Os itens marcados como bloqueador comercial devem ser resolvidos antes de um
+piloto pago. Itens de alta prioridade podem ser tratados durante um piloto
+controlado, desde que exista acompanhamento e plano de correção.
+
+#### Dados e confiabilidade
+
+- [ ] Corrigir a exclusao de organizacoes para remover metas, cobertura,
+  notificacoes, templates, regras de prioridade e todas as demais entidades
+  relacionadas antes de excluir o tenant.
+- [ ] Criar teste de exclusao de uma organizacao populada por todas as
+  funcionalidades existentes, incluindo rollback em caso de falha.
+- [ ] Diferenciar linhas realmente alteradas de linhas que apenas ja existiam
+  no catalogo durante a importacao.
+- [ ] Definir e documentar o significado de `inserido`, `alterado`, `sem
+  alteracao` e `erro` no resultado da importacao.
+- [ ] Definir se a cobertura e um snapshot por importacao ou um fechamento
+  mensal imutavel.
+- [ ] Impedir que importacoes posteriores sobrescrevam silenciosamente um
+  historico que ja foi considerado fechado.
+- [ ] Testar duas ou mais importacoes no mesmo mes e comparar os resultados
+  historicos esperados.
+
+#### Importacao em producao
+
+- [ ] Validar os limites reais de tamanho de request e duracao de funcao da
+  plataforma de hospedagem.
+- [ ] Ajustar o limite de 5 MB/50.000 linhas, ou migrar o processamento grande
+  para uma estrategia assincrona, sem deixar a interface prometer um fluxo que
+  pode expirar em producao.
+- [ ] Adicionar rate limiting especifico para importacoes e operacoes pesadas.
+- [ ] Registrar falhas de importacao com identificador diagnosticavel para o
+  suporte, sem expor stack trace ao cliente.
+- [ ] Garantir que o progresso exibido represente o estado real do processamento
+  ou deixar claro que e apenas um estado de espera.
+
+#### Planejamento e resultado operacional
+
+- [ ] Definir o que comprova que um planejamento foi finalizado.
+- [ ] Registrar data real, responsavel pela finalizacao e, quando aplicavel,
+  a importacao que confirmou o resultado.
+- [ ] Evitar que um planejamento finalizado continue parecendo pendente sem
+  explicar a divergencia entre planejamento e dados do ERP.
+- [ ] Decidir se planejamentos ativos duplicados para o mesmo subgrupo sao
+  permitidos; caso nao sejam, impedir duplicidade ou exigir uma nova data/ciclo.
+
+#### Conta, onboarding e suporte
+
+- [ ] Criar fluxo de recuperacao e alteracao de senha sem depender do
+  desenvolvedor.
+- [ ] Documentar o onboarding controlado de um novo cliente desde a criacao da
+  organizacao ate a primeira prioridade encontrada.
+- [ ] Definir se convites serao enviados por e-mail ou se o link copiado sera
+  aceito somente durante o piloto controlado.
+- [ ] Definir canal de suporte, horario de atendimento e procedimento para
+  diagnosticar importacoes e acessos.
+- [ ] Definir ciclo de vida de organizacao, usuario, sessao e dados inativos.
+- [ ] Implementar exportacao dos dados da organizacao em formato adequado,
+  separada da exportacao operacional de produtos.
+
+#### Infraestrutura e seguranca operacional
+
+- [ ] Configurar backup de producao com politica de retencao definida.
+- [ ] Executar e registrar um restore de teste em ambiente separado.
+- [ ] Configurar monitoramento de erros, disponibilidade e falhas de importacao.
+- [ ] Definir alertas operacionais e um procedimento de incidente.
+- [ ] Definir rollback de deploy e procedimento para migration que falhar.
+- [ ] Revisar rate limits, headers de seguranca, dependencias vulneraveis e
+  protecao contra abuso dos endpoints autenticados.
+- [ ] Separar e validar ambientes de desenvolvimento, preview e producao.
+
+#### Alertas, regras e escopo
+
+- [ ] Fazer notificacoes serem geradas por evento ou deixar explicitamente claro
+  que a central e sob demanda; nao apresentar polling manual como alerta
+  proativo.
+- [ ] Definir evento, destinatario, frequencia, acao esperada e deduplicacao
+  antes de adicionar e-mail ou push.
+- [ ] Manter a regra padrao de prioridade como referencia segura.
+- [ ] Validar regras configuraveis com clientes antes de criar presets ou
+  liberar customizacao ampla.
+- [ ] Nao adicionar novas funcionalidades de PWA, temas, PDF, automacoes ou
+  integracoes sem evidencia de uso no piloto.
+
+#### Testes e documentacao
+
+- [ ] Fazer a CI executar todos os testes existentes de importacao, estoque,
+  planejamento, metas, relatorios, notificacoes, permissoes e regras de
+  prioridade.
+- [ ] Adicionar pelo menos um fluxo E2E de navegador para onboarding, importacao
+  e primeira prioridade.
+- [ ] Testar o caminho completo com um CSV representativo e um estabelecimento
+  real ou dados anonimizados equivalentes.
+- [ ] Atualizar o README para nao listar como "melhorias futuras" funcionalidades
+  que ja existem.
+- [ ] Registrar metricas basicas: tempo ate primeira importacao, importacoes
+  bem-sucedidas, erros, prioridades investigadas, planejamentos finalizados e
+  uso por organizacao.
+
+#### Comercial e legal
+
+- [ ] Definir publico inicial, proposta de valor, plano de piloto e criterio de
+  sucesso.
+- [ ] Definir preco, limites, cobranca, inadimplencia e cancelamento, mesmo que
+  o primeiro piloto seja faturado manualmente.
+- [ ] Criar termos de uso/SaaS e politica de suporte.
+- [ ] Criar politica de privacidade e revisar responsabilidades de controlador
+  e operador conforme a LGPD.
+- [ ] Definir retencao, exclusao e portabilidade dos dados importados.
+- [ ] Documentar responsabilidades do cliente sobre os dados exportados do ERP.
+
+#### Criterios para considerar a fase concluida
+
+- Uma organizacao pode ser criada, configurada e usada sem intervencao tecnica
+  em cada etapa do fluxo principal.
+- Uma importacao realista conclui dentro dos limites de producao e deixa um
+  diagnostico utilizavel em caso de erro.
+- O sistema consegue explicar a prioridade e preservar a evidencia usada para
+  a decisao.
+- Um planejamento finalizado possui significado operacional verificavel.
+- Recuperacao de senha, suporte, backup e restore foram testados.
+- Existe um plano de piloto, preco provisoriamente definido e documentacao
+  legal minima antes da venda.
+
+#### Checklist de conclusao
+
+- [ ] Rodar lint, TypeScript, build e toda a suite de testes em CI.
+- [ ] Validar backup e restore em ambiente separado.
+- [ ] Executar um piloto controlado com o primeiro estabelecimento.
+- [ ] Medir o tempo ate a primeira prioridade util.
+- [ ] Corrigir falhas encontradas no piloto antes de adicionar novo escopo.
+- [ ] Repetir o fluxo com um segundo estabelecimento ou layout de ERP.
+- [ ] Registrar decisao sobre o que sera mantido, simplificado ou removido do
+  backlog.
+
+---
+
 ## Marcos
 
 ### MVP
@@ -2231,4 +2486,22 @@ Fases 17–18. Projeto preparado para demonstracao publica.
 
 ### V2.0
 
-Fases 19–33. Evolucao baseada em necessidades reais observadas durante o uso.
+Fases 19–35. Evolucao baseada em necessidades reais observadas durante o uso.
+
+### Produto piloto
+
+Fase 35.
+
+O produto pode ser considerado pronto para piloto quando:
+
+```text
+Organizacao criada
+  -> usuario consegue acessar ou recuperar sua conta
+  -> CSV realista importado com diagnostico
+  -> prioridade explicada e investigavel
+  -> planejamento criado e finalizado com significado claro
+  -> dados protegidos por backup e restore testado
+  -> suporte e regras do piloto definidos
+```
+
+Isso nao significa produto pronto para escala ou comercializacao irrestrita.
