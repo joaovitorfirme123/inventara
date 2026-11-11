@@ -43,6 +43,8 @@ model Organization {
   auditLogs AuditLog[]
   importTemplates ImportTemplate[]
   priorityRule PriorityRule?
+  divergenceAnalyses DivergenceAnalysis[]
+  divergenceAnalysisMeta DivergenceAnalysisMeta?
 
   @@map("organizations")
 }
@@ -372,4 +374,26 @@ model PriorityRuleRevision {
   @@unique([ruleId, version])
   @@index([ruleId, version(sort: Desc)])
   @@map("priority_rule_revisions")
+}
+
+model DivergenceAnalysis {
+  id             String       @id
+  organizationId String       @map("organization_id") @db.Uuid
+  name           String
+  inventoryDate  String?      @map("inventory_date")
+  productCount   Int          @map("product_count")
+  dataset        Json
+  savedAt        DateTime     @default(now()) @map("saved_at")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, savedAt(sort: Desc)])
+  @@map("divergence_analyses")
+}
+
+model DivergenceAnalysisMeta {
+  organizationId String       @id @map("organization_id") @db.Uuid
+  analysisCount  Int          @default(0) @map("analysis_count")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@map("divergence_analyses_meta")
 }

@@ -3,6 +3,7 @@ import { Geist_Mono, Manrope } from "next/font/google";
 import { AppShell } from "@/components/app-shell";
 import { getOptionalSessionContext } from "@/lib/session";
 import "./globals.css";
+import "./divergencias.css";
 
 const manrope = Manrope({
   variable: "--font-manrope",
