@@ -4437,6 +4437,16 @@ html[data-theme="dark"] .panel {
   line-height: 0.98;
 }
 
+.login-copy h1::after {
+  content: "";
+  display: block;
+  width: 42px;
+  height: 4px;
+  margin-top: 22px;
+  background: var(--lime);
+  border-radius: 2px;
+}
+
 .login-copy p {
   max-width: 360px;
   margin-top: 22px;
