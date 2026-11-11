@@ -1,0 +1,13 @@
+{
+  "name": "amostra sintética de demonstração (8 produtos fictícios)",
+  "items": [
+    { "cod": "0000000000011", "desc": "PRODUTO EXEMPLO ALFA 500G", "atual": 12, "cong": 10, "inv": 12, "div": 2, "plu": "1001", "emb": "12", "ultimaQtd": 24, "ultimaData": "01/11/2026", "custoRep": 8.5, "custoMedio": 8.2 },
+    { "cod": "0000000000028", "desc": "PRODUTO EXEMPLO BETA 1KG", "atual": -3, "cong": 5, "inv": 2, "div": -3, "plu": "1002", "emb": "10", "ultimaQtd": 10, "ultimaData": "28/10/2026", "custoRep": 15.9, "custoMedio": 15.1 },
+    { "cod": "0000000000035", "desc": "CREME EXEMPLO GAMMA 200G", "atual": 20, "cong": 18, "inv": 24, "div": 6, "plu": "1003", "emb": "24", "ultimaQtd": 48, "ultimaData": "05/11/2026", "custoRep": 4.75, "custoMedio": 4.6 },
+    { "cod": "0000000000042", "desc": "CREME EXEMPLO DELTA 200G", "atual": 9, "cong": 15, "inv": 9, "div": -6, "plu": "1004", "emb": "24", "ultimaQtd": 24, "ultimaData": "05/11/2026", "custoRep": 4.9, "custoMedio": 4.72 },
+    { "cod": "0000000000059", "desc": "PRODUTO EXEMPLO EPSILON 250G", "atual": 0, "cong": 7, "inv": 0, "div": -7, "plu": "1005", "emb": "20", "ultimaQtd": 20, "ultimaData": "20/10/2026", "custoRep": 11.2, "custoMedio": 10.98 },
+    { "cod": "0000000000066", "desc": "PRODUTO EXEMPLO ZETA 900ML", "atual": 30, "cong": -4, "inv": 3, "div": 7, "plu": "1006", "emb": "12", "ultimaQtd": 12, "ultimaData": "08/11/2026", "custoRep": 6.3, "custoMedio": 6.1 },
+    { "cod": "0000000000073", "desc": "PRODUTO EXEMPLO ETA 1L", "atual": 14, "cong": 14, "inv": 14, "div": 0, "plu": "1007", "emb": "12", "ultimaQtd": 24, "ultimaData": "02/11/2026", "custoRep": 9.9, "custoMedio": 9.5 },
+    { "cod": "0000000000080", "desc": "PRODUTO EXEMPLO THETA 400G", "atual": 22, "cong": 22, "inv": 22, "div": 0, "plu": "1008", "emb": "24", "ultimaQtd": 48, "ultimaData": "30/10/2026", "custoRep": 7.4, "custoMedio": 7.15 }
+  ]
+}
