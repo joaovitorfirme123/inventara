@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { comparar, type Comparacao } from "@/lib/comparacao";
+import { comparar, ordenarPorData, type Comparacao } from "@/lib/comparacao";
 import { fmt, fmtSigned } from "@/lib/divergencias";
 import type { SavedAnalysis } from "@/lib/divergencias-storage";
 
@@ -9,10 +9,46 @@ function label(r: SavedAnalysis): string {
   return `${r.inventoryDate ? `Inventário ${r.inventoryDate} · ` : ""}${r.name}`;
 }
 
+/**
+ * Quanto os dois arquivos se sobrepõem. A comparação casa produtos pelo código
+ * de barras, então setores diferentes produzem um resultado vazio sem explicar
+ * por quê; este aviso torna a sobreposição explícita antes das listas.
+ */
+function SobreposicaoAviso({ cmp }: { cmp: Comparacao }) {
+  const { comuns, totalA, totalB } = cmp.sobreposicao;
+  const base = Math.max(totalA, totalB, 1);
+  const pct = Math.round((comuns / base) * 100);
+  const resumo = `${comuns} de ${base} produtos aparecem nos dois arquivos (${pct}%): ${totalA} em A, ${totalB} em B.`;
+  if (comuns === 0) {
+    return (
+      <div className="callout is-danger" role="alert">
+        <strong>Nenhum produto em comum</strong>
+        <p>
+          {resumo} Nenhum código de barras aparece nas duas análises, então não há recorrência para medir. Os dois
+          arquivos parecem ser de setores ou grupos diferentes: para comparar períodos, salve o mesmo setor em
+          duas datas.
+        </p>
+      </div>
+    );
+  }
+  if (pct < 50) {
+    return (
+      <div className="callout is-warning" role="note">
+        <strong>Poucos produtos em comum</strong>
+        <p>
+          {resumo} A comparação e a recorrência consideram só os produtos presentes nos dois arquivos. Se os
+          inventários eram para cobrir o mesmo setor, confira se os CSVs são do mesmo grupo de produtos.
+        </p>
+      </div>
+    );
+  }
+  return <p className="panel-note">{resumo} A comparação e a recorrência consideram só esses produtos em comum.</p>;
+}
+
 export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnalysis[]; emptyNote: React.ReactNode }) {
   const [selA, setSelA] = useState("");
   const [selB, setSelB] = useState("");
-  const [resultado, setResultado] = useState<{ a: SavedAnalysis; b: SavedAnalysis; cmp: Comparacao } | null>(null);
+  const [resultado, setResultado] = useState<{ a: SavedAnalysis; b: SavedAnalysis; cmp: Comparacao; trocou: boolean; datasValidas: boolean } | null>(null);
   const [compareError, setCompareError] = useState<string | null>(null);
 
   function onCompare() {
@@ -34,7 +70,8 @@ export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnal
       return;
     }
     setCompareError(null);
-    setResultado({ a: ra, b: rb, cmp: comparar(ra.dataset, rb.dataset) });
+    const ord = ordenarPorData(ra, rb);
+    setResultado({ a: ord.a, b: ord.b, cmp: comparar(ord.a.dataset, ord.b.dataset), trocou: ord.trocou, datasValidas: ord.datasValidas });
   }
 
   if (records.length < 2) {
@@ -45,7 +82,7 @@ export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnal
     <>
       <div className="compare-grid">
         <label>
-          <span>Inventário A (mais antigo)</span>
+          <span>Inventário A</span>
           <select value={selA} onChange={(e) => setSelA(e.target.value)}>
             <option value="">Escolher...</option>
             {records.map((r) => (
@@ -54,7 +91,7 @@ export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnal
           </select>
         </label>
         <label>
-          <span>Inventário B (mais recente)</span>
+          <span>Inventário B</span>
           <select value={selB} onChange={(e) => setSelB(e.target.value)}>
             <option value="">Escolher...</option>
             {records.map((r) => (
@@ -66,6 +103,10 @@ export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnal
           Comparar
         </button>
       </div>
+      <p className="panel-note">
+        A é o inventário mais antigo e B o mais recente. Quando as duas análises têm data do inventário válida, a
+        ordem é ajustada automaticamente; sem data válida, vale a ordem escolhida aqui.
+      </p>
       {compareError && (
         <div className="callout is-danger" role="alert">
           <strong>Não deu para comparar</strong>
@@ -74,6 +115,18 @@ export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnal
       )}
       {resultado && (
         <>
+          {resultado.trocou && (
+            <p className="panel-note">
+              Ordem ajustada pela data do inventário: A = {label(resultado.a)} (mais antigo) e B = {label(resultado.b)} (mais recente).
+            </p>
+          )}
+          {!resultado.datasValidas && (
+            <p className="panel-note">
+              Pelo menos uma das análises está sem data do inventário válida, então a ordem A/B ficou como você
+              escolheu. Confira se A é mesmo a contagem mais antiga.
+            </p>
+          )}
+          <SobreposicaoAviso cmp={resultado.cmp} />
           <h3 className="compare-heading">Padrão recorrente: faltas e sobras parecidas</h3>
           <p className="panel-note">
             Produtos com divergência no mesmo sentido e em quantidades parecidas nas duas contagens
