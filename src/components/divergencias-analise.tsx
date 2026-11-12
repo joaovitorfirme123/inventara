@@ -83,7 +83,7 @@ export function DivergenciasAnalise() {
         return !alertSets.p1.has(i) && !alertSets.p2.has(i) && !alertSets.p3.has(i) && !alertSets.p4.has(i);
       return alertSets[alertaFiltro].has(i);
     });
-  // Sem custo confirmado, a lista nunca ordena por impacto: volta para a ordem do arquivo.
+  // Sem custo confirmado, a lista nunca ordena por impacto: volta para a ordem do arquivo (o seletor também retorna).
   const ordenacaoEfetiva = costConfirmed ? ordenacao : "arquivo";
   const ordered =
     ordenacaoEfetiva === "arquivo"
