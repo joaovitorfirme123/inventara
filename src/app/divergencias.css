@@ -376,6 +376,12 @@
     text-align: left;
   }
 
+  /* Auditoria em 390px: o detalhe a 0.72rem (11,5px) era o menor texto da
+     página; 0.78rem mantém leitura confortável no celular. */
+  .alert-detail {
+    font-size: 0.78rem;
+  }
+
   .finance-facts {
     grid-template-columns: 1fr;
   }
