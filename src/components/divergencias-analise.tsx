@@ -49,6 +49,9 @@ export function DivergenciasAnalise() {
   const [dataset, setDataset] = useState<Dataset>(sampleDataset);
   const [query, setQuery] = useState("");
   const [showAll, setShowAll] = useState(false);
+  const [tipoFiltro, setTipoFiltro] = useState<"todas" | "falta" | "sobra" | "sem">("todas");
+  const [alertaFiltro, setAlertaFiltro] = useState<"todos" | "p1" | "p2" | "p3" | "p4" | "fora">("todos");
+  const [ordenacao, setOrdenacao] = useState<"arquivo" | "quantidade" | "impacto">("arquivo");
   const [costConfirmed, setCostConfirmed] = useState(false);
   const [parseError, setParseError] = useState<string | null>(null);
   const [onlineFeedback, setOnlineFeedback] = useState<string | null>(null);
@@ -60,7 +63,32 @@ export function DivergenciasAnalise() {
   const inputRef = useRef<HTMLInputElement>(null);
 
   const a = useMemo(() => analyze(dataset.items), [dataset]);
-  const filtered = dataset.items.filter((i) => norm(`${i.desc} ${i.cod} ${i.plu ?? ""}`).includes(norm(query)));
+  const alertSets = useMemo(
+    () => ({
+      p1: new Set(a.negCong),
+      p2: new Set(a.pairs.flatMap((p) => [p.a, p.b])),
+      p3: new Set(a.zeroCount),
+      p4: new Set(a.negAtual),
+    }),
+    [a],
+  );
+  const filtered = dataset.items
+    .filter((i) => norm(`${i.desc} ${i.cod} ${i.plu ?? ""}`).includes(norm(query)))
+    .filter((i) =>
+      tipoFiltro === "todas" ? true : tipoFiltro === "falta" ? i.div < 0 : tipoFiltro === "sobra" ? i.div > 0 : i.div === 0,
+    )
+    .filter((i) => {
+      if (alertaFiltro === "todos") return true;
+      if (alertaFiltro === "fora")
+        return !alertSets.p1.has(i) && !alertSets.p2.has(i) && !alertSets.p3.has(i) && !alertSets.p4.has(i);
+      return alertSets[alertaFiltro].has(i);
+    });
+  const ordered =
+    ordenacao === "arquivo"
+      ? filtered
+      : [...filtered].sort((x, y) =>
+          ordenacao === "quantidade" ? Math.abs(y.div) - Math.abs(x.div) : Math.abs(valueOf(y)) - Math.abs(valueOf(x)),
+        );
   const valued = dataset.items.filter((i) => i.custoMedio != null && i.custoMedio >= 0);
   const financeTop = [...valued]
     .filter((i) => i.div !== 0)
@@ -477,8 +505,69 @@ export function DivergenciasAnalise() {
             placeholder="Ex.: Produto Exemplo ou 0000000000011"
           />
         </label>
-        <p className="panel-note">{filtered.length} de {dataset.items.length} produtos. Abra um item para consultar os campos.</p>
-        {(showAll ? filtered : filtered.slice(0, 6)).map((i, index) => (
+        <div className="list-controls">
+          <label>
+            <span>Tipo de divergência</span>
+            <select
+              value={tipoFiltro}
+              onChange={(e) => {
+                setTipoFiltro(e.target.value as typeof tipoFiltro);
+                setShowAll(false);
+              }}
+            >
+              <option value="todas">Todas</option>
+              <option value="falta">Só faltas (contado menor)</option>
+              <option value="sobra">Só sobras (contado maior)</option>
+              <option value="sem">Sem divergência</option>
+            </select>
+          </label>
+          <label>
+            <span>Alerta</span>
+            <select
+              value={alertaFiltro}
+              onChange={(e) => {
+                setAlertaFiltro(e.target.value as typeof alertaFiltro);
+                setShowAll(false);
+              }}
+            >
+              <option value="todos">Todos</option>
+              <option value="p1">Padrão 1 - saldo congelado negativo</option>
+              <option value="p2">Padrão 2 - par com sinais opostos</option>
+              <option value="p3">Padrão 3 - contagem zero com saldo</option>
+              <option value="p4">Padrão 4 - estoque atual negativo</option>
+              <option value="fora">Fora dos padrões de alerta</option>
+            </select>
+          </label>
+          <label>
+            <span>Ordem</span>
+            <select
+              value={ordenacao}
+              onChange={(e) => {
+                setOrdenacao(e.target.value as typeof ordenacao);
+                setShowAll(false);
+              }}
+            >
+              <option value="arquivo">Ordem do arquivo</option>
+              <option value="quantidade">Maior diferença em quantidade</option>
+              <option value="impacto" disabled={!costConfirmed}>
+                Maior impacto estimado (R$)
+              </option>
+            </select>
+          </label>
+        </div>
+        {ordenacao === "impacto" && costConfirmed && (
+          <p className="panel-note">
+            Ordem pelo valor estimado (Qtd.Divergente × Custo Médio confirmado acima): ajuda a escolher o que conferir
+            primeiro, sem provar causa nem perda.
+          </p>
+        )}
+        {!costConfirmed && (
+          <p className="panel-note">
+            Para ordenar por impacto em R$, confirme antes a base do Custo Médio na seção de estimativa financeira.
+          </p>
+        )}
+        <p className="panel-note">{ordered.length} de {dataset.items.length} produtos. Abra um item para consultar os campos.</p>
+        {(showAll ? ordered : ordered.slice(0, 6)).map((i, index) => (
           <details className="product" key={`${i.cod}:${index}`}>
             <summary>
               <span>{i.desc}</span>
@@ -503,12 +592,12 @@ export function DivergenciasAnalise() {
             </div>
           </details>
         ))}
-        {filtered.length > 6 && (
+        {ordered.length > 6 && (
           <button type="button" className="secondary-action" onClick={() => setShowAll(!showAll)}>
-            {showAll ? "Mostrar menos produtos" : `Ver todos os ${filtered.length} produtos`}
+            {showAll ? "Mostrar menos produtos" : `Ver todos os ${ordered.length} produtos`}
           </button>
         )}
-        {!filtered.length && <p className="panel-note">Nenhum produto encontrado. Apague a busca para ver todos.</p>}
+        {!ordered.length && <p className="panel-note">Nenhum produto encontrado com estes filtros. Ajuste a busca ou os filtros para ver mais.</p>}
       </section>
 
       <section className="panel" aria-labelledby="importante-titulo">
