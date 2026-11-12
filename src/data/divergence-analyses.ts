@@ -7,6 +7,9 @@ import {
   MAX_ANALISES,
   type SavedAnalysis,
 } from "@/lib/divergencias-storage";
+import { inventoryDateError, normalizeInventoryDate } from "@/lib/inventory-date";
+import { isSampleDataset } from "@/lib/divergencias-amostra";
+import { datasetFingerprint, inventoryDateKey } from "@/lib/divergencias-fingerprint";
 
 export const MAX_DATASET_ITEMS = 20000;
 export const MAX_BODY_CHARS = 8_000_000;
@@ -62,8 +65,13 @@ export function buildDivergenceRecord(input: unknown): { name: string; inventory
     return { error: `A análise tem produtos demais para salvar (limite de ${MAX_DATASET_ITEMS} por análise).` };
   }
   const name = typeof body.name === "string" && body.name.trim() ? body.name.trim().slice(0, 200) : String(dataset.name ?? "").slice(0, 200);
-  const inventoryDate =
-    typeof body.inventoryDate === "string" && body.inventoryDate.trim() ? body.inventoryDate.trim().slice(0, 40) : undefined;
+  if (isSampleDataset(dataset)) {
+    return { error: "A amostra de demonstração é só para explorar a tela. Importe um CSV do ERP antes de salvar no histórico." };
+  }
+  const rawDate = typeof body.inventoryDate === "string" ? body.inventoryDate : "";
+  const dateProblem = inventoryDateError(rawDate);
+  if (dateProblem) return { error: dateProblem };
+  const inventoryDate = normalizeInventoryDate(rawDate) ?? undefined;
   const candidate: SavedAnalysis = {
     id: "srv-check",
     savedAt: new Date().toISOString(),
@@ -86,8 +94,30 @@ export function buildDivergenceRecord(input: unknown): { name: string; inventory
 export async function createDivergenceAnalysis(
   organizationId: string,
   record: { name: string; inventoryDate?: string; productCount: number; dataset: Dataset },
-): Promise<SavedAnalysis | "LIMIT_REACHED"> {
+): Promise<SavedAnalysis | "LIMIT_REACHED" | { duplicate: { id: string; name: string; inventoryDate: string | null; savedAt: Date } }> {
   return prisma.$transaction(async (tx) => {
+    // Trava de aviso por organização: duas gravações simultâneas da mesma
+    // organização passam uma de cada vez, então a verificação de duplicata
+    // abaixo não corre o risco de as duas lerem antes de qualquer gravação.
+    await tx.$executeRaw`SELECT pg_advisory_xact_lock(hashtext(${organizationId}))`;
+
+    // Mesmo CSV salvo de novo para a MESMA data de inventário? A conferência
+    // vem antes de reservar vaga, para duplicata recusada não consumir o
+    // contador do limite de 50. Conteúdo igual em data diferente é legítimo
+    // (inventários de dias distintos podem ter valores iguais) e passa.
+    const fp = datasetFingerprint(record.dataset);
+    if (fp) {
+      const dateKey = inventoryDateKey(record.inventoryDate);
+      const existing = await tx.divergenceAnalysis.findMany({
+        where: { organizationId },
+        select: { id: true, name: true, inventoryDate: true, savedAt: true, dataset: true },
+      });
+      const dup = existing.find(
+        (r) => datasetFingerprint(r.dataset) === fp && inventoryDateKey(r.inventoryDate) === dateKey,
+      );
+      if (dup) return { duplicate: { id: dup.id, name: dup.name, inventoryDate: dup.inventoryDate, savedAt: dup.savedAt } };
+    }
+
     const reserved = await tx.$queryRaw<Array<{ analysis_count: number }>>`
       INSERT INTO divergence_analyses_meta (organization_id, analysis_count)
       VALUES (${organizationId}::uuid, 1)

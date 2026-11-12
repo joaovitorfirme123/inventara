@@ -1,4 +1,5 @@
 import type { Item, Dataset } from "./divergencias";
+import { parseInventoryDate } from "./inventory-date";
 
 export type ComparacaoRow = {
   cod: string;
@@ -22,6 +23,8 @@ export type Comparacao = {
   semPadrao: ComparacaoRow[];
   soEmUmaData: ComparacaoRow[];
   comVariacaoContado: ComparacaoRow[];
+  /** Quantos produtos aparecem nos dois arquivos (a comparação só olha para eles). */
+  sobreposicao: { comuns: number; totalA: number; totalB: number };
 };
 
 /**
@@ -78,5 +81,24 @@ export function comparar(a: Dataset, b: Dataset): Comparacao {
 
   const comVariacaoContado = rows.filter((r) => r.difContado !== 0);
 
-  return { rows, soEmA, soEmB, recorrentes, semPadrao, soEmUmaData, comVariacaoContado };
+  const sobreposicao = { comuns: rows.length, totalA: mapA.size, totalB: mapB.size };
+
+  return { rows, soEmA, soEmB, recorrentes, semPadrao, soEmUmaData, comVariacaoContado, sobreposicao };
+}
+
+/**
+ * Garante que A é o inventário mais antigo quando as duas análises têm data
+ * válida; trocadas pelo usuário, as datas vencem a seleção. Sem duas datas
+ * válidas (texto antigo ou em branco), mantém a ordem escolhida e avisa com
+ * datasValidas = false, para a tela pedir conferência manual.
+ */
+export function ordenarPorData<T extends { inventoryDate?: string }>(
+  a: T,
+  b: T,
+): { a: T; b: T; trocou: boolean; datasValidas: boolean } {
+  const da = parseInventoryDate(a.inventoryDate);
+  const db = parseInventoryDate(b.inventoryDate);
+  if (!da || !db) return { a, b, trocou: false, datasValidas: false };
+  if (da.getTime() <= db.getTime()) return { a, b, trocou: false, datasValidas: true };
+  return { a: b, b: a, trocou: true, datasValidas: true };
 }

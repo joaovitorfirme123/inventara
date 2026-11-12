@@ -13,6 +13,7 @@ import {
   type Item,
 } from "@/lib/divergencias";
 import { SAMPLE_ITEMS, SAMPLE_NAME } from "@/lib/divergencias-amostra";
+import { inventoryDateError } from "@/lib/inventory-date";
 import { saveAnalysisOnline } from "@/lib/divergencias-api";
 
 const sampleDataset: Dataset = {
@@ -54,6 +55,8 @@ export function DivergenciasAnalise() {
   const [onlineError, setOnlineError] = useState<string | null>(null);
   const [onlineBusy, setOnlineBusy] = useState(false);
   const [inventoryDate, setInventoryDate] = useState("");
+  // A tela abre na amostra sintética de demonstração, que não pode ser salva.
+  const [isSample, setIsSample] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const a = useMemo(() => analyze(dataset.items), [dataset]);
@@ -81,6 +84,7 @@ export function DivergenciasAnalise() {
         setQuery("");
         setShowAll(false);
         setCostConfirmed(false);
+        setIsSample(false);
         setDataset({ name: `${file.name} (${result.items.length} produtos)`, items: result.items, warnings: result.warnings });
       }
     };
@@ -122,8 +126,15 @@ export function DivergenciasAnalise() {
           <button
             type="button"
             className="secondary-action"
-            disabled={onlineBusy}
+            disabled={onlineBusy || isSample}
+            title={isSample ? "A amostra de demonstração não pode ser salva" : undefined}
             onClick={async () => {
+              const dateProblem = inventoryDateError(inventoryDate);
+              if (dateProblem) {
+                setOnlineFeedback(null);
+                setOnlineError(dateProblem);
+                return;
+              }
               setOnlineBusy(true);
               setOnlineError(null);
               setOnlineFeedback(null);
@@ -139,6 +150,12 @@ export function DivergenciasAnalise() {
             {onlineBusy ? "Salvando..." : "Salvar análise no histórico"}
           </button>
         </div>
+        {isSample && (
+          <p className="panel-note">
+            A amostra de demonstração é só para explorar a tela e não pode ser salva no histórico. Importe um CSV
+            do ERP para liberar o botão de salvar.
+          </p>
+        )}
         {onlineFeedback && (
           <div className="callout" role="status">
             <strong>Salvo no histórico</strong>
