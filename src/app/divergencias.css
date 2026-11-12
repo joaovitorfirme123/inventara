@@ -237,6 +237,7 @@ html[data-theme="dark"] .inline-link { color: var(--lime); }
   max-width: 480px;
 }
 
+/* Controles de filtro e ordenação da lista (responsivo em telas pequenas). */
 .list-controls {
   display: flex;
   flex-wrap: wrap;
