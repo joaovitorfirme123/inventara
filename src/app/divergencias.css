@@ -1,7 +1,7 @@
 .div-tabs { display: flex; gap: 8px; margin: 0 0 18px; flex-wrap: wrap; }
 .div-tab { padding: 10px 16px; border: 1px solid var(--line, #d8d8d0); border-radius: 999px; font-weight: 700; font-size: 0.92rem; text-decoration: none; color: var(--forest); }
 .div-tab.active { background: var(--forest); color: #fff; border-color: var(--forest); }
-/* No tema escuro, --forest vira fundo quase preto: aba inativa e link inline precisam de cor de leitura clara; no tema claro valem as cores padrão. */
+/* No tema escuro, --forest vira fundo quase preto: aba inativa e link inline precisam de cor de leitura clara. */
 html[data-theme="dark"] .div-tab { color: var(--ink); }
 html[data-theme="dark"] .inline-link { color: var(--lime); }
 
@@ -235,6 +235,39 @@ html[data-theme="dark"] .inline-link { color: var(--lime); }
   gap: 7px;
   margin-top: 16px;
   max-width: 480px;
+}
+
+/* Controles de filtro e ordenação da lista (responsivo em telas pequenas). */
+.list-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.list-controls > label {
+  display: grid;
+  gap: 7px;
+  min-width: 180px;
+  flex: 1 1 180px;
+  max-width: 300px;
+}
+
+.list-controls > label > span {
+  color: var(--muted);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.list-controls select {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
 }
 
 .search-label > span {
