@@ -83,11 +83,13 @@ export function DivergenciasAnalise() {
         return !alertSets.p1.has(i) && !alertSets.p2.has(i) && !alertSets.p3.has(i) && !alertSets.p4.has(i);
       return alertSets[alertaFiltro].has(i);
     });
+  // Sem custo confirmado, a lista nunca ordena por impacto: volta para a ordem do arquivo (o seletor também retorna).
+  const ordenacaoEfetiva = costConfirmed ? ordenacao : "arquivo";
   const ordered =
-    ordenacao === "arquivo"
+    ordenacaoEfetiva === "arquivo"
       ? filtered
       : [...filtered].sort((x, y) =>
-          ordenacao === "quantidade" ? Math.abs(y.div) - Math.abs(x.div) : Math.abs(valueOf(y)) - Math.abs(valueOf(x)),
+          ordenacaoEfetiva === "quantidade" ? Math.abs(y.div) - Math.abs(x.div) : Math.abs(valueOf(y)) - Math.abs(valueOf(x)),
         );
   const valued = dataset.items.filter((i) => i.custoMedio != null && i.custoMedio >= 0);
   const financeTop = [...valued]
@@ -112,6 +114,7 @@ export function DivergenciasAnalise() {
         setQuery("");
         setShowAll(false);
         setCostConfirmed(false);
+        setOrdenacao((o) => (o === "impacto" ? "arquivo" : o));
         setIsSample(false);
         setDataset({ name: `${file.name} (${result.items.length} produtos)`, items: result.items, warnings: result.warnings });
       }
@@ -414,7 +417,14 @@ export function DivergenciasAnalise() {
           multiplicador nem presumimos a base de Custo.Rep.
         </p>
         <label className="confirm-cost">
-          <input type="checkbox" checked={costConfirmed} onChange={(e) => setCostConfirmed(e.target.checked)} />
+          <input
+            type="checkbox"
+            checked={costConfirmed}
+            onChange={(e) => {
+              setCostConfirmed(e.target.checked);
+              if (!e.target.checked) setOrdenacao((o) => (o === "impacto" ? "arquivo" : o));
+            }}
+          />
           Confirmo, para o arquivo em análise, que Custo Médio está em R$ por mesma unidade da quantidade contada.
         </label>
         <p className="panel-note">
