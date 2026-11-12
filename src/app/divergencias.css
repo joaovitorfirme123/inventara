@@ -1,6 +1,8 @@
 .div-tabs { display: flex; gap: 8px; margin: 0 0 18px; flex-wrap: wrap; }
 .div-tab { padding: 10px 16px; border: 1px solid var(--line, #d8d8d0); border-radius: 999px; font-weight: 700; font-size: 0.92rem; text-decoration: none; color: var(--forest); }
 .div-tab.active { background: var(--forest); color: #fff; border-color: var(--forest); }
+html[data-theme="dark"] .div-tab { color: var(--ink); }
+html[data-theme="dark"] .inline-link { color: var(--lime); }
 
 /* ===== Análise de divergências (aba Divergências) ===== */
 
