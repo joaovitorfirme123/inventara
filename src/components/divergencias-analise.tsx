@@ -233,6 +233,7 @@ export function DivergenciasAnalise() {
           positiva pode vir só da correção desse saldo, mas também pode haver sobra física. O CSV sozinho não separa
           as causas. Possibilidades a conferir nas movimentações, sem conclusão neste relatório:
         </p>
+        <p className="panel-note">Critério: saldo congelado menor que zero no relatório.</p>
         <ul className="hint-list">
           <li>Nota de entrada lançada fora de ordem em relação à venda</li>
           <li>Venda feita sem o lançamento da nota de entrada</li>
@@ -267,6 +268,10 @@ export function DivergenciasAnalise() {
           textual: não confirma equivalência de produto nem de unidade. Compare rótulo, PLU, unidade e movimentações
           antes de investigar possível troca de código; os pares não provam compensação.
         </p>
+        <p className="panel-note">
+          Critério: mesma palavra-chave na descrição, sinais opostos, e a menor diferença valendo ao menos metade da
+          maior (e pelo menos 2).
+        </p>
         {a.pairs.length ? (
           <>
             <ul className="alert-list">
@@ -300,6 +305,7 @@ export function DivergenciasAnalise() {
           O sistema tinha saldo e a contagem registrou zero. Pode ser ruptura real ou item que ficou de fora da
           contagem. O zero sozinho não prova nenhuma das duas: confira no local.
         </p>
+        <p className="panel-note">Critério: contagem igual a zero com saldo congelado maior que zero.</p>
         {a.zeroCount.length ? (
           <AlertRows
             items={a.zeroCount}
@@ -327,6 +333,7 @@ export function DivergenciasAnalise() {
           O campo de estoque atual está negativo nestes produtos. Confira a data de referência do relatório e as
           movimentações de cada item; o CSV isolado não explica a causa.
         </p>
+        <p className="panel-note">Critério: campo de estoque atual menor que zero no relatório.</p>
         {a.negAtual.length ? (
           <AlertRows
             items={a.negAtual}
