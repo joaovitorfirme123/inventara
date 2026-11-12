@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { comparar, ordenarPorData, type Comparacao } from "@/lib/comparacao";
-import { fmt, fmtSigned } from "@/lib/divergencias";
+import { comparar, ordenarPorData, ordenarRecorrentesPorImpacto, valorEstimadoB, type Comparacao } from "@/lib/comparacao";
+import { fmt, fmtSigned, money } from "@/lib/divergencias";
 import type { SavedAnalysis } from "@/lib/divergencias-storage";
 
 function label(r: SavedAnalysis): string {
@@ -50,6 +50,11 @@ export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnal
   const [selB, setSelB] = useState("");
   const [resultado, setResultado] = useState<{ a: SavedAnalysis; b: SavedAnalysis; cmp: Comparacao; trocou: boolean; datasValidas: boolean } | null>(null);
   const [compareError, setCompareError] = useState<string | null>(null);
+  // Visão financeira opcional: desmarcada por padrão, exige a mesma
+  // confirmação de base de custo da aba Análise e nunca substitui a ordenação
+  // por quantidade sozinha.
+  const [custoConfirmado, setCustoConfirmado] = useState(false);
+  const [ordenarPorImpacto, setOrdenarPorImpacto] = useState(false);
 
   function onCompare() {
     const ra = records.find((r) => r.id === selA);
@@ -138,24 +143,68 @@ export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnal
             investigar, mas não prova causa: confira movimentações, rótulo, PLU e unidade antes de concluir.
           </p>
           {resultado.cmp.recorrentes.length ? (
-            <ul className="alert-list">
-              {resultado.cmp.recorrentes.map(({ row, tipo }) => (
-                <li key={row.cod} className="alert-row">
-                  <span className="alert-name">{row.desc}</span>
-                  <span className="alert-detail">
-                    {resultado.a.inventoryDate ?? "A"}: {fmtSigned(row.divA)} · {resultado.b.inventoryDate ?? "B"}: {fmtSigned(row.divB)}
-                  </span>
-                  <span className="alert-value">{tipo === "falta" ? "falta recorrente" : "sobra recorrente"}</span>
-                </li>
-              ))}
-            </ul>
+            <>
+              <label className="confirm-cost">
+                <input
+                  type="checkbox"
+                  checked={custoConfirmado}
+                  onChange={(e) => {
+                    setCustoConfirmado(e.target.checked);
+                    if (!e.target.checked) setOrdenarPorImpacto(false);
+                  }}
+                />
+                Confirmo, para o inventário B, que Custo Médio está em R$ por mesma unidade da quantidade contada.
+              </label>
+              {custoConfirmado && (
+                <>
+                  <label className="confirm-cost">
+                    <input
+                      type="checkbox"
+                      checked={ordenarPorImpacto}
+                      onChange={(e) => setOrdenarPorImpacto(e.target.checked)}
+                    />
+                    Ordenar recorrências pelo impacto estimado em R$ (diferença de B × custo médio de B). Desmarcado,
+                    vale a ordenação padrão por quantidade.
+                  </label>
+                  <div className="callout is-warning" role="note">
+                    <strong>Estimativa para ordenar a conferência, não prova de perda</strong>
+                    <p>
+                      O valor usa só o custo médio do relatório de B. Custo ausente, inválido ou desatualizado não
+                      gera valor nem prova perda: produtos sem custo utilizável vão para o fim da lista, marcados.
+                    </p>
+                  </div>
+                </>
+              )}
+              <ul className="alert-list">
+                {(ordenarPorImpacto && custoConfirmado
+                  ? ordenarRecorrentesPorImpacto(resultado.cmp.recorrentes)
+                  : resultado.cmp.recorrentes
+                ).map(({ row, tipo }) => {
+                  const valor = custoConfirmado ? valorEstimadoB(row) : null;
+                  return (
+                    <li key={row.cod} className="alert-row">
+                      <span className="alert-name">{row.desc}</span>
+                      <span className="alert-detail">
+                        {resultado.a.inventoryDate ?? "A"}: {fmtSigned(row.divA)} · {resultado.b.inventoryDate ?? "B"}: {fmtSigned(row.divB)}
+                        {custoConfirmado &&
+                          (valor != null
+                            ? ` · estimativa ${valor > 0 ? "+" : ""}${money(valor)}`
+                            : " · custo médio não utilizável em B")}
+                      </span>
+                      <span className="alert-value">{tipo === "falta" ? "falta recorrente" : "sobra recorrente"}</span>
+                    </li>
+                  );
+                })}
+              </ul>
+            </>
           ) : (
             <p className="panel-note">Nenhum produto com faltas ou sobras parecidas nas duas datas.</p>
           )}
 
           <h3 className="compare-heading">Divergiu nas duas datas, sem padrão claro</h3>
           <p className="panel-note">
-            Divergência nas duas contagens, mas com sinal trocado ou tamanhos muito diferentes. Também vale
+            Critério: o produto divergiu nas duas contagens, mas com sinais opostos ou com a menor quantidade
+            abaixo da metade da maior. Também vale
             conferir, sem tratar como repetição.
           </p>
           {resultado.cmp.semPadrao.length ? (
@@ -175,6 +224,10 @@ export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnal
           )}
 
           <h3 className="compare-heading">Divergiu em uma data só</h3>
+          <p className="panel-note">
+            Critério: o produto teve divergência em exatamente uma das duas contagens (na outra, contado igual ao
+            congelado).
+          </p>
           {resultado.cmp.soEmUmaData.length ? (
             <ul className="alert-list">
               {resultado.cmp.soEmUmaData.map((r) => (
