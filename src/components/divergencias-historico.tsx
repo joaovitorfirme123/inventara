@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { DivergenciasCompare } from "@/components/divergencias-compare";
 import { listAnalyses, removeAnalysisOnline } from "@/lib/divergencias-api";
+import { buildHistoricoCsv } from "@/lib/divergencias-export";
 import type { SavedAnalysis } from "@/lib/divergencias-storage";
 
 function formatDate(iso: string): string {
@@ -23,16 +24,28 @@ export function DivergenciasHistorico() {
     });
   }, []);
 
-  function onExport() {
-    if (!records) return;
-    const blob = new Blob([JSON.stringify(records, null, 2)], { type: "application/json" });
+  function baixar(nomeArquivo: string, conteudo: string, tipo: string) {
+    const blob = new Blob([conteudo], { type: tipo });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = "divergencias-historico.json";
+    a.download = nomeArquivo;
     a.click();
     URL.revokeObjectURL(url);
-    setFeedback("Arquivo divergencias-historico.json baixado. É o backup das análises salvas da organização.");
+  }
+
+  function onExportJson() {
+    if (!records) return;
+    baixar("divergencias-historico.json", JSON.stringify(records, null, 2), "application/json");
+    setFeedback("Arquivo divergencias-historico.json baixado. É o backup completo das análises salvas da organização.");
+  }
+
+  function onExportCsv() {
+    if (!records) return;
+    baixar("divergencias-historico.csv", "\uFEFF" + buildHistoricoCsv(records), "text/csv;charset=utf-8");
+    setFeedback(
+      "Arquivo divergencias-historico.csv baixado: uma linha por produto por análise, para conferir em planilha. Só entram os números já salvos, sem cálculo novo. O JSON continua sendo o backup completo.",
+    );
   }
 
   async function onRemove(id: string) {
@@ -72,7 +85,10 @@ export function DivergenciasHistorico() {
         ) : records !== null ? (
           <>
             <div className="import-actions">
-              <button type="button" className="secondary-action" onClick={onExport}>
+              <button type="button" className="secondary-action" onClick={onExportCsv}>
+                Exportar histórico (CSV)
+              </button>
+              <button type="button" className="secondary-action" onClick={onExportJson}>
                 Exportar histórico (JSON)
               </button>
             </div>
