@@ -1,5 +1,6 @@
 /**
  * Teste isolado do exportador CSV do histórico (buildHistoricoCsv).
+ * Cobre escaping, proteção anti-fórmula, nulos, formato BR e round-trip.
  * Roda com: npx tsx scripts/test-export-csv.ts
  * Não toca em banco nem em dados reais: usa registros sintéticos.
  */
