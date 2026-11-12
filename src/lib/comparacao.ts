@@ -11,6 +11,8 @@ export type ComparacaoRow = {
   congeladoB: number;
   divA: number;
   divB: number;
+  /** Custo médio do relatório mais recente (B), se veio no CSV. Nunca presumido. */
+  custoMedioB?: number | null;
 };
 
 export type Recorrencia = { row: ComparacaoRow; tipo: "falta" | "sobra" };
@@ -54,6 +56,7 @@ export function comparar(a: Dataset, b: Dataset): Comparacao {
       congeladoB: ib.cong,
       divA: ia.div,
       divB: ib.div,
+      custoMedioB: ib.custoMedio ?? null,
     });
   }
 
@@ -101,4 +104,34 @@ export function ordenarPorData<T extends { inventoryDate?: string }>(
   if (!da || !db) return { a, b, trocou: false, datasValidas: false };
   if (da.getTime() <= db.getTime()) return { a, b, trocou: false, datasValidas: true };
   return { a: b, b: a, trocou: true, datasValidas: true };
+}
+
+/**
+ * Valor estimado da divergência mais recente (B) ao custo médio do relatório
+ * de B. Só existe quando B trouxe custo médio válido (>= 0); custo ausente ou
+ * inválido não gera valor inventado. É estimativa para ordenar a conferência,
+ * nunca prova de perda ou ganho.
+ */
+export function valorEstimadoB(row: ComparacaoRow): number | null {
+  const c = row.custoMedioB;
+  if (c == null || !(c >= 0)) return null;
+  const v = Math.round(row.divB * c * 100) / 100;
+  return v === 0 ? 0 : v; // evita -0 quando custo ou divergência zeram o produto
+}
+
+/**
+ * Cópia da lista de recorrências ordenada pelo módulo do valor estimado em B.
+ * Quem não tem custo utilizável vai para o fim, mantendo a ordem original por
+ * quantidade dentro de cada grupo. Não altera a classificação de recorrência.
+ */
+export function ordenarRecorrentesPorImpacto(recorrentes: Recorrencia[]): Recorrencia[] {
+  const comValor = recorrentes.map((r, idx) => ({ r, idx, v: valorEstimadoB(r.row) }));
+  comValor.sort((x, y) => {
+    if (x.v == null && y.v == null) return x.idx - y.idx;
+    if (x.v == null) return 1;
+    if (y.v == null) return -1;
+    const d = Math.abs(y.v) - Math.abs(x.v);
+    return d !== 0 ? d : x.idx - y.idx;
+  });
+  return comValor.map((c) => c.r);
 }
