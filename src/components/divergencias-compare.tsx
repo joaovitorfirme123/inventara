@@ -169,8 +169,9 @@ export function DivergenciasCompare({ records, emptyNote }: { records: SavedAnal
                   <div className="callout is-warning" role="note">
                     <strong>Estimativa para ordenar a conferência, não prova de perda</strong>
                     <p>
-                      O valor usa só o custo médio do relatório de B. Custo ausente, inválido ou desatualizado não
-                      gera valor nem prova perda: produtos sem custo utilizável vão para o fim da lista, marcados.
+                      O valor usa só o custo médio do relatório de B. Custo ausente ou inválido não gera
+                      estimativa: produtos sem custo utilizável vão para o fim da lista, marcados. Custo desatualizado
+                      pode distorcer o valor — confira a base antes de concluir. Nada disso prova perda.
                     </p>
                   </div>
                 </>
