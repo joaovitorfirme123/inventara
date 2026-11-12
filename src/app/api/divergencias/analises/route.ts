@@ -48,6 +48,16 @@ export async function POST(request: Request) {
     if (created === "LIMIT_REACHED") {
       return Response.json({ error: LIMIT_MESSAGE }, { status: 409 });
     }
+    if ("duplicate" in created) {
+      const dup = created.duplicate;
+      const quando = dup.savedAt.toLocaleString("pt-BR", { dateStyle: "short", timeStyle: "short", timeZone: "America/Sao_Paulo" });
+      return Response.json(
+        {
+          error: `Este mesmo arquivo já está salvo no histórico como "${dup.name}"${dup.inventoryDate ? `, inventário de ${dup.inventoryDate},` : ""} salvo em ${quando}. Não gravei uma cópia repetida. Se este CSV é de uma contagem diferente, informe a data do inventário correspondente antes de salvar.`,
+        },
+        { status: 409 },
+      );
+    }
     return Response.json({ record: created }, { status: 201 });
   } catch (error: unknown) {
     console.error("Failed to save divergence analysis", error);
