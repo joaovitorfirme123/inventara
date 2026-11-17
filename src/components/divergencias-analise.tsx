@@ -61,6 +61,9 @@ export function DivergenciasAnalise() {
   // A tela abre na amostra sintética de demonstração, que não pode ser salva.
   const [isSample, setIsSample] = useState(true);
   const inputRef = useRef<HTMLInputElement>(null);
+  const readerRef = useRef<FileReader | null>(null);
+  const [isReading, setIsReading] = useState(false);
+  const [fileFeedback, setFileFeedback] = useState<string | null>(null);
 
   const a = useMemo(() => analyze(dataset.items), [dataset]);
   const alertSets = useMemo(
@@ -101,9 +104,16 @@ export function DivergenciasAnalise() {
   function onFile(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0];
     e.target.value = "";
-    if (!file) return;
+    if (!file || !isSample || readerRef.current) return;
+    setFileFeedback(null);
+    setParseError(null);
+    setIsReading(true);
     const reader = new FileReader();
+    readerRef.current = reader;
     reader.onload = () => {
+      if (readerRef.current !== reader) return;
+      readerRef.current = null;
+      setIsReading(false);
       const result = parseCsv(String(reader.result ?? ""));
       if ("error" in result) {
         setParseError(result.error);
@@ -119,8 +129,38 @@ export function DivergenciasAnalise() {
         setDataset({ name: `${file.name} (${result.items.length} produtos)`, items: result.items, warnings: result.warnings });
       }
     };
-    reader.onerror = () => setParseError("Não consegui abrir este arquivo. Tente exportar o relatório de novo.");
+    reader.onerror = () => {
+      if (readerRef.current !== reader) return;
+      readerRef.current = null;
+      setIsReading(false);
+      setParseError("Não consegui abrir este arquivo. Tente exportar o relatório de novo.");
+    };
     reader.readAsText(file, "ISO-8859-1");
+  }
+
+  function removeFile() {
+    if (onlineBusy) return;
+    const reader = readerRef.current;
+    readerRef.current = null;
+    reader?.abort();
+    setIsReading(false);
+    setDataset(sampleDataset);
+    setIsSample(true);
+    setQuery("");
+    setShowAll(false);
+    setTipoFiltro("todas");
+    setAlertaFiltro("todos");
+    setOrdenacao("arquivo");
+    setCostConfirmed(false);
+    setInventoryDate("");
+    setParseError(null);
+    setOnlineFeedback(null);
+    setOnlineError(null);
+    setFileFeedback("Arquivo removido da tela. Nenhuma análise salva no histórico foi apagada. Você já pode escolher outro CSV.");
+    if (inputRef.current) {
+      inputRef.current.value = "";
+      inputRef.current.focus();
+    }
   }
 
   return (
@@ -133,14 +173,27 @@ export function DivergenciasAnalise() {
           </div>
           <span className="status-pill">{dataset.items.length} produtos</span>
         </div>
-        <label className="import-zone">
-          <input ref={inputRef} type="file" accept=".csv,text/csv" onChange={onFile} aria-label="Escolher arquivo CSV" />
-          <strong>Escolher CSV de divergências</strong>
-          <small>Separado por ponto e vírgula, como sai do ERP</small>
-        </label>
+        {isSample ? (
+          <label className="import-zone" aria-busy={isReading}>
+            <input ref={inputRef} type="file" accept=".csv,text/csv" onChange={onFile} disabled={isReading} aria-label="Escolher arquivo CSV" />
+            <strong>{isReading ? "Lendo arquivo CSV..." : "Escolher CSV de divergências"}</strong>
+            <small>Separado por ponto e vírgula, como sai do ERP</small>
+          </label>
+        ) : (
+          <div className="callout loaded-csv" role="status">
+            <strong>CSV carregado</strong>
+            <p>{dataset.name}</p>
+            <p>Para importar outro CSV, remova primeiro o arquivo carregado da tela.</p>
+            <button type="button" className="secondary-action" disabled={onlineBusy} onClick={removeFile}>
+              Remover arquivo da tela
+            </button>
+            <p className="panel-note">Isso não apaga análises salvas no histórico.</p>
+          </div>
+        )}
+        {fileFeedback && <p className="panel-note" role="status">{fileFeedback}</p>}
         <p className="panel-note">
-          Analisando agora: {dataset.name}. O arquivo é lido apenas neste navegador e substitui a análise exibida,
-          sem juntar inventários. Nada é enviado ao ERP, e ao banco do Inventara só vai a análise que você escolher
+          Analisando agora: {dataset.name}. O arquivo é lido apenas neste navegador, sem juntar inventários.
+          Nada é enviado ao ERP, e ao banco do Inventara só vai a análise que você escolher
           salvar. Ao recarregar a página, volta a amostra sintética de demonstração.
         </p>
         <div className="import-actions">
@@ -628,4 +681,4 @@ export function DivergenciasAnalise() {
       </section>
     </>
   );
-}
+              }
