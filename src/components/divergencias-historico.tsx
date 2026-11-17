@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { DivergenciasMulti } from "@/components/divergencias-multi";
 import { DivergenciasCompare } from "@/components/divergencias-compare";
 import { listAnalyses, removeAnalysisOnline } from "@/lib/divergencias-api";
 import { buildHistoricoCsv } from "@/lib/divergencias-export";
@@ -123,6 +124,8 @@ export function DivergenciasHistorico() {
           consegue ver ou apagar. As análises antigas do site separado de divergências não foram migradas e continuam lá.
         </p>
       </section>
+
+      {records !== null && records.length >= 2 && <DivergenciasMulti records={records} />}
 
       <section className="panel" aria-labelledby="comparar-titulo">
         <div className="panel-heading">

@@ -422,3 +422,31 @@ html[data-theme="dark"] .inline-link { color: var(--lime); }
     grid-template-columns: 1fr;
   }
 }
+
+/* Multi-inventory descriptive view: scroll stays inside the panel. */
+.multi-comparison { min-width: 0; }
+.multi-picker { border: 1px solid var(--line); padding: 14px; display: grid; gap: 8px; max-height: 300px; overflow: auto; margin: 18px 0 10px; }
+.multi-picker legend { font-weight: 700; padding: 0 6px; }
+.multi-picker label { display: flex; gap: 10px; align-items: center; min-height: 48px; padding: 6px; cursor: pointer; }
+.multi-picker input { flex: 0 0 auto; width: 18px; height: 18px; accent-color: var(--lime); }
+.multi-picker small, .multi-table small { display: block; font-weight: 400; font-size: .78rem; overflow-wrap: anywhere; }
+.multi-filters { display: flex; flex-wrap: wrap; gap: 14px; margin: 18px 0; }
+.multi-filters label { display: grid; gap: 6px; flex: 1 1 210px; font-size: .85rem; }
+.multi-filters input, .multi-filters select { min-width: 0; width: 100%; min-height: 44px; padding: 8px; border: 1px solid var(--line); color: var(--ink); background: var(--paper); }
+.multi-key { padding-left: 24px; overflow-wrap: anywhere; font-size: .85rem; line-height: 1.8; }
+.multi-scroll { max-width: 100%; overflow-x: auto; border: 1px solid var(--line); isolation: isolate; }
+.multi-scroll:focus-visible { outline: 2px solid var(--ink); outline-offset: 3px; }
+.multi-table { width: max-content; min-width: 100%; border-collapse: separate; border-spacing: 0; font-size: .85rem; }
+.multi-table caption { text-align: left; padding: 12px; font-weight: 700; }
+.multi-table th, .multi-table td { padding: 12px; border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); text-align: right; min-width: 130px; font-variant-numeric: tabular-nums; }
+.multi-table tr > :first-child { position: sticky; left: 0; z-index: 1; transform: translateZ(0); background: var(--paper); text-align: left; min-width: 180px; width: 220px; max-width: 220px; overflow-wrap: anywhere; }
+.multi-missing { color: var(--muted); font-size: .78rem; }
+@media (max-width: 600px) { .multi-table tr > :first-child { min-width: 136px; max-width: 136px; width: 136px; } .multi-table th, .multi-table td { padding: 10px; min-width: 114px; } }
+
+.multi-details { margin: 22px 0; }
+.multi-details details { border: 1px solid var(--line); margin: 10px 0; padding: 12px; overflow-wrap: anywhere; }
+.multi-details summary { cursor: pointer; font-weight: 700; min-height: 44px; }
+.multi-details summary span { display: block; margin-top: 6px; font-size: .85rem; font-weight: 400; }
+.multi-details details p, .multi-details details ul { margin-top: 12px; line-height: 1.6; font-size: .85rem; }
+.multi-details details ul { padding-left: 20px; }
+.multi-picker label:has(input:disabled) { opacity: .6; cursor: not-allowed; }
