@@ -450,3 +450,5 @@ html[data-theme="dark"] .inline-link { color: var(--lime); }
 .multi-details details p, .multi-details details ul { margin-top: 12px; line-height: 1.6; font-size: .85rem; }
 .multi-details details ul { padding-left: 20px; }
 .multi-picker label:has(input:disabled) { opacity: .6; cursor: not-allowed; }
+.loaded-csv { margin-top: 18px; }
+.loaded-csv p { overflow-wrap: anywhere; }
