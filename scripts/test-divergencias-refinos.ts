@@ -11,7 +11,7 @@ import assert from "node:assert/strict";
 import { comparar, ordenarPorData } from "../src/lib/comparacao";
 import { datasetFingerprint, inventoryDateKey } from "../src/lib/divergencias-fingerprint";
 import { isSampleDataset, SAMPLE_ITEMS } from "../src/lib/divergencias-amostra";
-import { inventoryDateError, normalizeInventoryDate, parseInventoryDate } from "../src/lib/inventory-date";
+import { inventoryDateError, inventoryDateForSave, normalizeInventoryDate, parseInventoryDate, todayInventoryDate } from "../src/lib/inventory-date";
 import type { Dataset, Item } from "../src/lib/divergencias";
 
 function item(cod: string, cong: number, inv: number, div: number, atual: number): Item {
@@ -34,6 +34,17 @@ assert.equal(inventoryDateError("12/11/2099"), null, "data futura não é bloque
 assert.ok(inventoryDateError("abc")?.includes("DD/MM/AAAA"));
 assert.ok(parseInventoryDate("29/02/2028"), "ano bissexto válido");
 assert.equal(parseInventoryDate("29/02/2027"), null, "2027 não é bissexto");
+
+// --- Data assumida ao salvar sem data ---
+const hoje = todayInventoryDate();
+assert.match(hoje, /^\d{2}\/\d{2}\/\d{4}$/, "hoje sai em DD/MM/AAAA");
+assert.ok(parseInventoryDate(hoje), "hoje é uma data real de calendário");
+const quaseMeiaNoiteUtc = new Date(Date.UTC(2026, 10, 17, 2, 30)); // 16/11 23:30 em Brasília
+assert.equal(todayInventoryDate(quaseMeiaNoiteUtc), "16/11/2026", "usa o dia de Brasília, não o dia UTC");
+assert.equal(inventoryDateForSave(""), hoje, "em branco assume o dia atual");
+assert.equal(inventoryDateForSave("   "), hoje, "só espaços também assume o dia atual");
+assert.equal(inventoryDateForSave("9/11/2026"), "09/11/2026", "data explícita é preservada e normalizada");
+assert.equal(inventoryDateForSave("31/02/2026"), undefined, "data inválida não vira hoje (a validação recusa antes)");
 
 // --- Ordenação A/B ---
 type An = { id: string; inventoryDate?: string };

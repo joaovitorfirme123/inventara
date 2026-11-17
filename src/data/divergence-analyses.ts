@@ -7,7 +7,7 @@ import {
   MAX_ANALISES,
   type SavedAnalysis,
 } from "@/lib/divergencias-storage";
-import { inventoryDateError, normalizeInventoryDate } from "@/lib/inventory-date";
+import { inventoryDateError, inventoryDateForSave } from "@/lib/inventory-date";
 import { isSampleDataset } from "@/lib/divergencias-amostra";
 import { datasetFingerprint, inventoryDateKey } from "@/lib/divergencias-fingerprint";
 
@@ -71,7 +71,8 @@ export function buildDivergenceRecord(input: unknown): { name: string; inventory
   const rawDate = typeof body.inventoryDate === "string" ? body.inventoryDate : "";
   const dateProblem = inventoryDateError(rawDate);
   if (dateProblem) return { error: dateProblem };
-  const inventoryDate = normalizeInventoryDate(rawDate) ?? undefined;
+  // Sem data informada, assume o dia do salvamento no horário de Brasília.
+  const inventoryDate = inventoryDateForSave(rawDate);
   const candidate: SavedAnalysis = {
     id: "srv-check",
     savedAt: new Date().toISOString(),

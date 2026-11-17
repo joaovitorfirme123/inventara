@@ -1,8 +1,9 @@
 /**
  * Data do inventário em texto brasileiro (DD/MM/AAAA).
- * Compartilhada entre navegador e servidor: a validação é a mesma nos dois lados.
- * Análises antigas podem ter datas em texto livre ou nenhuma data; isso continua
- * válido na leitura. A validação vale só para análises novas.
+ * Compartilhada entre navegador e servidor: a validação e a data assumida são
+ * as mesmas nos dois lados. Análises antigas podem ter datas em texto livre ou
+ * nenhuma data; isso continua válido na leitura. A validação vale só para
+ * análises novas.
  */
 
 /** Interpreta DD/MM/AAAA (aceita 9/11/2026) como data real de calendário. Null quando inválida. */
@@ -30,8 +31,9 @@ export function normalizeInventoryDate(text: string | null | undefined): string 
 
 /**
  * Erro de validação para salvar, ou null quando a data pode ser salva.
- * Texto vazio é válido (a data continua opcional). O único requisito é ser
- * uma data real de calendário no formato DD/MM/AAAA.
+ * Texto vazio é válido (a data continua opcional e assume o dia atual ao
+ * salvar). O único requisito é ser uma data real de calendário no formato
+ * DD/MM/AAAA.
  */
 export function inventoryDateError(text: string): string | null {
   const t = text.trim();
@@ -40,4 +42,31 @@ export function inventoryDateError(text: string): string | null {
     return `A data do inventário "${t}" não é uma data real no formato DD/MM/AAAA (ex.: 09/11/2026). Corrija ou deixe em branco.`;
   }
   return null;
+}
+
+/**
+ * Data de "hoje" em DD/MM/AAAA no horário de Brasília (America/Sao_Paulo).
+ * É a data assumida quando a análise é salva sem data informada.
+ */
+export function todayInventoryDate(now: Date = new Date()): string {
+  const parts = new Intl.DateTimeFormat("pt-BR", {
+    timeZone: "America/Sao_Paulo",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  }).formatToParts(now);
+  const get = (type: string) => parts.find((p) => p.type === type)?.value ?? "";
+  return `${get("day")}/${get("month")}/${get("year")}`;
+}
+
+/**
+ * Data gravada ao salvar: a data informada, normalizada, ou o dia atual no
+ * horário de Brasília quando o campo fica em branco. Undefined só quando o
+ * texto não é uma data real (caso que a validação recusa antes de salvar).
+ * Navegador e servidor usam esta mesma função para concordar na data assumida.
+ */
+export function inventoryDateForSave(text: string | null | undefined, now: Date = new Date()): string | undefined {
+  const t = text?.trim() ?? "";
+  if (!t) return todayInventoryDate(now);
+  return normalizeInventoryDate(t) ?? undefined;
 }

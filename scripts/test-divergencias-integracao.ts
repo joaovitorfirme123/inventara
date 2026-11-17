@@ -9,6 +9,7 @@
 import assert from "node:assert/strict";
 import { prisma } from "../src/lib/prisma";
 import { buildDivergenceRecord, createDivergenceAnalysis } from "../src/data/divergence-analyses";
+import { inventoryDateForSave } from "../src/lib/inventory-date";
 import { SAMPLE_ITEMS } from "../src/lib/divergencias-amostra";
 import type { Dataset, Item } from "../src/lib/divergencias";
 
@@ -61,11 +62,14 @@ try {
   const saved2 = await createDivergenceAnalysis(orgId, build("analise-2-outra-data", "12/11/2026"));
   assert.ok(typeof saved2 === "object" && "id" in saved2, "mesmo CSV em outra data deve ser permitido");
 
-  // 5. Sem data: primeira salva, repetição é duplicata
+  // 5. Sem data: assume o dia atual; repetição no mesmo dia é duplicata
+  const hoje = inventoryDateForSave("");
+  assert.ok(hoje, "hoje deve existir");
   const saved3 = await createDivergenceAnalysis(orgId, build("analise-3-sem-data", ""));
   assert.ok(typeof saved3 === "object" && "id" in saved3, "sem data deve salvar");
+  assert.equal(saved3.inventoryDate, hoje, "sem data assume o dia atual");
   const dup3 = await createDivergenceAnalysis(orgId, build("analise-3-sem-data-copia", ""));
-  assert.ok(typeof dup3 === "object" && "duplicate" in dup3, "sem data repetida deve ser duplicata");
+  assert.ok(typeof dup3 === "object" && "duplicate" in dup3, "sem data repetida no mesmo dia deve ser duplicata");
 
   // 6. Conteúdo diferente na mesma data = não é duplicata
   const outroDataset: Dataset = { ...dataset, items: [item("9", 1, 1, 0, 1)] };

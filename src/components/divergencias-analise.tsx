@@ -145,7 +145,7 @@ export function DivergenciasAnalise() {
         </p>
         <div className="import-actions">
           <label className="date-label">
-            <span>Data do inventário (opcional)</span>
+            <span>Data do inventário (em branco, assume o dia de hoje)</span>
             <input
               type="text"
               value={inventoryDate}
@@ -175,7 +175,10 @@ export function DivergenciasAnalise() {
                 setOnlineError(res.error);
                 return;
               }
-              setOnlineFeedback("Análise salva no histórico da organização. Na aba Histórico, dentro de Divergências, dá para comparar inventários de datas diferentes e exportar em JSON.");
+              const dataSalva = res.record.inventoryDate;
+              setOnlineFeedback(
+                `Análise salva no histórico da organização${dataSalva ? `, como inventário de ${dataSalva}` : ""}. Na aba Histórico, dentro de Divergências, dá para comparar inventários de datas diferentes e exportar em JSON.`,
+              );
             }}
           >
             {onlineBusy ? "Salvando..." : "Salvar análise no histórico"}
