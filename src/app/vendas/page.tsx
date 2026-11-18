@@ -152,6 +152,7 @@ export default async function VendasPage({
     totalRows: item.totalRows,
     errorRows: item.errorRows,
     newRows: item.newRows,
+    activeRows: item.activeRows,
     unmappedPlus: item.unmappedPlus,
   }));
 
