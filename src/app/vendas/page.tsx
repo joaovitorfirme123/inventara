@@ -16,6 +16,7 @@ import {
 } from "@/data/vendas";
 import type { SalesFilters, SalesSummaryRow } from "@/data/vendas";
 import { requireOrganizationSessionContext } from "@/lib/session";
+import "./vendas-mobile.css";
 
 export const metadata: Metadata = { title: "Vendas" };
 
