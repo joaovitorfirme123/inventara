@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { connection } from "next/server";
 import { CsvImporter } from "@/components/csv-importer";
+import { ImportCleanup } from "@/components/import-cleanup";
 import { ImportTemplateManager } from "@/components/import-template-manager";
 import { PageHeader } from "@/components/page-header";
 import { listImportsByOrganization } from "@/data/imports";
@@ -96,6 +97,8 @@ export default async function ImportacoesPage() {
           </div>
         )}
       </section>
+
+      <ImportCleanup canManage={session.user.role === "OWNER"} />
     </>
   );
 }
