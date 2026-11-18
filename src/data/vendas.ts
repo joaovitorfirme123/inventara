@@ -497,12 +497,23 @@ export async function getSalesRange(organizationId: string) {
   return rows[0] ?? { min: null, max: null };
 }
 
-export function listSalesImports(organizationId: string) {
-  return prisma.salesImport.findMany({
+export async function listSalesImports(organizationId: string) {
+  const imports = await prisma.salesImport.findMany({
     where: { organizationId, status: { not: "DISCARDED" } },
     orderBy: [{ importedAt: "desc" }, { id: "desc" }],
     take: 20,
   });
+
+  // Linhas ainda ativas por lote: um "Substituir recorte" pode apagar linhas
+  // de outros lotes, entao o historico nao pode assumir que tudo continua gravado.
+  const counts = await prisma.sale.groupBy({
+    by: ["importId"],
+    where: { organizationId, importId: { in: imports.map((item) => item.id) } },
+    _count: { _all: true },
+  });
+  const countByImport = new Map(counts.map((row) => [row.importId, row._count._all]));
+
+  return imports.map((item) => ({ ...item, activeRows: countByImport.get(item.id) ?? 0 }));
 }
 
 export async function getSalesImportSummary(organizationId: string, importId: string) {
@@ -531,4 +542,4 @@ export async function getSalesImportSummary(organizationId: string, importId: st
     periodEnd: record.periodEnd ? record.periodEnd.toISOString().slice(0, 10) : null,
     stores: record.stores,
   };
-    }
+}
