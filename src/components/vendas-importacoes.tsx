@@ -15,6 +15,7 @@ export type SalesImportItem = {
   totalRows: number;
   errorRows: number;
   newRows: number;
+  activeRows: number;
   unmappedPlus: number;
 };
 
@@ -149,8 +150,22 @@ export function VendasImportacoes({ imports }: { imports: SalesImportItem[] }) {
                 <td>{dateTimeFormatter.format(new Date(item.importedAt))}</td>
                 <td><strong>{item.filename}</strong></td>
                 <td>{formatPeriod(item.periodStart, item.periodEnd)}</td>
-                <td>{item.status === "PENDING" ? "Aguardando revisão" : "Gravado"}</td>
-                <td>{numberFormatter.format(item.totalRows)}</td>
+                <td>
+                  {item.status === "PENDING"
+                    ? "Aguardando revisão"
+                    : item.activeRows === 0
+                      ? "Substituído"
+                      : item.activeRows < item.newRows
+                        ? "Parcialmente substituído"
+                        : "Gravado"}
+                </td>
+                <td>
+                  {item.status === "PENDING"
+                    ? numberFormatter.format(item.totalRows)
+                    : item.activeRows < item.newRows
+                      ? `${numberFormatter.format(item.activeRows)} ativas de ${numberFormatter.format(item.newRows)}`
+                      : numberFormatter.format(item.totalRows)}
+                </td>
                 <td>{numberFormatter.format(item.errorRows)}</td>
                 <td>
                   {item.status === "PENDING" && (
