@@ -10,6 +10,7 @@ type SnapshotPreview = {
 };
 
 type AuditPreview = {
+  corteSolicitado: string | null;
   corte: string;
   apagaveis: number;
   importacoesAfetadas: number;
@@ -22,6 +23,8 @@ const dateFormatter = new Intl.DateTimeFormat("pt-BR", { dateStyle: "short" });
 export function ImportCleanup({ canManage }: { canManage: boolean }) {
   const [snapshots, setSnapshots] = useState<SnapshotPreview | null>(null);
   const [auditoria, setAuditoria] = useState<AuditPreview | null>(null);
+  const [ultimaImportacao, setUltimaImportacao] = useState<string | null>(null);
+  const [token, setToken] = useState<string | null>(null);
   const [corte, setCorte] = useState("");
   const [trimSnapshots, setTrimSnapshots] = useState(true);
   const [loading, setLoading] = useState(false);
@@ -34,6 +37,8 @@ export function ImportCleanup({ canManage }: { canManage: boolean }) {
     if (response.ok) {
       const data = await response.json();
       setSnapshots(data.snapshots);
+      setToken(data.token ?? null);
+      setUltimaImportacao(data.ultimaImportacao?.data ?? null);
     }
   }, []);
 
@@ -49,11 +54,14 @@ export function ImportCleanup({ canManage }: { canManage: boolean }) {
     if (response.ok) {
       const body = await response.json();
       setAuditoria(body.auditoria);
+      setToken(body.token ?? null);
+      setUltimaImportacao(body.ultimaImportacao?.data ?? null);
     }
   }
 
   const temAlgoParaLimpar =
-    (trimSnapshots && (snapshots?.apagaveis ?? 0) > 0) || (auditoria && auditoria.apagaveis > 0);
+    Boolean(token) &&
+    ((trimSnapshots && (snapshots?.apagaveis ?? 0) > 0) || (auditoria !== null && auditoria.apagaveis > 0));
 
   async function executar() {
     setLoading(true);
@@ -65,6 +73,7 @@ export function ImportCleanup({ canManage }: { canManage: boolean }) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           confirm: true,
+          previewToken: token,
           scope: {
             trimSnapshots,
             auditBefore: auditoria && corte ? new Date(corte).toISOString() : null,
@@ -74,6 +83,12 @@ export function ImportCleanup({ canManage }: { canManage: boolean }) {
       const body = await response.json();
       if (!response.ok) {
         setErro(body.error ?? "Falha ao executar a limpeza.");
+        if (response.status === 409) {
+          // Os dados mudaram depois da prévia: recarrega os números e pede nova revisão.
+          setConfirming(false);
+          await loadSnapshots();
+          if (corte) await previewAuditoria(corte);
+        }
       } else {
         setResultado(
           `Removidos ${numberFormatter.format(body.snapshotsRemovidos)} registros de histórico de estoque e ${numberFormatter.format(body.auditoriaRemovida)} linhas de auditoria. ${body.aviso}`,
@@ -92,6 +107,9 @@ export function ImportCleanup({ canManage }: { canManage: boolean }) {
 
   if (!canManage) return null;
 
+  const corteAjustado =
+    auditoria && auditoria.corteSolicitado && auditoria.corteSolicitado !== auditoria.corte;
+
   return (
     <section className="import-history panel">
       <div className="history-heading">
@@ -104,6 +122,9 @@ export function ImportCleanup({ canManage }: { canManage: boolean }) {
       <p>
         Libera espaço no banco sem tocar em produtos, estoques atuais nem inventários. Revise o
         que sai e o que fica antes de confirmar. A exclusão é definitiva.
+        {ultimaImportacao
+          ? ` O detalhe da importação mais recente (${dateFormatter.format(new Date(ultimaImportacao))}) é sempre preservado.`
+          : ""}
       </p>
 
       <div>
@@ -141,6 +162,9 @@ export function ImportCleanup({ canManage }: { canManage: boolean }) {
             {numberFormatter.format(auditoria.importacoesAfetadas)} importações anteriores a{" "}
             {dateFormatter.format(new Date(auditoria.corte))}. As importações continuam listadas
             com nome, data e contagens, mas o detalhe por linha delas deixa de existir.
+            {corteAjustado
+              ? ` A data escolhida passa da importação mais recente, então o corte efetivo é ${dateFormatter.format(new Date(auditoria.corte))}.`
+              : ""}
           </p>
         )}
       </div>
