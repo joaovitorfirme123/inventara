@@ -1,8 +1,10 @@
 import { createHash } from "node:crypto";
+import { gunzipSync } from "node:zlib";
 import { PAYLOAD_TOO_LARGE_MESSAGE, stageSalesImport } from "@/data/vendas";
 import {
   DUPLICATE_IMPORT_WINDOW_MS,
   hasAllowedImportExtension,
+  MAX_IMPORT_COMPRESSED_BYTES,
   MAX_IMPORT_FILE_BYTES,
   MAX_IMPORT_ROWS,
 } from "@/lib/import-limits";
@@ -32,22 +34,62 @@ export async function POST(request: Request) {
       );
     }
 
-    if (file.size > MAX_IMPORT_FILE_BYTES) {
-      return Response.json(
-        {
-          error: `O arquivo excede o limite de ${Math.round(
-            MAX_IMPORT_FILE_BYTES / (1024 * 1024),
-          )} MB.`,
-        },
-        { status: 413 },
-      );
+    // O navegador envia o CSV compactado (gzip) para caber no limite de 4,5 MB da hospedagem.
+    const originalName = file.name.toLowerCase().endsWith(".gz")
+      ? file.name.slice(0, -3)
+      : file.name;
+
+    const uploadBytes = new Uint8Array(await file.arrayBuffer());
+
+    let csvBytes: Uint8Array;
+    if (uploadBytes.length >= 2 && uploadBytes[0] === 0x1f && uploadBytes[1] === 0x8b) {
+      if (uploadBytes.byteLength > MAX_IMPORT_COMPRESSED_BYTES) {
+        return Response.json(
+          {
+            error:
+              "Mesmo compactado, o arquivo ficou grande demais para o envio. Divida o período em arquivos menores.",
+          },
+          { status: 413 },
+        );
+      }
+      try {
+        csvBytes = gunzipSync(uploadBytes, {
+          // Trava de segurança: interrompe a descompressão se o conteúdo passar do limite.
+          maxOutputLength: MAX_IMPORT_FILE_BYTES + 1,
+        });
+      } catch {
+        return Response.json(
+          {
+            error: `O arquivo excede o limite de ${Math.round(
+              MAX_IMPORT_FILE_BYTES / (1024 * 1024),
+            )} MB ou está corrompido. Tente exportar um período menor.`,
+          },
+          { status: 413 },
+        );
+      }
+    } else {
+      if (uploadBytes.byteLength > MAX_IMPORT_FILE_BYTES) {
+        return Response.json(
+          {
+            error: `O arquivo excede o limite de ${Math.round(
+              MAX_IMPORT_FILE_BYTES / (1024 * 1024),
+            )} MB.`,
+          },
+          { status: 413 },
+        );
+      }
+      csvBytes = uploadBytes;
     }
 
-    const buffer = await file.arrayBuffer();
-    const fileHash = createHash("sha256").update(new Uint8Array(buffer)).digest("hex");
+    // Hash sobre o conteúdo CSV real: o mesmo arquivo é reconhecido compactado ou não.
+    const fileHash = createHash("sha256").update(csvBytes).digest("hex");
     const organizationId = session.user.organizationId;
 
-    const parsed = parseSalesCsvBuffer(buffer);
+    const csvBuffer = csvBytes.buffer.slice(
+      csvBytes.byteOffset,
+      csvBytes.byteOffset + csvBytes.byteLength,
+    ) as ArrayBuffer;
+    const parsed = parseSalesCsvBuffer(csvBuffer);
 
     if (parsed.fatalErrors.length > 0) {
       return Response.json(
@@ -101,7 +143,7 @@ export async function POST(request: Request) {
 
     const staged = await stageSalesImport({
       organizationId,
-      filename: file.name,
+      filename: originalName,
       fileHash,
       rows: parsed.rows,
       errorRows: parsed.errors.length,
