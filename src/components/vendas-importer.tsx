@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { ChangeEvent, DragEvent } from "react";
 import {
   hasAllowedImportExtension,
+  MAX_IMPORT_COMPRESSED_BYTES,
   MAX_IMPORT_FILE_BYTES,
   MAX_IMPORT_ROWS,
 } from "@/lib/import-limits";
@@ -35,8 +36,27 @@ export function VendasImporter() {
     setMessage("");
 
     try {
+      // Compacta o CSV no navegador: a hospedagem limita cada envio a 4,5 MB,
+      // e um CSV de até 10 MB costuma ficar bem abaixo disso em gzip.
+      let uploadFile = selectedFile;
+      if (typeof CompressionStream !== "undefined") {
+        const compressedBlob = await new Response(
+          selectedFile.stream().pipeThrough(new CompressionStream("gzip")),
+        ).blob();
+        if (compressedBlob.size > MAX_IMPORT_COMPRESSED_BYTES) {
+          setState("error");
+          setMessage(
+            "Mesmo compactado, o arquivo ficou grande demais para o envio. Divida o período em arquivos menores.",
+          );
+          return;
+        }
+        uploadFile = new File([compressedBlob], `${selectedFile.name}.gz`, {
+          type: "application/gzip",
+        });
+      }
+
       const formData = new FormData();
-      formData.append("file", selectedFile);
+      formData.append("file", uploadFile);
       const response = await fetch("/api/vendas/importacoes", {
         method: "POST",
         body: formData,
@@ -57,7 +77,12 @@ export function VendasImporter() {
 
       if (!response.ok) {
         setState("error");
-        setMessage(payload?.error ?? "Não foi possível processar o arquivo.");
+        setMessage(
+          payload?.error ??
+            (response.status === 413
+              ? "O arquivo é grande demais para o envio. Divida o período em arquivos menores."
+              : "Não foi possível processar o arquivo."),
+        );
         return;
       }
 

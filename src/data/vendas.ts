@@ -6,7 +6,8 @@ import { prisma } from "@/lib/prisma";
 import type { VendaCsvRow } from "@/lib/vendas-csv";
 
 const IMPORT_BATCH_SIZE = 500;
-const MAX_PAYLOAD_CHARS = 6_000_000;
+// Folga para ~150 mil linhas em JSON no staging; o payload é descartado após "Gravar".
+const MAX_PAYLOAD_CHARS = 50_000_000;
 
 export const SEM_CADASTRO = "Sem cadastro";
 const SEM_GRUPO = "Sem grupo";
