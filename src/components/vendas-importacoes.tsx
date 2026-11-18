@@ -147,10 +147,10 @@ export function VendasImportacoes({ imports }: { imports: SalesImportItem[] }) {
           <tbody>
             {imports.map((item) => (
               <tr key={item.id}>
-                <td>{dateTimeFormatter.format(new Date(item.importedAt))}</td>
-                <td><strong>{item.filename}</strong></td>
-                <td>{formatPeriod(item.periodStart, item.periodEnd)}</td>
-                <td>
+                <td data-label="Data">{dateTimeFormatter.format(new Date(item.importedAt))}</td>
+                <td data-label="Arquivo"><strong>{item.filename}</strong></td>
+                <td data-label="Período">{formatPeriod(item.periodStart, item.periodEnd)}</td>
+                <td data-label="Status">
                   {item.status === "PENDING"
                     ? "Aguardando revisão"
                     : item.activeRows === 0
@@ -159,14 +159,14 @@ export function VendasImportacoes({ imports }: { imports: SalesImportItem[] }) {
                         ? "Parcialmente substituído"
                         : "Gravado"}
                 </td>
-                <td>
+                <td data-label="Linhas">
                   {item.status === "PENDING"
                     ? numberFormatter.format(item.totalRows)
                     : item.activeRows < item.newRows
                       ? `${numberFormatter.format(item.activeRows)} ativas de ${numberFormatter.format(item.newRows)}`
                       : numberFormatter.format(item.totalRows)}
                 </td>
-                <td>{numberFormatter.format(item.errorRows)}</td>
+                <td data-label="Erros">{numberFormatter.format(item.errorRows)}</td>
                 <td>
                   {item.status === "PENDING" && (
                     <button
