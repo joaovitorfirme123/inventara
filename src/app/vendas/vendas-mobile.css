@@ -1,6 +1,0 @@
-/* Rotulos das tabelas de vendas legiveis sobre a linha escura de secao no mobile */
-@media (max-width: 700px) {
-  .vendas-section-row td::before {
-    color: rgba(246, 243, 234, 0.72);
-  }
-}
