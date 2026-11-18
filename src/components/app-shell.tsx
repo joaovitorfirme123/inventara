@@ -16,8 +16,7 @@ const navigation = [
   { href: "/notificacoes", label: "Notificações", code: "07" },
   { href: "/relatorios", label: "Relatórios", code: "08" },
   { href: "/divergencias", label: "Divergências", code: "09" },
-  { href: "/vendas", label: "Vendas", code: "10" },
-  { href: "/configuracoes", label: "Configurações", code: "11" },
+  { href: "/configuracoes", label: "Configurações", code: "10" },
 ];
 
 type AppShellProps = {
