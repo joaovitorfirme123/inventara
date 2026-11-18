@@ -49,14 +49,17 @@ export function VendasRevisao({
   onDiscarded: () => void;
 }) {
   const [busy, setBusy] = useState<"ADD" | "REPLACE" | "DISCARD" | null>(null);
+  const [confirmReplace, setConfirmReplace] = useState(false);
   const [message, setMessage] = useState("");
 
   async function apply(mode: "ADD" | "REPLACE") {
-    if (mode === "REPLACE") {
-      const confirmed = window.confirm(
-        `Substituir o recorte apaga ${numberFormatter.format(summary.conflictingRows)} linhas já gravadas (${currencyFormatter.format(summary.conflictValue)}) que não estão neste arquivo. As vendas do arquivo entram no lugar. Confirmar?`,
+    if (mode === "REPLACE" && !confirmReplace) {
+      // Dois cliques em vez de window.confirm, que bloqueia a aba em alguns navegadores.
+      setConfirmReplace(true);
+      setMessage(
+        `Substituir o recorte apaga ${numberFormatter.format(summary.conflictingRows)} linhas já gravadas (${currencyFormatter.format(summary.conflictValue)}) que não estão neste arquivo. As vendas do arquivo entram no lugar. Clique em "Confirmar substituição" para executar.`,
       );
-      if (!confirmed) return;
+      return;
     }
 
     setBusy(mode);
@@ -75,6 +78,7 @@ export function VendasRevisao({
       if (!response.ok) {
         setMessage(payload?.error ?? "Não foi possível gravar as vendas.");
         setBusy(null);
+        setConfirmReplace(false);
         return;
       }
 
@@ -177,7 +181,11 @@ export function VendasRevisao({
             onClick={() => void apply("REPLACE")}
             type="button"
           >
-            {busy === "REPLACE" ? "Substituindo..." : "Substituir recorte pelo arquivo"}
+            {busy === "REPLACE"
+              ? "Substituindo..."
+              : confirmReplace
+                ? "Confirmar substituição"
+                : "Substituir recorte pelo arquivo"}
           </button>
         )}
         <button
