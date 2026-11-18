@@ -38,6 +38,7 @@ export function VendasImportacoes({ imports }: { imports: SalesImportItem[] }) {
   const [busyId, setBusyId] = useState<string | null>(null);
   const [reviewing, setReviewing] = useState<SalesStagingSummary | null>(null);
   const [feedback, setFeedback] = useState<{ kind: "error" | "success"; text: string } | null>(null);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
 
   async function openReview(item: SalesImportItem) {
     setBusyId(item.id);
@@ -62,14 +63,21 @@ export function VendasImportacoes({ imports }: { imports: SalesImportItem[] }) {
   }
 
   async function removeImport(item: SalesImportItem) {
-    const confirmed = window.confirm(
-      item.status === "PENDING"
-        ? `Descartar a revisão de "${item.filename}"? Nada foi gravado ainda.`
-        : `Excluir a importação "${item.filename}"? As linhas de venda gravadas por ela serão removidas. O cadastro de produtos e os inventários não são alterados.`,
-    );
+    // Dois cliques: o primeiro arma a confirmação, o segundo executa.
+    // Evita window.confirm, que bloqueia a aba e não funciona bem em todo navegador.
+    if (confirmingId !== item.id) {
+      setConfirmingId(item.id);
+      setFeedback({
+        kind: "error",
+        text:
+          item.status === "PENDING"
+            ? `Clique em "Confirmar" para descartar a revisão de "${item.filename}". Nada foi gravado ainda.`
+            : `Clique em "Confirmar" para excluir a importação "${item.filename}". As linhas de venda gravadas por ela serão removidas. O cadastro de produtos e os inventários não são alterados.`,
+      });
+      return;
+    }
 
-    if (!confirmed) return;
-
+    setConfirmingId(null);
     setBusyId(item.id);
     setFeedback(null);
 
@@ -161,8 +169,27 @@ export function VendasImportacoes({ imports }: { imports: SalesImportItem[] }) {
                     onClick={() => void removeImport(item)}
                     type="button"
                   >
-                    {item.status === "PENDING" ? "Descartar" : "Excluir"}
+                    {busyId === item.id
+                      ? "Excluindo..."
+                      : confirmingId === item.id
+                        ? "Confirmar"
+                        : item.status === "PENDING"
+                          ? "Descartar"
+                          : "Excluir"}
                   </button>
+                  {confirmingId === item.id && (
+                    <button
+                      className="compact-action secondary-action"
+                      disabled={busyId === item.id}
+                      onClick={() => {
+                        setConfirmingId(null);
+                        setFeedback(null);
+                      }}
+                      type="button"
+                    >
+                      Voltar
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}
