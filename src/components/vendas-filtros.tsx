@@ -36,7 +36,7 @@ function applySelection(
 
 export function VendasFiltros({ filters, options }: VendasFiltrosProps) {
   return (
-    <form className="product-filters panel" method="get">
+    <form className="product-filters vendas-filters panel" method="get">
       <label>
         <span>De</span>
         <input defaultValue={filters.de} name="de" type="date" />
