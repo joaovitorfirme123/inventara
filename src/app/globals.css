@@ -6152,3 +6152,58 @@ html[data-theme="dark"] .priority-legend > div {
 html[data-theme="dark"] :focus-visible {
   outline-color: var(--lime);
 }
+
+
+/* Vendas */
+.vendas-presets {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 14px 0;
+}
+
+.vendas-preset {
+  padding: 8px 14px;
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 0.68rem;
+  font-weight: 700;
+}
+
+.vendas-preset:hover {
+  border-color: var(--forest);
+}
+
+.vendas-range {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 0.62rem;
+}
+
+.vendas-section-row td {
+  background: var(--forest);
+  color: var(--paper);
+  font-weight: 700;
+}
+
+.vendas-section-row td strong {
+  color: var(--paper);
+}
+
+.vendas-group-row td {
+  background: #f0efe8;
+  font-weight: 700;
+}
+
+.vendas-subgroup-row td:first-child {
+  padding-left: 36px;
+}
+
+@media (max-width: 700px) {
+  .vendas-range {
+    width: 100%;
+    margin-left: 0;
+  }
+  }
