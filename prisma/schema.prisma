@@ -44,6 +44,8 @@ model Organization {
   importTemplates ImportTemplate[]
   priorityRule PriorityRule?
   divergenceAnalyses DivergenceAnalysis[]
+  salesImports SalesImport[]
+  sales Sale[]
   divergenceAnalysisMeta DivergenceAnalysisMeta?
 
   @@map("organizations")
@@ -396,4 +398,68 @@ model DivergenceAnalysisMeta {
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@map("divergence_analyses_meta")
+}
+
+
+enum SalesImportStatus {
+  PENDING
+  APPLIED
+  DISCARDED
+}
+
+enum SalesApplyMode {
+  ADD
+  REPLACE
+}
+
+model SalesImport {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  filename       String
+  fileHash       String?      @map("file_hash")
+  importedAt     DateTime     @default(now()) @map("imported_at")
+  status         SalesImportStatus @default(PENDING)
+  periodStart    DateTime?    @map("period_start") @db.Date
+  periodEnd      DateTime?    @map("period_end") @db.Date
+  stores         String[]
+  totalRows      Int          @map("total_rows")
+  errorRows      Int          @map("error_rows")
+  newRows        Int          @default(0) @map("new_rows")
+  duplicateRows  Int          @default(0) @map("duplicate_rows")
+  conflictingRows Int         @default(0) @map("conflicting_rows")
+  conflictValue  Decimal      @default(0) @map("conflict_value") @db.Decimal(15, 2)
+  unmappedPlus   Int          @default(0) @map("unmapped_plus")
+  payload        Json?
+  appliedAt      DateTime?    @map("applied_at")
+  appliedMode    SalesApplyMode? @map("applied_mode")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  sales          Sale[]
+
+  @@index([organizationId, importedAt(sort: Desc)])
+  @@index([organizationId, fileHash])
+  @@map("sales_imports")
+}
+
+model Sale {
+  id             String       @id @default(uuid()) @db.Uuid
+  organizationId String       @map("organization_id") @db.Uuid
+  importId       String       @map("import_id") @db.Uuid
+  plu            String
+  description    String?
+  soldAt         DateTime     @map("sold_at") @db.Date
+  store          String?
+  couponNumber   String?      @map("coupon_number")
+  pdv            String?
+  unitPrice      Decimal      @map("unit_price") @db.Decimal(15, 2)
+  quantity       Decimal      @db.Decimal(15, 3)
+  totalValue     Decimal      @map("total_value") @db.Decimal(15, 2)
+  rowHash        String       @map("row_hash")
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  salesImport    SalesImport  @relation(fields: [importId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, soldAt, store])
+  @@index([organizationId, plu, soldAt])
+  @@index([organizationId, rowHash])
+  @@index([importId])
+  @@map("sales")
 }
