@@ -293,13 +293,13 @@ function SectionRows({
   return (
     <>
       <tr className="vendas-section-row">
-        <td>
+        <td data-label="Classificação">
           <strong>{section.name}</strong>
         </td>
-        <td>{currencyFormatter.format(section.total)}</td>
+        <td data-label="Valor">{currencyFormatter.format(section.total)}</td>
         <td />
         <td />
-        <td>{percent.toFixed(1)}%</td>
+        <td data-label="% do total">{percent.toFixed(1)}%</td>
       </tr>
       {[...section.groups.values()].map((group) => (
         <GroupRows key={`${section.name}:${group.name}`} sectionName={section.name} group={group} total={total} />
@@ -322,19 +322,19 @@ function GroupRows({
   return (
     <>
       <tr className="vendas-group-row">
-        <td>{group.name}</td>
-        <td>{currencyFormatter.format(group.total)}</td>
+        <td data-label="Classificação">{group.name}</td>
+        <td data-label="Valor">{currencyFormatter.format(group.total)}</td>
         <td />
         <td />
-        <td>{percent.toFixed(1)}%</td>
+        <td data-label="% do total">{percent.toFixed(1)}%</td>
       </tr>
       {group.rows.map((row) => (
         <tr key={`${sectionName}:${group.name}:${row.subgroup}`} className="vendas-subgroup-row">
-          <td>{row.subgroup}</td>
-          <td>{currencyFormatter.format(row.totalValue)}</td>
-          <td>{quantityFormatter.format(row.totalQuantity)}</td>
-          <td>{numberFormatter.format(row.pluCount)}</td>
-          <td>{total > 0 ? `${((row.totalValue / total) * 100).toFixed(1)}%` : "—"}</td>
+          <td data-label="Classificação">{row.subgroup}</td>
+          <td data-label="Valor">{currencyFormatter.format(row.totalValue)}</td>
+          <td data-label="Quantidade">{quantityFormatter.format(row.totalQuantity)}</td>
+          <td data-label="PLUs">{numberFormatter.format(row.pluCount)}</td>
+          <td data-label="% do total">{total > 0 ? `${((row.totalValue / total) * 100).toFixed(1)}%` : "—"}</td>
         </tr>
       ))}
     </>
