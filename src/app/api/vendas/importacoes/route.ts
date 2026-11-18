@@ -27,17 +27,17 @@ export async function POST(request: Request) {
       return Response.json({ error: "Selecione um arquivo CSV." }, { status: 400 });
     }
 
-    if (!hasAllowedImportExtension(file.name)) {
+    // O navegador envia o CSV compactado (gzip) para caber no limite de 4,5 MB da hospedagem.
+    const originalName = file.name.toLowerCase().endsWith(".gz")
+      ? file.name.slice(0, -3)
+      : file.name;
+
+    if (!hasAllowedImportExtension(originalName)) {
       return Response.json(
         { error: "Formato inválido. Envie um arquivo com extensão .csv." },
         { status: 400 },
       );
     }
-
-    // O navegador envia o CSV compactado (gzip) para caber no limite de 4,5 MB da hospedagem.
-    const originalName = file.name.toLowerCase().endsWith(".gz")
-      ? file.name.slice(0, -3)
-      : file.name;
 
     const uploadBytes = new Uint8Array(await file.arrayBuffer());
 
